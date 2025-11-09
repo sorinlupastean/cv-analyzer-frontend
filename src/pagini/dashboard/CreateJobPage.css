@@ -196,3 +196,53 @@
     transform: translateY(0);
   }
 }
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 6px 12px 6px 38px;
+  width: 260px;
+  transition: 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.search-bar input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+  color: #333;
+  background: transparent;
+}
+
+.search-bar input::placeholder {
+  color: #aaa;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  width: 18px;
+  height: 18px;
+  opacity: 0.6;
+  pointer-events: none;
+
+  filter: invert(67%) sepia(0%) saturate(0%) hue-rotate(192deg) brightness(91%)
+    contrast(86%);
+}
+
+.search-bar:focus-within {
+  border-color: #4481eb;
+  box-shadow: 0 0 0 3px rgba(68, 129, 235, 0.2);
+}
+
+/* Stil personalizat pentru toast */
+.react-hot-toast {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  border-radius: 8px;
+}

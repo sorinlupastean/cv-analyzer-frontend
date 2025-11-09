@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
+import SearchIcon from "../../assets/search.svg";
+import toast, { Toaster } from "react-hot-toast";
 import "./CreateJobPage.css";
 
 interface Job {
@@ -13,31 +15,27 @@ interface Job {
 }
 
 const CreateJobPage: React.FC = () => {
-  const [jobs, setJobs] = useState<Job[]>([
-    {
-      id: 1,
-      title: "Frontend Developer",
-      category: "IT & Software",
-      location: "Remote",
-      type: "Full-time",
-      description: "Responsabil cu implementarea componentelor UI în React.",
-      createdAt: "05.11.2025",
-    },
-  ]);
-
-  // Controlăm dacă e modul creare sau editare
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingJobId, setEditingJobId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // State pentru formular (reutilizate la creare și editare)
   const [jobTitle, setJobTitle] = useState("");
   const [jobCategory, setJobCategory] = useState("");
   const [jobLocation, setJobLocation] = useState("");
   const [jobType, setJobType] = useState("Full-time");
   const [jobDescription, setJobDescription] = useState("");
 
-  // Resetare formular
+  useEffect(() => {
+    const stored = localStorage.getItem("jobs");
+    if (stored) setJobs(JSON.parse(stored));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("jobs", JSON.stringify(jobs));
+  }, [jobs]);
+
   const resetForm = () => {
     setJobTitle("");
     setJobCategory("");
@@ -49,12 +47,10 @@ const CreateJobPage: React.FC = () => {
     setIsEditing(false);
   };
 
-  // Creare job nou
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (isEditing && editingJobId !== null) {
-      // actualizare job existent
       setJobs((prevJobs) =>
         prevJobs.map((job) =>
           job.id === editingJobId
@@ -69,8 +65,8 @@ const CreateJobPage: React.FC = () => {
             : job
         )
       );
+      toast.success("Modificările au fost salvate!");
     } else {
-      // creare job nou
       const newJob: Job = {
         id: Date.now(),
         title: jobTitle,
@@ -81,19 +77,19 @@ const CreateJobPage: React.FC = () => {
         createdAt: new Date().toLocaleDateString("ro-RO"),
       };
       setJobs((prev) => [...prev, newJob]);
+      toast.success("Job creat cu succes!");
     }
 
     resetForm();
   };
 
-  // Ștergere job
   const handleDelete = (id: number) => {
     if (window.confirm("Sigur vrei să ștergi acest job?")) {
       setJobs(jobs.filter((job) => job.id !== id));
+      toast.error("Job șters."); // ✅ Toast ștergere
     }
   };
 
-  // Editare job existent
   const handleEdit = (job: Job) => {
     setIsEditing(true);
     setEditingJobId(job.id);
@@ -104,27 +100,38 @@ const CreateJobPage: React.FC = () => {
     setJobDescription(job.description);
   };
 
+  const filteredJobs = jobs.filter((job) =>
+    job.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <DashboardLayout pageTitle="Creează Job">
       <div className="create-job-page-container">
-        {/* 🔹 Bara de sus (fără search) */}
+        <Toaster position="top-right" reverseOrder={false} />{" "}
+        {/* ✅ container toast */}
         {!isCreating && !isEditing && (
           <div className="top-bar">
+            <div className="search-bar">
+              <img src={SearchIcon} alt="search" className="search-icon" />
+              <input
+                type="text"
+                placeholder="Caută job..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
             <button className="create-btn" onClick={() => setIsCreating(true)}>
               + Creează
             </button>
           </div>
         )}
-
-        {/* 🔹 Afișare condiționată */}
         {!isCreating && !isEditing ? (
-          // --- LISTA DE JOBURI ---
           <div className="job-list-container">
-            {jobs.length === 0 ? (
+            {filteredJobs.length === 0 ? (
               <p className="no-jobs">Nu există joburi create încă.</p>
             ) : (
               <div className="job-cards-grid">
-                {jobs.map((job) => (
+                {filteredJobs.map((job) => (
                   <div
                     key={job.id}
                     className="job-card"
@@ -158,7 +165,6 @@ const CreateJobPage: React.FC = () => {
             )}
           </div>
         ) : (
-          // --- FORMULAR CREARE / EDITARE ---
           <div className="create-job-wrapper">
             <h2>{isEditing ? "Editare Job" : "Creare Job Nou"}</h2>
 
