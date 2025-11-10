@@ -4,117 +4,31 @@
   border-radius: 12px;
 }
 
-/* Bara de sus (fără search) */
-.top-bar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-.create-btn {
-  background: linear-gradient(135deg, #4481eb 0%, #5590ff 100%);
-  color: white;
-  border: none;
-  padding: 10px 18px;
-  font-weight: 600;
-  border-radius: 10px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(68, 129, 235, 0.3);
-  transition: all 0.25s ease;
-}
-
-.create-btn:hover {
-  background: linear-gradient(135deg, #3a74e4 0%, #4a88ff 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(68, 129, 235, 0.4);
-}
-
-/* Cardurile joburilor */
-.job-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.job-card {
-  background: white;
-  padding: 20px;
-  border-radius: 14px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: pointer;
-}
-
-.job-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-}
-
-.job-card h3 {
-  margin: 0;
-  color: #313131;
-}
-
-.job-card .category {
-  color: #744c71;
-  font-weight: 500;
-  margin-top: 5px;
-}
-
-.job-card .details {
-  color: #666;
-  font-size: 0.9rem;
-  margin-top: 10px;
-}
-
-.description-preview {
-  color: #777;
-  font-size: 0.85rem;
-  margin-top: 10px;
-}
-
-.job-card .footer {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #999;
-  font-size: 0.85rem;
-}
-
-.delete-btn {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 1rem;
-  color: #b43c3c;
-  transition: 0.2s;
-}
-
-.delete-btn:hover {
-  color: #ff5555;
-  transform: scale(1.1);
-}
-
-/* Formular creare job */
+/* === CARD CREARE JOB === */
 .create-job-wrapper {
   background: #fff;
-  padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-  animation: fadeInUp 0.3s ease;
+  padding: 50px 60px;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.4s ease;
+  max-width: 950px;
+  margin: 0 auto;
 }
 
 .create-job-wrapper h2 {
-  margin-bottom: 20px;
-  color: #333;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #213554;
+  margin-bottom: 35px;
+  text-align: left;
+  letter-spacing: -0.5px;
 }
 
+/* --- Layout form --- */
 .create-job-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 25px 30px;
 }
 
 .form-group {
@@ -123,70 +37,120 @@
 }
 
 .form-group label {
-  font-weight: 500;
-  margin-bottom: 5px;
-  color: #444;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 0.95rem;
 }
 
 .create-job-form input,
-.create-job-form select {
-  border: 1px solid #ddd;
-  padding: 10px 14px;
+.create-job-form select,
+.create-job-form textarea {
+  border: 1px solid #e0e0e0;
+  background: #f9fafb;
   border-radius: 10px;
-  background: #f9f9f9;
+  padding: 12px 14px;
+  font-size: 0.95rem;
+  color: #333;
+  transition: all 0.2s ease;
   font-family: "Poppins", sans-serif;
 }
 
-/* Câmp Descriere */
+.create-job-form input:focus,
+.create-job-form select:focus,
+.create-job-form textarea:focus {
+  border-color: #4481eb;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(68, 129, 235, 0.15);
+  outline: none;
+}
+
 .description-group {
   grid-column: 1 / 3;
 }
 
-.description-group textarea {
-  resize: vertical;
+.create-job-form textarea {
+  resize: none;
   min-height: 120px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 10px 14px;
-  background: #f9f9f9;
-  font-family: "Poppins", sans-serif;
-  font-size: 0.95rem;
-  line-height: 1.4;
 }
 
+/* 🔹 Scrollbar elegant albastru cu accente fine */
+.create-job-form textarea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.create-job-form textarea::-webkit-scrollbar-track {
+  background: transparent; /* track invizibil, curat */
+}
+
+.create-job-form textarea::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15); /* gri subtil translucid */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.create-job-form textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35); /* intensitate mai mare la hover */
+}
+
+/* opțional: efect de fade-in/out la focus */
+.create-job-form textarea:focus::-webkit-scrollbar-thumb {
+  background: rgba(68, 129, 235, 0.4); /* ușor accent albastru la focus */
+}
+
+/* --- Butoane --- */
 .form-actions {
   grid-column: 1 / 3;
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 15px;
 }
 
 .form-actions button {
   border: none;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 22px;
   font-weight: 600;
+  cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
 }
 
+/* Buton anulare */
 .form-actions button:first-child {
   background: #f2f2f2;
+  color: #333;
 }
 
-.btn-submit {
-  background: linear-gradient(135deg, #744c71, #e3cde5);
-  color: white;
-  box-shadow: 0 4px 15px rgba(116, 76, 113, 0.25);
-}
-
-.btn-submit:hover {
-  opacity: 0.9;
+.form-actions button:first-child:hover {
+  background: #e6e6e6;
   transform: translateY(-1px);
 }
 
-/* Animatie */
-@keyframes fadeInUp {
+.form-context {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Buton submit */
+.btn-submit {
+  background: linear-gradient(135deg, #4481eb 0%, #5590ff 100%);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(68, 129, 235, 0.25);
+}
+
+.btn-submit:hover {
+  opacity: 0.95;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(68, 129, 235, 0.35);
+}
+
+/* --- Animatie aparitie --- */
+@keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -197,52 +161,538 @@
   }
 }
 
+/* === RESPONSIVE === */
+@media (max-width: 820px) {
+  .create-job-form {
+    grid-template-columns: 1fr;
+  }
+
+  .description-group {
+    grid-column: 1 / 2;
+  }
+
+  .create-job-wrapper {
+    padding: 40px 30px;
+  }
+
+  .create-job-wrapper h2 {
+    text-align: center;
+  }
+
+  .form-actions {
+    justify-content: center;
+  }
+}
+
+/* --- Bara superioară --- */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.actions-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- Căutare --- */
 .search-bar {
   position: relative;
   display: flex;
   align-items: center;
   background: #fff;
-  border: 1px solid #ddd;
+  border: 1px solid #e0e0e0;
   border-radius: 10px;
-  padding: 6px 12px 6px 38px;
+  padding: 8px 14px 8px 38px;
   width: 260px;
-  transition: 0.2s;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.search-bar:focus-within {
+  border-color: #4481eb;
+  box-shadow: 0 0 0 3px rgba(68, 129, 235, 0.15);
 }
 
 .search-bar input {
   border: none;
   outline: none;
+  background: transparent;
   width: 100%;
   font-size: 0.95rem;
   color: #333;
-  background: transparent;
 }
 
 .search-bar input::placeholder {
   color: #aaa;
+  font-weight: 400;
 }
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 14px;
   width: 18px;
   height: 18px;
-  opacity: 0.6;
+  opacity: 0.8;
   pointer-events: none;
-
-  filter: invert(67%) sepia(0%) saturate(0%) hue-rotate(192deg) brightness(91%)
-    contrast(86%);
+  filter: invert(66%) sepia(2%) saturate(5%) hue-rotate(169deg) brightness(90%)
+    contrast(90%);
 }
 
-.search-bar:focus-within {
+/* --- Sortare --- */
+.sort-select {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  color: #333;
+  background: #fff;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.sort-select:hover {
   border-color: #4481eb;
-  box-shadow: 0 0 0 3px rgba(68, 129, 235, 0.2);
 }
 
-/* Stil personalizat pentru toast */
-.react-hot-toast {
-  font-family: "Poppins", sans-serif;
+/* --- Buton Creează --- */
+.create-btn {
+  background: linear-gradient(135deg, #4481eb 0%, #5590ff 100%);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(68, 129, 235, 0.25);
+}
+
+.create-btn:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+  box-shadow: 0 6px 15px rgba(68, 129, 235, 0.3);
+}
+
+/* === CONTAINER LISTĂ JOBURI === */
+.job-list-container {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* === STIL MESAJ CENTRAL CÂND NU EXISTĂ JOBURI === */
+.no-jobs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 220px;
+  color: #6b7280;
+  font-size: 1rem;
   font-weight: 500;
+  animation: fadeIn 0.4s ease;
+  gap: 10px;
+}
+
+.no-jobs-icon {
+  width: 48px;
+  height: 48px;
+  opacity: 0.8;
+  filter: brightness(95%);
+}
+
+.no-jobs p {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #555;
+}
+
+/* opțional: efect subtil de fade-in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CARD principal */
+.modern-job-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fdfdfd;
+  border: 1px solid #e6e9f0;
+  border-radius: 14px;
+  padding: 10px 16px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.modern-job-card:hover {
+  background: #f9faff;
+  border-color: #4a73ff;
+  box-shadow: 0 6px 22px rgba(74, 115, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ICON stânga */
+.job-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.job-icon {
+  background: #eaf1ff;
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.job-icon img {
+  width: 26px;
+  height: 26px;
+  opacity: 0.9;
+}
+
+/* TEXT & META */
+.job-info h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e2433;
+  margin: 0;
+}
+
+.job-meta {
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* TAG tip job */
+.job-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.badge-type {
+  background: #eaf1ff;
+  color: #3367ff;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: capitalize;
+}
+
+/* PARTEA DREAPTĂ */
+.job-right {
+  display: flex;
+  flex-direction: column; /* schimbăm pe coloană */
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  height: 100%; /* asigură întinderea pe înălțimea cardului */
+  padding: 4px 0;
+}
+
+.job-date {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.delete-btn {
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  padding: 4px 6px;
   border-radius: 8px;
+  transition: 0.2s;
+}
+
+.delete-btn img {
+  width: 18px;
+  height: 18px;
+  opacity: 0.8;
+}
+
+.delete-btn:hover {
+  background: #ffeaea;
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+/* RESPONSIVE */
+@media (max-width: 800px) {
+  .modern-job-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .job-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+/* === EFECT ANIMAȚIE === */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.job-row {
+  animation: fadeSlideUp 0.35s ease forwards;
+}
+
+/* Responsivitate */
+@media (max-width: 820px) {
+  .job-table-header {
+    display: none;
+  }
+
+  .job-row {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .job-title {
+    font-size: 1rem;
+    margin-bottom: 6px;
+  }
+
+  .job-category,
+  .job-date {
+    color: #666;
+    font-size: 0.85rem;
+  }
+
+  .job-action {
+    justify-content: flex-start;
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 950px) {
+  .job-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .job-left {
+    gap: 10px;
+  }
+
+  .job-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 850px) {
+  .job-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .job-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .description-preview {
+    max-width: 100%;
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .job-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .job-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .description-preview {
+    max-width: 100%;
+  }
+}
+
+/* === ANIMAȚII === */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInList {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 820px) {
+  .job-card {
+    padding: 10px 14px;
+  }
+
+  .job-card h3 {
+    font-size: 0.9rem;
+  }
+
+  .description-preview {
+    max-width: 100%;
+  }
+}
+
+/* --- Sortare modernă --- */
+.sort-container {
+  position: relative;
+}
+
+.sort-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+  font-family: "Poppins", sans-serif;
+}
+
+.sort-toggle:hover {
+  border-color: #4481eb;
+  box-shadow: 0 0 0 3px rgba(68, 129, 235, 0.15);
+}
+
+.sort-toggle span {
+  font-size: 0.9rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.sort-toggle strong {
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.sort-icon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+  filter: invert(66%) sepia(2%) saturate(5%) hue-rotate(169deg) brightness(90%)
+    contrast(90%);
+}
+
+.sort-dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07);
+  width: 180px;
+  z-index: 10;
+  animation: fadeIn 0.2s ease;
+}
+
+.sort-dropdown p {
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: 0.15s ease;
+  border-radius: 8px;
+}
+
+.sort-dropdown p:hover,
+.sort-dropdown p.active {
+  background: #f4f7ff;
+  color: #4481eb;
+  font-weight: 500;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import SearchIcon from "../../assets/search.svg";
+import SortIcon from "../../assets/sort.svg";
+import Briefcase from "../../assets/briefcase.svg";
+import Trash from "../../assets/trash.svg";
 import toast, { Toaster } from "react-hot-toast";
 import "./CreateJobPage.css";
 
@@ -16,10 +19,13 @@ interface Job {
 
 const CreateJobPage: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingJobId, setEditingJobId] = useState<number | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
 
   const [jobTitle, setJobTitle] = useState("");
   const [jobCategory, setJobCategory] = useState("");
@@ -36,21 +42,32 @@ const CreateJobPage: React.FC = () => {
     localStorage.setItem("jobs", JSON.stringify(jobs));
   }, [jobs]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setShowSortMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const resetForm = () => {
     setJobTitle("");
     setJobCategory("");
     setJobLocation("");
     setJobType("Full-time");
     setJobDescription("");
-    setEditingJobId(null);
     setIsCreating(false);
     setIsEditing(false);
+    setEditingJobId(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (isEditing && editingJobId !== null) {
+      // actualizează jobul existent
       setJobs((prevJobs) =>
         prevJobs.map((job) =>
           job.id === editingJobId
@@ -65,8 +82,9 @@ const CreateJobPage: React.FC = () => {
             : job
         )
       );
-      toast.success("Modificările au fost salvate!");
+      toast.success("Job actualizat cu succes!");
     } else {
+      // creează job nou
       const newJob: Job = {
         id: Date.now(),
         title: jobTitle,
@@ -84,10 +102,8 @@ const CreateJobPage: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Sigur vrei să ștergi acest job?")) {
-      setJobs(jobs.filter((job) => job.id !== id));
-      toast.error("Job șters."); // ✅ Toast ștergere
-    }
+    setJobs(jobs.filter((job) => job.id !== id));
+    toast.error("Job șters.");
   };
 
   const handleEdit = (job: Job) => {
@@ -97,77 +113,124 @@ const CreateJobPage: React.FC = () => {
     setJobCategory(job.category);
     setJobLocation(job.location);
     setJobType(job.type);
-    setJobDescription(job.description);
+    setJobDescription(job.description || "");
   };
 
   const filteredJobs = jobs.filter((job) =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const sortedJobs = [...filteredJobs].sort((a, b) => {
+    if (sortOrder === "newest") return b.id - a.id;
+    if (sortOrder === "oldest") return a.id - b.id;
+    if (sortOrder === "az") return a.title.localeCompare(b.title);
+    if (sortOrder === "za") return b.title.localeCompare(a.title);
+    return 0;
+  });
+
   return (
     <DashboardLayout pageTitle="Creează Job">
       <div className="create-job-page-container">
-        <Toaster position="top-right" reverseOrder={false} />{" "}
-        {/* ✅ container toast */}
+        <Toaster position="top-right" />
+
         {!isCreating && !isEditing && (
           <div className="top-bar">
-            <div className="search-bar">
-              <img src={SearchIcon} alt="search" className="search-icon" />
-              <input
-                type="text"
-                placeholder="Caută job..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+            <div className="actions-left">
+              <div className="search-bar">
+                <img src={SearchIcon} alt="search" className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Caută job..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+
+              <div className="sort-container" ref={sortRef}>
+                <button
+                  className="sort-toggle"
+                  onClick={() => setShowSortMenu((prev) => !prev)}
+                >
+                  <img src={SortIcon} alt="sort" className="sort-icon" />
+                  <span>Sortare după:</span>
+                  <strong>
+                    {sortOrder === "newest"
+                      ? "Cele mai noi"
+                      : sortOrder === "oldest"
+                      ? "Cele mai vechi"
+                      : sortOrder === "az"
+                      ? "A–Z"
+                      : "Z–A"}
+                  </strong>
+                </button>
+
+                {showSortMenu && (
+                  <div className="sort-dropdown">
+                    <p onClick={() => setSortOrder("newest")}>Cele mai noi</p>
+                    <p onClick={() => setSortOrder("oldest")}>Cele mai vechi</p>
+                    <p onClick={() => setSortOrder("az")}>A–Z</p>
+                    <p onClick={() => setSortOrder("za")}>Z–A</p>
+                  </div>
+                )}
+              </div>
             </div>
+
             <button className="create-btn" onClick={() => setIsCreating(true)}>
               + Creează
             </button>
           </div>
         )}
+
         {!isCreating && !isEditing ? (
           <div className="job-list-container">
-            {filteredJobs.length === 0 ? (
-              <p className="no-jobs">Nu există joburi create încă.</p>
+            {sortedJobs.length === 0 ? (
+              <div className="no-jobs">
+                <img src={Briefcase} alt="empty" className="no-jobs-icon" />
+                <p>Nu există joburi create încă.</p>
+              </div>
             ) : (
-              <div className="job-cards-grid">
-                {filteredJobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="job-card"
-                    onClick={() => handleEdit(job)}
-                  >
-                    <h3>{job.title}</h3>
-                    <p className="category">{job.category}</p>
-                    <p className="details">
-                      📍 {job.location} | {job.type}
-                    </p>
-                    <p className="description-preview">
-                      {job.description.length > 70
-                        ? job.description.slice(0, 70) + "..."
-                        : job.description}
-                    </p>
-                    <div className="footer">
-                      <span>{job.createdAt}</span>
-                      <button
-                        className="delete-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(job.id);
-                        }}
-                      >
-                        🗑️
-                      </button>
+              sortedJobs.map((job) => (
+                <div
+                  key={job.id}
+                  className="modern-job-card"
+                  onClick={() => handleEdit(job)} // 🔹 click = editare
+                >
+                  <div className="job-left">
+                    <div className="job-icon">
+                      <img src={Briefcase} alt="briefcase" />
+                    </div>
+
+                    <div className="job-info">
+                      <h3 className="job-title">{job.title}</h3>
+                      <p className="job-meta">
+                        <span className="job-category">{job.category}</span> •{" "}
+                        <span className="job-location">{job.location}</span>
+                      </p>
+
+                      <div className="job-tags">
+                        <span className="badge-type">{job.type}</span>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
+
+                  <div className="job-right">
+                    <span className="job-date">{job.createdAt}</span>
+                    <button
+                      className="delete-btn"
+                      onClick={(e) => {
+                        e.stopPropagation(); // prevenim trigger-ul de edit
+                        handleDelete(job.id);
+                      }}
+                    >
+                      <img src={Trash} alt="delete" />
+                    </button>
+                  </div>
+                </div>
+              ))
             )}
           </div>
         ) : (
           <div className="create-job-wrapper">
-            <h2>{isEditing ? "Editare Job" : "Creare Job Nou"}</h2>
-
             <form className="create-job-form" onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Titlu Job</label>
