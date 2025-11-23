@@ -30,7 +30,7 @@ const Sidebar: React.FC = () => {
     {
       name: "Încarcă CV-uri",
       IconComponent: UploadIcon,
-      path: "/dashboard/upload-cvs",
+      path: "/dashboard/upload-cv",
     },
     {
       name: "Rezultate Analiză",
