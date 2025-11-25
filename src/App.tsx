@@ -7,6 +7,7 @@ import PaginaAuth from "./pagini/înregistrare/PaginaAuth";
 import HomePage from "./pagini/dashboard/HomePage";
 import CreateJobPage from "./pagini/dashboard/CreateJobPage";
 import UploadCVPage from "./pagini/dashboard/UploadCVPage";
+import ResultsPage from "./pagini/dashboard/ResultsPage";
 
 import "./App.css";
 
@@ -42,6 +43,7 @@ const App: React.FC = () => {
               <Route path="/dashboard/home" element={<HomePage />} />
               <Route path="/dashboard/create-job" element={<CreateJobPage />} />
               <Route path="/dashboard/upload-cv" element={<UploadCVPage />} />
+              <Route path="/dashboard/results" element={<ResultsPage />} />
             </>
           ) : (
             <Route path="/dashboard/*" element={<Navigate to="/" replace />} />
