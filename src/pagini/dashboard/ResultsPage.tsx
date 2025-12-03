@@ -8,6 +8,12 @@ import EyeOpen from "../../assets/eye-open.svg";
 import EyeClosed from "../../assets/eye-closed.svg";
 import SortIcon from "../../assets/sort.svg";
 import Briefcase from "../../assets/briefcase.svg";
+import PhoneIcon from "../../assets/phone.svg";
+import SchoolIcon from "../../assets/school.svg";
+import AwardIcon from "../../assets/award.svg";
+
+import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 interface CVResult {
   id: number;
@@ -37,6 +43,8 @@ const ResultsPage: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [openSortMenu, setOpenSortMenu] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Load mock data
   useEffect(() => {
@@ -101,6 +109,13 @@ const ResultsPage: React.FC = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (location.state?.openJobId) {
+      const job = jobData.find((j) => j.id === location.state.openJobId);
+      if (job) setSelectedJob(job);
+    }
+  }, [jobData, location.state]);
 
   // Sort logic
   const sortCVs = (items: CVResult[]) => {
@@ -262,6 +277,11 @@ const ResultsPage: React.FC = () => {
 
                   <button
                     className={styles.viewBtn}
+                    onClick={() =>
+                      navigate(`/cv/${cv.id}`, {
+                        state: { fromResults: true, jobId: selectedJob?.id },
+                      })
+                    }
                     onMouseEnter={() => setHovered(cv.id)}
                     onMouseLeave={() => setHovered(null)}
                   >

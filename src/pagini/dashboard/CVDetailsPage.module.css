@@ -1,0 +1,181 @@
+.pageWrapper {
+  padding: 20px 20px 40px;
+}
+
+.backButton {
+  background: #ffffff;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.backButton:hover {
+  background: #f5f7ff;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 22px;
+}
+
+/* LEFT CARD */
+.leftCard {
+  background: #ffffff;
+  border: 1px solid #e4e9f7;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 14px rgba(40, 60, 120, 0.05);
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.scoreNumber {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #5a7bff;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.progressBar {
+  width: 100%;
+  height: 9px;
+  background: #e6ebff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #7fa7ff, #4a76ff);
+  border-radius: 10px;
+}
+
+.scoreLabel {
+  text-align: center;
+  margin-top: 8px;
+  color: #556;
+}
+
+.divider {
+  border: none;
+  height: 1px;
+  background: #eef1fa;
+  margin: 20px 0;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.statusBadge {
+  background: #dbe4ff;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: #3d5bfd;
+}
+
+/* RIGHT SIDE */
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.infoCard {
+  background: #ffffff;
+  border: 1px solid #e4e9f7;
+  padding: 22px;
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(40, 60, 120, 0.05);
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475472;
+  margin-bottom: 6px;
+}
+
+.name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.skillsList {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skillTag {
+  background: #eaf1ff;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  color: #3c4fd6;
+}
+
+.analysisCard {
+  background: #f3f6ff;
+  border: 1px solid #dbe4ff;
+  padding: 22px;
+  border-radius: 16px;
+}
+
+.analysisTitle {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+
+.checkList li {
+  margin-bottom: 8px;
+}
+
+/* PDF VIEWER */
+
+.pdfWrapper {
+  margin-top: 28px;
+  background: #ffffff;
+  border: 1px solid #dbe4ff;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.pdfTitle {
+  font-size: 1.2rem;
+  margin-bottom: 14px;
+}
+
+.pdfViewer {
+  width: 100%;
+  height: 620px;
+  border: none;
+  border-radius: 12px;
+}

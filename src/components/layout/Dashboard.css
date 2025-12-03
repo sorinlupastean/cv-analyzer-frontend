@@ -20,7 +20,7 @@ button {
   /* Sidebar 280px fix */
   grid-template-columns: 280px 1fr;
   height: 100vh;
-  overflow: hidden;
+  overflow: auto;
   background-color: #f4f7f9; /* Fundalul general (gri deschis) */
   color: #333;
 }
@@ -162,7 +162,7 @@ button {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 .page-content-wrapper-new {

@@ -8,6 +8,7 @@ import HomePage from "./pagini/dashboard/HomePage";
 import CreateJobPage from "./pagini/dashboard/CreateJobPage";
 import UploadCVPage from "./pagini/dashboard/UploadCVPage";
 import ResultsPage from "./pagini/dashboard/ResultsPage";
+import CVDetailsPage from "./pagini/dashboard/CVDetailsPage";
 
 import "./App.css";
 
@@ -44,6 +45,7 @@ const App: React.FC = () => {
               <Route path="/dashboard/create-job" element={<CreateJobPage />} />
               <Route path="/dashboard/upload-cv" element={<UploadCVPage />} />
               <Route path="/dashboard/results" element={<ResultsPage />} />
+              <Route path="/cv/:id" element={<CVDetailsPage />} />
             </>
           ) : (
             <Route path="/dashboard/*" element={<Navigate to="/" replace />} />
