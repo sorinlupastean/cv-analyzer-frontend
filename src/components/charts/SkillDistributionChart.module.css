@@ -1,0 +1,214 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600;700&display=swap");
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: transparent;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-family: "Cinzel", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0e7490; /* Cyan-800 */
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  margin: 4px 0 0 0;
+  color: #64748b; /* Slate-500 */
+}
+
+/* ICONIȚĂ DECORATIVĂ (Mini Chart) */
+.miniIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Desenăm un mic Pie Chart cu CSS */
+.miniIcon::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid #06b6d4;
+  border-top-color: transparent;
+  transform: rotate(45deg);
+}
+
+/* CONȚINUT */
+.content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* --- CHART AREA --- */
+.chartSide {
+  width: 45%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chartInner {
+  width: 100%;
+  height: 100%;
+  /* Efect de glow în spatele graficului */
+  filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.2));
+}
+
+/* BUBBLE CENTRAL (Informații la hover) */
+.centerBubble {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+
+  /* Sticlă Mată */
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 5px 20px rgba(14, 165, 233, 0.15);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  /* Animație de apariție */
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+.centerLabel {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  max-width: 80px;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.centerValue {
+  font-family: "Cinzel", serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #0891b2; /* Cyan-700 */
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* --- LEGEND AREA --- */
+.legendSide {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: center;
+}
+
+.legendRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+/* Efect interactiv la hover pe legendă */
+.legendRow:hover,
+.legendRow.active {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(34, 211, 238, 0.3);
+  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.1);
+  transform: translateX(5px);
+}
+
+.rowTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px; /* Pătrat rotunjit (Tech look) */
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* PROGRESS BAR */
+.track {
+  width: 100%;
+  height: 6px;
+  background: rgba(226, 232, 240, 0.6);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.5s ease-out;
+}

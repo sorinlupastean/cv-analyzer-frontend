@@ -1,0 +1,366 @@
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap");
+
+/* ================= ROOT ================= */
+
+.root {
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ================= HEADER ================= */
+
+.topBar {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px) saturate(150%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 30px rgba(34, 211, 238, 0.1);
+}
+
+.left {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+}
+
+/* ================= SEARCH ================= */
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  padding: 10px 18px;
+  border-radius: 15px;
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  max-width: 420px;
+  flex: 1;
+  transition: 0.3s;
+}
+
+.search:focus-within {
+  background: white;
+  border-color: #22d3ee;
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.25);
+}
+
+.search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+/* ================= SORT ================= */
+
+.sort {
+  position: relative;
+}
+
+.sortBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: "Montserrat";
+  color: #64748b;
+  transition: 0.25s;
+}
+
+.sortBtn:hover {
+  border-color: #22d3ee;
+  color: #0ea5e9;
+}
+
+/* ================= DROPDOWN ================= */
+
+.dropdown {
+  position: absolute;
+  top: 56px;
+  right: 0;
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 50;
+}
+
+.dropdown p {
+  padding: 14px 22px;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.dropdown p:hover {
+  background: #f0f9ff;
+  color: #0ea5e9;
+}
+
+/* ================= PRIMARY BUTTON ================= */
+
+.primary {
+  background: linear-gradient(120deg, #22d3ee 0%, #0ea5e9 100%);
+  color: white;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 15px;
+  font-weight: 700;
+  font-family: "Montserrat";
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+  transition: 0.25s;
+}
+
+.primary:hover {
+  transform: scale(1.04);
+  box-shadow: 0 14px 30px rgba(14, 165, 233, 0.45);
+}
+
+/* ================= CONTENT ================= */
+
+.content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+/* ================= LIST ================= */
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Scrollbar */
+
+.list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.list::-webkit-scrollbar-track {
+  background: rgba(34, 211, 238, 0.05);
+  border-radius: 10px;
+}
+
+.list::-webkit-scrollbar-thumb {
+  background: linear-gradient(#22d3ee, #0ea5e9);
+  border-radius: 10px;
+}
+
+/* ================= CARD ================= */
+
+.card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  padding: 24px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.92);
+  border-color: #22d3ee;
+  box-shadow: 0 15px 30px rgba(34, 211, 238, 0.18);
+}
+
+.cardLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.iconWrapper {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardInfo h3 {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.meta {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 12px;
+  background: rgba(34, 211, 238, 0.12);
+  color: #0891b2;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* ================= CARD RIGHT ================= */
+
+.cardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.date {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.trashBtn {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: 0.2s;
+}
+
+.card:hover .trashBtn {
+  opacity: 1;
+}
+
+.trashBtn:hover {
+  background: #fee2e2;
+}
+
+/* ================= FORM ================= */
+
+.form {
+  max-width: 720px;
+  width: 100%;
+  margin: auto;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  padding: 36px;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 1);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form h2 {
+  font-family: "Cinzel";
+  color: #0f172a;
+  margin: 0;
+}
+
+/* ================= FORM GRID ================= */
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px 24px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.formGroup label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #64748b;
+}
+
+.form input,
+.form select,
+.form textarea {
+  padding: 14px;
+  border-radius: 15px;
+  border: 1.5px solid rgba(34, 211, 238, 0.35);
+  background: rgba(255, 255, 255, 0.55);
+  font-family: "Montserrat";
+  font-size: 0.95rem;
+  transition: 0.25s;
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  outline: none;
+  border-color: #22d3ee;
+  background: white;
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.18);
+}
+
+.form textarea {
+  min-height: 120px;
+  max-height: 120px;
+  resize: none;
+}
+
+/* ================= ACTIONS ================= */
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.cancelBtn {
+  background: #f1f5f9;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #64748b;
+}

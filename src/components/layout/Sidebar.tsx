@@ -1,15 +1,30 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom"; // 🔹 Importă Link și useLocation
-import "./Dashboard.css";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { PATHS } from "../../routs/paths";
+import styles from "./Dashboard.module.css";
 
-// ICONIȚE SVG
-import { ReactComponent as HomeIcon } from "../../assets/home.svg";
-import { ReactComponent as CreateJobIcon } from "../../assets/file-job.svg";
-import { ReactComponent as UploadIcon } from "../../assets/upload-cv.svg";
-import { ReactComponent as ResultsIcon } from "../../assets/chart.svg";
-import { ReactComponent as SettingsIcon } from "../../assets/settings.svg";
-import { ReactComponent as LogoutIcon } from "../../assets/logout.svg";
-import { ReactComponent as ProfileIcon } from "../../assets/account.svg";
+// --- ICONS ---
+import {
+  FaHome,
+  FaPlusCircle,
+  FaCloudUploadAlt,
+  FaChartBar,
+  FaCog,
+  FaSignOutAlt,
+  FaUserCircle,
+} from "react-icons/fa";
+
+import type { ComponentType } from "react";
+import type { IconBaseProps } from "react-icons";
+
+// --- FIX TYPESCRIPT ICONS ---
+const HomeIcon = FaHome as unknown as ComponentType<IconBaseProps>;
+const CreateJobIcon = FaPlusCircle as unknown as ComponentType<IconBaseProps>;
+const UploadIcon = FaCloudUploadAlt as unknown as ComponentType<IconBaseProps>;
+const ResultsIcon = FaChartBar as unknown as ComponentType<IconBaseProps>;
+const SettingsIcon = FaCog as unknown as ComponentType<IconBaseProps>;
+const LogoutIcon = FaSignOutAlt as unknown as ComponentType<IconBaseProps>;
+const ProfileIcon = FaUserCircle as unknown as ComponentType<IconBaseProps>;
 
 interface NavItem {
   name: string;
@@ -18,58 +33,63 @@ interface NavItem {
 }
 
 const Sidebar: React.FC = () => {
-  const location = useLocation(); // 🔹 Obținem calea curentă pentru a marca linkul activ
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  // --- LOGOUT LOGIC ---
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate(PATHS.ROOT, { replace: true });
+  };
+
+  // --- MAIN NAV ---
   const mainNav: NavItem[] = [
-    { name: "Acasă", IconComponent: HomeIcon, path: "/dashboard/home" },
+    {
+      name: "Acasă",
+      IconComponent: HomeIcon,
+      path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`,
+    },
     {
       name: "Creează Job",
       IconComponent: CreateJobIcon,
-      path: "/dashboard/create-job",
+      path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.CREATE_JOB}`,
     },
     {
       name: "Încarcă CV-uri",
       IconComponent: UploadIcon,
-      path: "/dashboard/upload-cv",
+      path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
     },
     {
       name: "Rezultate Analiză",
       IconComponent: ResultsIcon,
-      path: "/dashboard/results",
+      path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.RESULTS}`,
     },
   ];
 
-  const bottomNav: NavItem[] = [
-    {
-      name: "Setări",
-      IconComponent: SettingsIcon,
-      path: "/dashboard/settings",
-    },
-    { name: "Deloghează-te", IconComponent: LogoutIcon, path: "/logout" },
-  ];
+  const isActive = (path: string) => location.pathname === path;
 
   return (
-    <aside className="sidebar-container-new">
-      {/* Profil */}
-      <div className="profile-section">
-        <div className="profile-icon">
+    <aside className={styles.sidebarContainerNew}>
+      {/* --- PROFILE --- */}
+      <div className={styles.profileSection}>
+        <div className={styles.profileIcon}>
           <ProfileIcon />
         </div>
-        <span className="profile-name">Sorin Lupaștean</span>
+        <span className={styles.profileName}>Utilizator Autentificat</span>
       </div>
 
-      {/* Navigație principală */}
-      <nav className="sidebar-nav-main">
+      {/* --- MAIN NAVIGATION --- */}
+      <nav className={styles.sidebarNavMain}>
         <ul>
           {mainNav.map((item) => (
-            <li key={item.name} className="nav-item">
+            <li key={item.name}>
               <Link
                 to={item.path}
-                className={`nav-link ${
-                  location.pathname === item.path ? "active" : ""
+                className={`${styles.navLink} ${
+                  isActive(item.path) ? styles.active : ""
                 }`}
               >
-                <span className="nav-icon">
+                <span className={styles.navIcon}>
                   <item.IconComponent />
                 </span>
                 {item.name}
@@ -79,24 +99,37 @@ const Sidebar: React.FC = () => {
         </ul>
       </nav>
 
-      {/* Navigație jos */}
-      <nav className="sidebar-nav-bottom">
+      {/* --- BOTTOM NAV --- */}
+      <nav className={styles.sidebarNavBottom}>
         <ul>
-          {bottomNav.map((item) => (
-            <li key={item.name} className="nav-item">
-              <Link
-                to={item.path}
-                className={`nav-link ${
-                  location.pathname === item.path ? "active" : ""
-                }`}
-              >
-                <span className="nav-icon">
-                  <item.IconComponent />
-                </span>
-                {item.name}
-              </Link>
-            </li>
-          ))}
+          <li>
+            <Link
+              to={`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.SETTINGS}`}
+              className={`${styles.navLink} ${
+                isActive(`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.SETTINGS}`)
+                  ? styles.active
+                  : ""
+              }`}
+            >
+              <span className={styles.navIcon}>
+                <SettingsIcon />
+              </span>
+              Setări
+            </Link>
+          </li>
+
+          <li>
+            <button
+              type="button"
+              className={`${styles.navLink} ${styles.logoutBtn}`}
+              onClick={handleLogout}
+            >
+              <span className={styles.navIcon}>
+                <LogoutIcon />
+              </span>
+              Delogare
+            </button>
+          </li>
         </ul>
       </nav>
     </aside>

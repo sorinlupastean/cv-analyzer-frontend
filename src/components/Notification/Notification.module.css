@@ -1,0 +1,172 @@
+/* Notification.module.css */
+
+.toast {
+  position: fixed;
+  top: 30px;
+  right: 30px;
+  min-width: 320px;
+  padding: 20px 25px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  z-index: 9999;
+
+  /* Animație de intrare "Slide & Fade" */
+  animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* --- THEMA PĂDUREA (SUCCESS) --- */
+/* Avatar 1: Bioluminescență verde, organic, calm */
+.success {
+  /* Gradient întunecat de pădure */
+  background: linear-gradient(
+    135deg,
+    rgba(2, 44, 34, 0.9),
+    rgba(6, 78, 59, 0.8)
+  );
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  /* Accent stânga: Verde Neon */
+  border-left: 4px solid #34d399;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(52, 211, 153, 0.2); /* Glow Pădure */
+}
+
+/* Particule de "Spirite ale Pădurii" (Decorativ) */
+.success::before {
+  content: "";
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    rgba(52, 211, 153, 0.4) 0%,
+    transparent 70%
+  );
+  filter: blur(20px);
+  animation: pulseLight 4s infinite alternate;
+}
+
+/* --- THEMA FOC/CENUȘĂ (ERROR) --- */
+/* Avatar 3: Magmă, Tăciuni, Pericol */
+.error {
+  /* Gradient de lavă răcită/obsidian */
+  background: linear-gradient(
+    135deg,
+    rgba(69, 10, 10, 0.95),
+    rgba(40, 5, 5, 0.9)
+  );
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  /* Accent stânga: Portocaliu de foc */
+  border-left: 4px solid #ff4500;
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.7),
+    0 0 25px rgba(255, 69, 0, 0.25); /* Glow Magmatic */
+}
+
+/* Efect de "Tăciune aprins" */
+.error::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ff4500, transparent);
+  animation: emberFlow 2s linear infinite;
+}
+
+/* --- CONȚINUT --- */
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.success .iconWrapper {
+  color: #34d399;
+  filter: drop-shadow(0 0 5px #34d399);
+}
+.error .iconWrapper {
+  color: #ff4500;
+  filter: drop-shadow(0 0 8px #ff4500);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: "Cinzel", serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+  letter-spacing: 1px;
+}
+
+.message {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-left: auto;
+  transition: 0.3s;
+}
+.closeBtn:hover {
+  color: #fff;
+}
+
+/* ANIMAȚII */
+@keyframes slideIn {
+  0% {
+    transform: translateX(100%) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulseLight {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes emberFlow {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}

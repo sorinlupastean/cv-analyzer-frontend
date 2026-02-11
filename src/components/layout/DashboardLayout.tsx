@@ -1,29 +1,21 @@
 // src/components/layout/DashboardLayout.tsx
-
 import React from "react";
-import Sidebar from "./Sidebar"; // Importă Sidebar-ul de la tine
-import "./Dashboard.css"; // Importă stilurile
+import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import styles from "./Dashboard.module.css"; // Importă ca modul
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
-  pageTitle: string; // Adaugă un titlu pentru a fi afișat în header-ul paginii
-}
-
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  children,
-  pageTitle,
-}) => {
-  // Antetul Paginii Curente (ex: "Acasă")
-
+const DashboardLayout: React.FC = () => {
   return (
-    <div className="dashboard-app-container-new">
-      {/* 1. Sidebar-ul (Stânga) */}
+    <div className={styles.dashboardAppContainerNew}>
+      {/* Sidebar Fix */}
       <Sidebar />
 
-      {/* 2. Zona de Conținut (Dreapta) */}
-      <div className="main-content-area-new">
-        {/* Conținutul paginii curente */}
-        <main className="page-content-wrapper-new">{children}</main>
+      {/* Zona de Conținut */}
+      <div className={styles.mainContentAreaNew}>
+        <main className={styles.pageContentWrapperNew}>
+          {/* Aici vor fi randate paginile (Home, CreateJob, etc) */}
+          <Outlet />
+        </main>
       </div>
     </div>
   );

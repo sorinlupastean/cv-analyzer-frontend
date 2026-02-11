@@ -1,0 +1,121 @@
+/* CONTAINER */
+.chartWrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  /* Fundalul transparent (este în interiorul cardului de sticlă) */
+  background: transparent;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-family: "Cinzel", serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0e7490; /* Cyan-800 */
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.8rem;
+  margin: 4px 0 0 0;
+  color: #64748b; /* Slate-500 */
+}
+
+/* BADGE */
+.badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 211, 238, 0.15); /* Cyan deschis */
+  padding: 6px 12px;
+  border-radius: 12px;
+
+  /* Text Cyan Electric */
+  color: #0891b2;
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  /* Bordură fină */
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+/* TOOLTIP (Glass Popup) */
+.tooltipBox {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 12px 16px;
+  border-radius: 12px;
+
+  /* Efect de sticlă mată */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.15);
+  font-size: 0.85rem;
+  min-width: 140px;
+}
+
+.tooltipLabel {
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  color: #164e63; /* Deep Navy */
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding-bottom: 4px;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+  font-weight: 500;
+  color: #475569;
+}
+
+.tooltipRow span {
+  font-weight: 700;
+  color: #0ea5e9; /* Sky-500 */
+}
+
+/* LEGENDĂ */
+.legend {
+  display: flex;
+  gap: 20px;
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #475569;
+  justify-content: flex-start;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.legendItem:hover {
+  color: #0ea5e9;
+}
+
+.legendDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px; /* Mai tech, nu rotund perfect */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
