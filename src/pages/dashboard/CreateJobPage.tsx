@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./CreateJobPage.module.css";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import { jobsApi } from "../../api/jobs.service";
+import { PATHS } from "../../routs/paths";
 
-// --- IMPORT REACT ICONS (Modul corect conform codului tău) ---
 import {
   FaBriefcase,
   FaUserCircle,
-  FaSortAmountDown,
   FaEye,
   FaEyeSlash,
-  FaChevronLeft,
-  FaCheckCircle,
   FaLightbulb,
   FaPlus,
   FaSearch,
@@ -19,17 +17,13 @@ import {
   FaTimes,
   FaEdit,
 } from "react-icons/fa";
-
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
 const Briefcase = FaBriefcase as unknown as ComponentType<IconBaseProps>;
 const UserCircle = FaUserCircle as unknown as ComponentType<IconBaseProps>;
-const SortAmountDown =
-  FaSortAmountDown as unknown as ComponentType<IconBaseProps>;
 const Eye = FaEye as unknown as ComponentType<IconBaseProps>;
 const EyeSlash = FaEyeSlash as unknown as ComponentType<IconBaseProps>;
-const CheckCircle = FaCheckCircle as unknown as ComponentType<IconBaseProps>;
 const Lightbulb = FaLightbulb as unknown as ComponentType<IconBaseProps>;
 const Plus = FaPlus as unknown as ComponentType<IconBaseProps>;
 const SearchIcon = FaSearch as unknown as ComponentType<IconBaseProps>;
@@ -37,7 +31,6 @@ const TrashIcon = FaTrash as unknown as ComponentType<IconBaseProps>;
 const Times = FaTimes as unknown as ComponentType<IconBaseProps>;
 const EditIcon = FaEdit as unknown as ComponentType<IconBaseProps>;
 
-// --- INTERFACES ---
 interface CVResult {
   id: number;
   fileName: string;
@@ -66,7 +59,6 @@ const CreateJobPage: React.FC = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [hoveredCv, setHoveredCv] = useState<number | null>(null);
-
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -77,66 +69,16 @@ const CreateJobPage: React.FC = () => {
     description: "",
   });
 
-  // --- DATE HARDCODATE ȘI SINCRONIZARE ---
   useEffect(() => {
-    const saved = localStorage.getItem("jobs_unified");
-    if (saved) {
-      setJobs(JSON.parse(saved));
-    } else {
-      const initialJobs: Job[] = [
-        {
-          id: 1,
-          title: "Frontend Developer",
-          category: "IT & Software",
-          location: "Remote",
-          type: "Full-time",
-          description: "Căutăm un expert în React și CSS...",
-          createdAt: "29.11.2025",
-          cvs: [
-            {
-              id: 101,
-              fileName: "CV_Ion_Popescu.pdf",
-              candidateName: "Ion Popescu",
-              uploadDate: "15.01.2025",
-              matchScore: 92,
-              status: "Analizat",
-              skills: ["React", "JavaScript", "CSS"],
-            },
-            {
-              id: 102,
-              fileName: "CV_Andreea_Stan.pdf",
-              candidateName: "Andreea Stan",
-              uploadDate: "15.01.2025",
-              matchScore: 88,
-              status: "Analizat",
-              skills: ["HTML", "TypeScript", "Tailwind"],
-            },
-          ],
-        },
-        {
-          id: 2,
-          title: "Backend Developer",
-          category: "IT & Software",
-          location: "București",
-          type: "Full-time",
-          description: "Node.js, MongoDB și arhitecturi scalabile...",
-          createdAt: "28.11.2025",
-          cvs: [
-            {
-              id: 201,
-              fileName: "CV_Maria_Ionescu.pdf",
-              candidateName: "Maria Ionescu",
-              uploadDate: "14.01.2025",
-              matchScore: 85,
-              status: "Analizat",
-              skills: ["Node.js", "MongoDB", "Express"],
-            },
-          ],
-        },
-      ];
-      setJobs(initialJobs);
-      setSelectedJob(initialJobs[0]);
-    }
+    (async () => {
+      try {
+        const data = await jobsApi.list(); // acum e Job[]
+        setJobs(data);
+        setSelectedJob(data.length ? data[0] : null);
+      } catch (err) {
+        toast.error("Nu pot încărca job-urile din backend");
+      }
+    })();
   }, []);
 
   useEffect(() => {
@@ -144,28 +86,27 @@ const CreateJobPage: React.FC = () => {
       localStorage.setItem("jobs_unified", JSON.stringify(jobs));
   }, [jobs]);
 
-  // --- LOGICĂ ---
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editingId) {
-      const updated = jobs.map((j) =>
-        j.id === editingId ? { ...j, ...form } : j,
-      );
-      setJobs(updated);
-      if (selectedJob?.id === editingId)
-        setSelectedJob({ ...selectedJob, ...form });
-      toast.success("Job actualizat!");
-    } else {
-      const newJob: Job = {
-        id: Date.now(),
-        ...form,
-        createdAt: new Date().toLocaleDateString("ro-RO"),
-        cvs: [],
-      };
-      setJobs([newJob, ...jobs]);
-      toast.success("Job creat!");
+    try {
+      if (editingId) {
+        const updated = await jobsApi.update(editingId, form);
+        setJobs((prev) =>
+          prev.map((j) => (j.id === editingId ? { ...j, ...updated } : j)),
+        );
+        if (selectedJob?.id === editingId)
+          setSelectedJob((prev) => (prev ? { ...prev, ...updated } : prev));
+        toast.success("Job actualizat!");
+      } else {
+        const created = await jobsApi.create(form);
+        setJobs((prev) => [created as any, ...prev]);
+        setSelectedJob(created as any);
+        toast.success("Job creat!");
+      }
+      resetForm();
+    } catch (err) {
+      toast.error("Eroare la salvare");
     }
-    resetForm();
   };
 
   const resetForm = () => {
@@ -193,11 +134,16 @@ const CreateJobPage: React.FC = () => {
     setIsFormOpen(true);
   };
 
-  const deleteJob = (id: number, e: React.MouseEvent) => {
+  const deleteJob = async (id: number, e: React.MouseEvent) => {
     e.stopPropagation();
-    setJobs((prev) => prev.filter((j) => j.id !== id));
-    if (selectedJob?.id === id) setSelectedJob(null);
-    toast.error("Job șters");
+    try {
+      await jobsApi.remove(id);
+      setJobs((prev) => prev.filter((j) => j.id !== id));
+      if (selectedJob?.id === id) setSelectedJob(null);
+      toast.success("Job șters");
+    } catch (err) {
+      toast.error("Eroare la ștergere");
+    }
   };
 
   const filteredJobs = jobs.filter((j) =>
@@ -209,7 +155,7 @@ const CreateJobPage: React.FC = () => {
       <div className={styles.container}>
         <Toaster position="bottom-right" />
 
-        {/* PANOU JOBURI (în loc de navigație) */}
+        {/* JOBS PANEL */}
         <aside className={styles.jobsPanel}>
           <div className={styles.panelHeader}>
             <div className={styles.brandBlock}>
@@ -218,7 +164,6 @@ const CreateJobPage: React.FC = () => {
               </h2>
               <p className={styles.heroSubtitle}>Manage jobs and candidates</p>
             </div>
-
             <button
               className={styles.primaryBtn}
               onClick={() => setIsFormOpen(true)}
@@ -254,7 +199,6 @@ const CreateJobPage: React.FC = () => {
                     <p>{job.location}</p>
                   </div>
                 </div>
-
                 <div className={styles.miniCardActions}>
                   <button type="button" onClick={(e) => openEdit(job, e)}>
                     <EditIcon />
@@ -268,7 +212,7 @@ const CreateJobPage: React.FC = () => {
           </div>
         </aside>
 
-        {/* --- MAIN: ANALIZĂ REZULTATE --- */}
+        {/* MAIN AREA */}
         <main className={styles.mainArea}>
           {selectedJob ? (
             <>
@@ -308,7 +252,6 @@ const CreateJobPage: React.FC = () => {
                             {cv.matchScore}%
                           </div>
                         </div>
-
                         <div className={styles.progressSection}>
                           <div className={styles.barContainer}>
                             <div
@@ -317,7 +260,6 @@ const CreateJobPage: React.FC = () => {
                             />
                           </div>
                         </div>
-
                         <div className={styles.skills}>
                           {cv.skills.map((s) => (
                             <span key={s} className={styles.sTag}>
@@ -325,12 +267,18 @@ const CreateJobPage: React.FC = () => {
                             </span>
                           ))}
                         </div>
-
                         <button
                           className={styles.viewBtn}
                           onMouseEnter={() => setHoveredCv(cv.id)}
                           onMouseLeave={() => setHoveredCv(null)}
-                          onClick={() => navigate(`/cv/${cv.id}`)}
+                          onClick={() =>
+                            navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
+                              state: {
+                                fromResults: true,
+                                jobId: selectedJob.id,
+                              },
+                            })
+                          }
                         >
                           {hoveredCv === cv.id ? <Eye /> : <EyeSlash />}
                           Vezi Profil
@@ -349,13 +297,13 @@ const CreateJobPage: React.FC = () => {
             </>
           ) : (
             <div className={styles.noJobSelected}>
-              <Briefcase size={60} />
-              <h2>Selectează un job pentru a vedea datele</h2>
+              <Briefcase size={30} />
+              <h4>Selectează un job pentru a vedea datele</h4>
             </div>
           )}
         </main>
 
-        {/* --- OVERLAY FORM (Harmonized) --- */}
+        {/* MODAL */}
         {isFormOpen && (
           <div className={styles.overlay}>
             <div className={styles.modal}>
@@ -377,7 +325,6 @@ const CreateJobPage: React.FC = () => {
                       }
                     />
                   </div>
-
                   <div className={styles.fGroup}>
                     <label>Categorie</label>
                     <input
@@ -388,7 +335,6 @@ const CreateJobPage: React.FC = () => {
                       }
                     />
                   </div>
-
                   <div className={styles.fGroup}>
                     <label>Tip</label>
                     <select
@@ -403,7 +349,6 @@ const CreateJobPage: React.FC = () => {
                       <option>Internship</option>
                     </select>
                   </div>
-
                   <div className={styles.fGroup}>
                     <label>Locație</label>
                     <input
@@ -413,7 +358,6 @@ const CreateJobPage: React.FC = () => {
                       }
                     />
                   </div>
-
                   <div className={`${styles.fGroup} ${styles.fullWidth}`}>
                     <label>Descriere</label>
                     <textarea
@@ -426,7 +370,6 @@ const CreateJobPage: React.FC = () => {
                     />
                   </div>
                 </div>
-
                 <div className={styles.modalActions}>
                   <button
                     type="button"

@@ -1,16 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import styles from "./UploadCVPage.module.css";
 import Notification from "../../components/Notification/Notification";
-import "./UploadCVPage.css";
+import toast, { Toaster } from "react-hot-toast";
+import { jobsApi } from "../../api/jobs.service";
+import { cvsApi, type Cv } from "../../api/cvs.service";
 
-// --- IMPORT REACT ICONS ---
 import {
   FaCloudUploadAlt,
   FaRegFilePdf,
   FaTrashAlt,
-  FaChevronDown,
   FaRobot,
+  FaBriefcase,
+  FaSearch,
 } from "react-icons/fa";
-
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
@@ -18,27 +20,24 @@ const CloudUploadAlt =
   FaCloudUploadAlt as unknown as ComponentType<IconBaseProps>;
 const RegFilePdf = FaRegFilePdf as unknown as ComponentType<IconBaseProps>;
 const TrashAlt = FaTrashAlt as unknown as ComponentType<IconBaseProps>;
-const ChevronDown = FaChevronDown as unknown as ComponentType<IconBaseProps>;
 const Robot = FaRobot as unknown as ComponentType<IconBaseProps>;
+const Briefcase = FaBriefcase as unknown as ComponentType<IconBaseProps>;
+const SearchIcon = FaSearch as unknown as ComponentType<IconBaseProps>;
 
-interface Job {
+type JobLite = {
   id: number;
   title: string;
-}
-
-interface UploadedCV {
-  id: number;
-  fileName: string;
-  fileSize: string;
-  uploadDate: string;
-  jobId: number;
-}
+  location?: string;
+  type?: string;
+  createdAt?: string;
+};
 
 const UploadCVPage: React.FC = () => {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [selectedJob, setSelectedJob] = useState<number | "">("");
-  const [uploadedCVs, setUploadedCVs] = useState<UploadedCV[]>([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [jobs, setJobs] = useState<JobLite[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+
+  const [cvs, setCvs] = useState<Cv[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [notification, setNotification] = useState<{
     type: "success" | "error";
@@ -46,62 +45,157 @@ const UploadCVPage: React.FC = () => {
     message: string;
   } | null>(null);
 
+  // 1) Load jobs once
   useEffect(() => {
-    const storedJobs = localStorage.getItem("jobs");
-    if (storedJobs) setJobs(JSON.parse(storedJobs));
-
-    const storedCVs = localStorage.getItem("uploadedCVs");
-    if (storedCVs) setUploadedCVs(JSON.parse(storedCVs));
+    (async () => {
+      try {
+        const data = await jobsApi.list(); // recomandat să fie tipat Promise<Job[]>
+        setJobs(data as any);
+        setSelectedJobId((data as any).length ? (data as any)[0].id : null);
+      } catch {
+        toast.error("Nu pot încărca job-urile din backend");
+      }
+    })();
   }, []);
 
+  // 2) Load CVs whenever selectedJobId changes
   useEffect(() => {
-    localStorage.setItem("uploadedCVs", JSON.stringify(uploadedCVs));
-  }, [uploadedCVs]);
+    if (!selectedJobId) {
+      setCvs([]);
+      return;
+    }
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    (async () => {
+      try {
+        const data = await cvsApi.listForJob(selectedJobId);
+        setCvs(data);
+      } catch {
+        toast.error("Nu pot încărca CV-urile pentru job");
+      }
+    })();
+  }, [selectedJobId]);
+
+  const filteredJobs = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return jobs;
+    return jobs.filter((j) => j.title.toLowerCase().includes(q));
+  }, [jobs, searchTerm]);
+
+  const selectedJob = useMemo(
+    () => jobs.find((j) => j.id === selectedJobId) || null,
+    [jobs, selectedJobId],
+  );
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
 
-    if (!selectedJob) {
+    if (!selectedJobId) {
       setNotification({
         type: "error",
         title: "SISTEM BLOCAT",
-        message: "Selectează un post țintă pentru asimilarea datelor.",
+        message: "Selectează un job înainte să încarci CV-uri.",
       });
       return;
     }
 
     if (!files || files.length === 0) return;
 
-    const newFiles: UploadedCV[] = Array.from(files).map((file) => ({
-      id: Date.now() + Math.random(),
-      fileName: file.name,
-      fileSize: (file.size / 1024).toFixed(1) + " KB",
-      uploadDate: new Date().toLocaleDateString("ro-RO"),
-      jobId: Number(selectedJob),
-    }));
+    const fileArr = Array.from(files);
 
-    setUploadedCVs((prev) => [...prev, ...newFiles]);
+    try {
+      await Promise.all(
+        fileArr.map((f) => cvsApi.uploadForJob(selectedJobId, f)),
+      );
 
+      // refresh list
+      const refreshed = await cvsApi.listForJob(selectedJobId);
+      setCvs(refreshed);
+
+      setNotification({
+        type: "success",
+        title: "DOCUMENTE ÎNCĂRCATE",
+        message: `${fileArr.length} fișier(e) au fost încărcate în backend.`,
+      });
+    } catch {
+      toast.error("Upload eșuat");
+    } finally {
+      e.target.value = "";
+    }
+  };
+
+  const handleDelete = async (cvId: number) => {
+    try {
+      await cvsApi.remove(cvId);
+
+      if (selectedJobId) {
+        const refreshed = await cvsApi.listForJob(selectedJobId);
+        setCvs(refreshed);
+      }
+
+      setNotification({
+        type: "success",
+        title: "UNITATE ELIMINATĂ",
+        message: "Fișierul a fost șters din backend.",
+      });
+    } catch {
+      toast.error("Nu pot șterge fișierul");
+    }
+  };
+
+  const runMockAnalysis = () => {
     setNotification({
       type: "success",
-      title: "DOCUMENTE ÎNCĂRCATE",
-      message: `${newFiles.length} unități de date au fost stocate.`,
+      title: "ANALIZĂ IA ACTIVATĂ",
+      message: "Scanăm abilitățile candidaților...",
     });
+
+    window.setTimeout(() => {
+      setNotification({
+        type: "success",
+        title: "SINAPSĂ COMPLETĂ",
+        message: "Datele au fost agregate (mock).",
+      });
+    }, 1600);
   };
 
-  const handleDelete = (id: number) => {
-    setUploadedCVs((prev) => prev.filter((cv) => cv.id !== id));
-    setNotification({
-      type: "error",
-      title: "UNITATE ELIMINATĂ",
-      message: "Fișierul a fost șters din serverele locale.",
-    });
+  const formatDate = (d?: string | null) => {
+    if (!d) return "—";
+    const dt = new Date(d);
+    if (Number.isNaN(dt.getTime())) return d; // fallback dacă vine deja formatat
+    return dt.toLocaleDateString("ro-RO");
   };
 
-  const filteredCVs = uploadedCVs.filter((cv) => cv.jobId === selectedJob);
+  const formatSize = (bytes?: number | null) => {
+    if (!bytes && bytes !== 0) return "—";
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
+  };
+
+  const runAnalysis = async () => {
+    if (!selectedJobId || cvs.length === 0) return;
+
+    try {
+      // exemplu: analizează toate CV-urile din job
+      await Promise.all(cvs.map((cv) => cvsApi.analyze(cv.id)));
+
+      const refreshed = await cvsApi.listForJob(selectedJobId);
+      setCvs(refreshed);
+
+      setNotification({
+        type: "success",
+        title: "ANALIZĂ COMPLETĂ",
+        message: "Analiza a fost salvată în backend.",
+      });
+    } catch {
+      toast.error("Analiza a eșuat");
+    }
+  };
 
   return (
-    <div className="upload-page">
+    <div className={styles.pageShell}>
+      <Toaster position="bottom-right" />
+
       {notification && (
         <Notification
           type={notification.type}
@@ -111,144 +205,190 @@ const UploadCVPage: React.FC = () => {
         />
       )}
 
-      <div className="upload-card">
-        {/* === HEADER === */}
-        <div className="upload-header">
-          <div className="header-left">
-            <h2>Asimilare Resurse Umane</h2>
-            <p>
-              Conectează CV-urile la posturile vacante pentru procesare
-              biometrică.
-            </p>
-          </div>
-
-          {/* === DROPDOWN CUSTOM === */}
-          <div className="custom-dropdown">
-            <button
-              className="dropdown-toggle"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              <span>
-                {selectedJob
-                  ? jobs.find((j) => j.id === selectedJob)?.title
-                  : "Selectează Job Destinație"}
-              </span>
-              <ChevronDown
-                className={`arrow-icon ${isDropdownOpen ? "rotate" : ""}`}
-              />
-            </button>
-
-            {isDropdownOpen && (
-              <div className="dropdown-menu">
-                {jobs.length === 0 ? (
-                  <p className="no-jobs-option">Niciun job activ în rețea</p>
-                ) : (
-                  jobs.map((job) => (
-                    <p
-                      key={job.id}
-                      onClick={() => {
-                        setSelectedJob(job.id);
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      {job.title}
-                    </p>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* === ZONA UPLOAD === */}
-        <div className="upload-zone">
-          <label htmlFor="file-upload" className="upload-label">
-            <div className="upload-icon-pulse">
-              <CloudUploadAlt size={45} />
+      <div className={styles.container}>
+        {/* LEFT PANEL: Jobs */}
+        <aside className={styles.jobsPanel}>
+          <div className={styles.panelHeader}>
+            <div className={styles.brandBlock}>
+              <h2 className={styles.heroTitle}>
+                Recruit<span>AI</span>
+              </h2>
+              <p className={styles.heroSubtitle}>
+                Upload CV-uri și pornește matching
+              </p>
             </div>
-            <span>Drop CV-uri aici sau click pentru explorare</span>
-            <small>Formate acceptate: PDF, DOCX (Max 10MB)</small>
+          </div>
+
+          <div className={styles.searchWrapper}>
+            <SearchIcon className={styles.searchIcon} />
             <input
-              id="file-upload"
-              type="file"
-              multiple
-              accept=".pdf,.doc,.docx"
-              onChange={handleUpload}
+              placeholder="Caută în joburi..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-          </label>
-        </div>
+          </div>
 
-        {/* === LISTA DE FIȘIERE === */}
-        <div className="uploaded-section">
-          <div className="uploaded-header">
-            <div className="section-title">
-              <RegFilePdf />
-              <h3>Baza de date curentă</h3>
-            </div>
-            {filteredCVs.length > 0 && (
+          <div className={styles.jobScrollList}>
+            {filteredJobs.map((job) => (
               <button
-                className="analyze-btn"
-                onClick={() => {
-                  setNotification({
-                    type: "success",
-                    title: "ANALIZĂ IA ACTIVATĂ",
-                    message: "Scanăm abilitățile candidaților...",
-                  });
-                  setTimeout(() => {
-                    setNotification({
-                      type: "success",
-                      title: "SINAPSĂ COMPLETĂ",
-                      message: "Datele au fost agregate în Dashboard.",
-                    });
-                  }, 2000);
-                }}
+                key={job.id}
+                type="button"
+                className={`${styles.jobMiniCard} ${
+                  selectedJobId === job.id ? styles.activeJob : ""
+                }`}
+                onClick={() => setSelectedJobId(job.id)}
               >
-                <Robot style={{ marginRight: "8px" }} />
-                Inițiază Analiza
-              </button>
-            )}
-          </div>
+                <div className={styles.miniCardLeft}>
+                  <div className={styles.miniIconBox}>
+                    <Briefcase />
+                  </div>
+                  <div className={styles.jobText}>
+                    <h4>{job.title}</h4>
+                    <p>{job.location || "—"}</p>
+                  </div>
+                </div>
 
-          <div className="uploaded-list-container">
-            {filteredCVs.length === 0 ? (
-              <div className="no-cv">
-                <RegFilePdf size={40} style={{ opacity: 0.2 }} />
-                <p>Niciun fișier asociat acestui post.</p>
+                <div className={styles.rightMeta}>
+                  <span className={styles.countPill}>
+                    {selectedJobId === job.id ? cvs.length : "—"} CV
+                  </span>
+                </div>
+              </button>
+            ))}
+
+            {jobs.length === 0 && (
+              <div className={styles.emptyPanel}>
+                <p>Niciun job disponibil.</p>
               </div>
-            ) : (
-              <table className="crystal-table">
-                <thead>
-                  <tr>
-                    <th>Document</th>
-                    <th>Mărime</th>
-                    <th>Data Sincronizării</th>
-                    <th>Acțiune</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredCVs.map((cv) => (
-                    <tr key={cv.id}>
-                      <td className="file-name-cell">
-                        <RegFilePdf className="pdf-icon" />
-                        {cv.fileName}
-                      </td>
-                      <td>{cv.fileSize}</td>
-                      <td>{cv.uploadDate}</td>
-                      <td>
-                        <button
-                          className="delete-btn-crystal"
-                          onClick={() => handleDelete(cv.id)}
-                        >
-                          <TrashAlt />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             )}
           </div>
-        </div>
+        </aside>
+
+        {/* MAIN */}
+        <main className={styles.mainArea}>
+          {selectedJob ? (
+            <>
+              <header className={styles.contentHeader}>
+                <div className={styles.jobMainInfo}>
+                  <h1>{selectedJob.title}</h1>
+                  <div className={styles.metaRow}>
+                    {selectedJob.type && (
+                      <span className={styles.typeTag}>{selectedJob.type}</span>
+                    )}
+                    {selectedJob.createdAt && (
+                      <span className={styles.dateTag}>
+                        {formatDate(selectedJob.createdAt)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className={styles.statsCircle}>
+                  <strong>{cvs.length}</strong>
+                  <span>CV-uri</span>
+                </div>
+              </header>
+
+              <section className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.sectionTitle}>
+                    <CloudUploadAlt />
+                    <h3>Încărcare CV-uri</h3>
+                  </div>
+
+                  <button
+                    type="button"
+                    className={styles.primaryBtn}
+                    onClick={runAnalysis}
+                    disabled={cvs.length === 0}
+                  >
+                    <Robot />
+                    Inițiază analiza
+                  </button>
+                </div>
+
+                <label className={styles.uploadZone}>
+                  <div className={styles.uploadIconPulse}>
+                    <CloudUploadAlt />
+                  </div>
+                  <div className={styles.uploadText}>
+                    <span>Drop CV-uri aici sau click pentru upload</span>
+                    <small>PDF, DOCX (max 10MB per fișier)</small>
+                  </div>
+
+                  <input
+                    type="file"
+                    multiple
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleUpload}
+                  />
+                </label>
+              </section>
+
+              <section className={styles.card}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.sectionTitle}>
+                    <RegFilePdf />
+                    <h3>Baza de date curentă</h3>
+                  </div>
+                </div>
+
+                <div className={styles.tableWrap}>
+                  {cvs.length === 0 ? (
+                    <div className={styles.emptyState}>
+                      <RegFilePdf className={styles.emptyIcon} />
+                      <h4>Niciun fișier asociat</h4>
+                      <p>
+                        Încarcă CV-uri pentru acest job ca să începi
+                        matching-ul.
+                      </p>
+                    </div>
+                  ) : (
+                    <table className={styles.crystalTable}>
+                      <thead>
+                        <tr>
+                          <th>Document</th>
+                          <th>Mărime</th>
+                          <th>Data</th>
+                          <th>Acțiune</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {cvs.map((cv) => (
+                          <tr key={cv.id}>
+                            <td className={styles.fileNameCell}>
+                              <RegFilePdf className={styles.pdfIcon} />
+                              {cv.fileName}
+                            </td>
+                            <td>{formatSize(cv.fileSize ?? null)}</td>
+                            <td>{formatDate(cv.uploadDate ?? cv.createdAt)}</td>
+                            <td>
+                              <button
+                                type="button"
+                                className={styles.deleteBtn}
+                                onClick={() => handleDelete(cv.id)}
+                                aria-label="Șterge"
+                                title="Șterge"
+                              >
+                                <TrashAlt />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </section>
+            </>
+          ) : (
+            <div className={styles.noJobSelected}>
+              <Briefcase size={30} />
+              <h4>Selectează un job pentru a încărca CV-uri</h4>
+              <p>Panelul din stânga îți arată joburile disponibile.</p>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

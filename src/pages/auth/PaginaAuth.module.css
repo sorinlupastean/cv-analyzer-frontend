@@ -78,7 +78,7 @@ body {
   pointer-events: all;
 }
 
-form {
+.authForm {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -107,20 +107,46 @@ form {
   margin: 0 auto;
 }
 
-form:hover {
+.authForm:hover {
   border-top-color: rgba(165, 243, 252, 0.6);
   box-shadow:
     0 30px 70px rgba(0, 0, 0, 0.6),
     inset 0 0 20px rgba(74, 207, 238, 0.1);
 }
 
-form.sign-up-form {
+.signInForm {
+  z-index: 2;
+  pointer-events: all;
+}
+
+.signUpForm {
   opacity: 0;
   z-index: 1;
   transform: perspective(1000px) translateZ(-50px);
   pointer-events: none;
 }
-form.sign-in-form {
+
+.container.sign-up-mode .signUpForm {
+  opacity: 1;
+  z-index: 2;
+  pointer-events: all;
+  transform: perspective(1000px) translateZ(0);
+}
+
+.container.sign-up-mode .signInForm {
+  opacity: 0;
+  z-index: 1;
+  pointer-events: none;
+  transform: perspective(1000px) translateZ(-50px);
+}
+
+.authForm .sign-up-form {
+  opacity: 0;
+  z-index: 1;
+  transform: perspective(1000px) translateZ(-50px);
+  pointer-events: none;
+}
+.authForm .sign-in-form {
   z-index: 2;
   pointer-events: all;
 }
@@ -989,7 +1015,7 @@ form.sign-in-form {
 }
 @media (max-width: 768px) {
   /* Card mai compact */
-  form {
+  .container {
     max-width: 340px; /* înainte era 400px */
     padding: 1.6rem 1.2rem; /* redus din 2rem 1.5rem */
     border-radius: 22px;
@@ -1181,7 +1207,7 @@ form.sign-in-form {
     justify-content: center;
   }
 
-  form {
+  .container {
     max-width: 400px;
     margin: 0 auto;
     background: rgba(12, 40, 60, 0.85);
@@ -1198,8 +1224,8 @@ form.sign-in-form {
     display: none;
   }
 
-  form.sign-in-form,
-  form.sign-up-form {
+  .sign-in-form,
+  .sign-up-form {
     opacity: 1 !important;
     transform: none !important;
     pointer-events: all !important;
@@ -1214,8 +1240,20 @@ form.sign-in-form {
 
 @media (max-width: 768px) and (orientation: landscape) {
   /* Ridicăm planeta */
-  .container:before {
-    top: -650px; /* înainte era -550px */
+  .container.sign-up-mode .signInForm {
+    display: none;
+  }
+
+  .container:not(.sign-up-mode) .signUpForm {
+    display: none;
+  }
+
+  .signInForm,
+  .signUpForm {
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: all !important;
+    position: relative;
   }
 
   /* Micșorăm padding-ul de sus al hero */
@@ -1256,7 +1294,7 @@ form.sign-in-form {
     padding-top: 60px;
   }
 
-  form {
+  .container {
     padding: 1.8rem 1.2rem;
     border-radius: 18px;
   }

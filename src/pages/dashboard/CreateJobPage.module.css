@@ -1,5 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
 
+/* ================= PAGE SHELL ================= */
 .pageShell {
   height: 100vh;
   display: flex;
@@ -7,16 +8,16 @@
   background:
     radial-gradient(
       900px 500px at 15% 20%,
-      rgba(34, 211, 238, 0.12),
+      rgba(34, 211, 238, 0.06),
       transparent 60%
     ),
     radial-gradient(
       900px 500px at 85% 80%,
-      rgba(14, 165, 233, 0.1),
+      rgba(14, 165, 233, 0.05),
       transparent 60%
     ),
-    #03111c;
-  color: #e2e8f0;
+    #f8fafc;
+  color: #1e293b;
 }
 
 .container {
@@ -26,18 +27,14 @@
   overflow: hidden;
 }
 
-/* ================= JOBS PANEL (secondary sidebar) ================= */
-
+/* ================= JOBS PANEL ================= */
 .jobsPanel {
   width: 360px;
   min-width: 320px;
-
-  background: rgba(3, 17, 28, 0.85);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(18px);
-
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
   padding: 22px 16px;
-
   display: flex;
   flex-direction: column;
 }
@@ -47,9 +44,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-
   padding-bottom: 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   margin-bottom: 18px;
 }
 
@@ -64,46 +60,51 @@
   font-weight: 700;
   letter-spacing: 0.4px;
   margin: 0;
-  color: #e2e8f0;
+  color: #0f172a;
 }
 
 .heroTitle span {
-  color: #22d3ee;
+  color: #0ea5e9;
 }
 
 .heroSubtitle {
   margin: 0;
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .primaryBtn {
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  background: rgba(34, 211, 238, 0.14);
-  color: #22d3ee;
-
-  padding: 9px 12px;
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.1),
+    rgba(34, 211, 238, 0.1)
+  );
+  color: #0ea5e9;
+  padding: 9px 16px;
   border-radius: 12px;
-
   font-size: 0.78rem;
   font-weight: 600;
-
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-
-  transition: 0.25s ease;
+  transition: all 0.25s ease;
+  font-family: inherit;
 }
 
 .primaryBtn:hover {
-  background: rgba(34, 211, 238, 0.2);
-  border-color: rgba(34, 211, 238, 0.55);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.18),
+    rgba(34, 211, 238, 0.18)
+  );
+  border-color: rgba(14, 165, 233, 0.55);
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.15);
 }
 
 /* ================= SEARCH ================= */
-
 .searchWrapper {
   position: relative;
   margin-bottom: 16px;
@@ -112,27 +113,25 @@
 .searchWrapper input {
   width: 100%;
   padding: 11px 12px 11px 38px;
-
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  background: rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
-
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  color: #1e293b;
   font-size: 0.85rem;
   font-weight: 500;
-
   transition: 0.2s ease;
   outline: none;
+  font-family: inherit;
 }
 
 .searchWrapper input::placeholder {
-  color: rgba(148, 163, 184, 0.8);
+  color: rgba(100, 116, 139, 0.7);
 }
 
 .searchWrapper input:focus {
-  border-color: rgba(34, 211, 238, 0.45);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+  border-color: rgba(14, 165, 233, 0.5);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  background: #fff;
 }
 
 .searchIcon {
@@ -141,11 +140,10 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 0.9rem;
-  color: rgba(148, 163, 184, 0.9);
+  color: rgba(100, 116, 139, 0.7);
 }
 
 /* ================= JOB LIST ================= */
-
 .jobScrollList {
   flex: 1;
   overflow-y: auto;
@@ -153,12 +151,14 @@
 }
 
 .jobScrollList::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
 }
+
 .jobScrollList::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.22);
+  background: rgba(100, 116, 139, 0.18);
   border-radius: 999px;
 }
+
 .jobScrollList::-webkit-scrollbar-track {
   background: transparent;
 }
@@ -166,28 +166,27 @@
 .jobMiniCard {
   padding: 14px;
   border-radius: 14px;
-
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   margin-bottom: 10px;
   cursor: pointer;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  transition: 0.2s ease;
+  transition: all 0.22s ease;
 }
 
 .jobMiniCard:hover {
-  border-color: rgba(34, 211, 238, 0.35);
-  background: rgba(34, 211, 238, 0.06);
+  border-color: rgba(14, 165, 233, 0.3);
+  background: rgba(14, 165, 233, 0.04);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.08);
+  transform: translateY(-1px);
 }
 
 .activeJob {
-  border-color: rgba(34, 211, 238, 0.55);
-  background: rgba(34, 211, 238, 0.1);
+  border-color: rgba(14, 165, 233, 0.45) !important;
+  background: rgba(14, 165, 233, 0.07) !important;
+  box-shadow: 0 2px 16px rgba(14, 165, 233, 0.12);
 }
 
 .miniCardLeft {
@@ -200,26 +199,29 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-
-  background: rgba(34, 211, 238, 0.1);
-  color: #22d3ee;
-
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.1),
+    rgba(34, 211, 238, 0.08)
+  );
+  color: #0ea5e9;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.9rem;
 }
 
 .miniCardLeft h4 {
   font-size: 0.88rem;
   margin: 0;
   font-weight: 600;
-  color: #e2e8f0;
+  color: #0f172a;
 }
 
 .miniCardLeft p {
   font-size: 0.72rem;
   margin: 0;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .miniCardActions {
@@ -239,7 +241,7 @@
   background: transparent;
   border: none;
   font-size: 0.85rem;
-  color: rgba(148, 163, 184, 0.9);
+  color: rgba(100, 116, 139, 0.7);
   cursor: pointer;
   padding: 6px;
   border-radius: 10px;
@@ -247,16 +249,16 @@
 }
 
 .miniCardActions button:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #22d3ee;
+  background: rgba(14, 165, 233, 0.08);
+  color: #0ea5e9;
 }
 
 .miniCardActions button:last-child:hover {
+  background: rgba(239, 68, 68, 0.08);
   color: #ef4444;
 }
 
 /* ================= MAIN AREA ================= */
-
 .mainArea {
   flex: 1;
   padding: 28px;
@@ -269,20 +271,19 @@
   align-items: center;
   gap: 16px;
   margin-bottom: 22px;
-
-  padding: 18px 18px;
+  padding: 20px 22px;
   border-radius: 18px;
-
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .jobMainInfo h1 {
   font-size: 1.4rem;
   font-weight: 700;
   margin: 0 0 8px 0;
-  color: #e2e8f0;
+  color: #0f172a;
 }
 
 .metaRow {
@@ -290,23 +291,28 @@
   flex-wrap: wrap;
   gap: 10px;
   font-size: 0.78rem;
+  align-items: center;
 }
 
 .typeTag {
-  background: rgba(34, 211, 238, 0.12);
-  color: #22d3ee;
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.1),
+    rgba(34, 211, 238, 0.08)
+  );
+  color: #0ea5e9;
   padding: 5px 12px;
   border-radius: 999px;
   font-weight: 700;
-  border: 1px solid rgba(34, 211, 238, 0.25);
+  border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
 .dateTag {
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .categoryTag {
-  color: #cbd5e1;
+  color: #475569;
   opacity: 0.9;
 }
 
@@ -314,23 +320,31 @@
   width: 66px;
   height: 66px;
   border-radius: 50%;
-
-  background: rgba(3, 17, 28, 0.85);
-  border: 1px solid rgba(34, 211, 238, 0.22);
-
-  color: #e2e8f0;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border: 1.5px solid rgba(14, 165, 233, 0.2);
+  color: #0f172a;
   font-size: 0.78rem;
   font-weight: 600;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  box-shadow: 0 0 22px rgba(34, 211, 238, 0.1);
+  box-shadow: 0 2px 16px rgba(14, 165, 233, 0.1);
+  flex-shrink: 0;
 }
 
-/* ================= CV GRID ================= */
+.statsCircle strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0ea5e9;
+  line-height: 1;
+}
+
+.statsCircle span {
+  font-size: 0.62rem;
+  color: #64748b;
+  margin-top: 2px;
+}
 
 .cvGrid {
   display: grid;
@@ -339,18 +353,19 @@
 }
 
 .cvCard {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   backdrop-filter: blur(12px);
-
-  padding: 18px;
+  padding: 20px;
   border-radius: 18px;
-  transition: 0.2s ease;
+  transition: all 0.25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .cvCard:hover {
-  border-color: rgba(34, 211, 238, 0.35);
-  transform: translateY(-1px);
+  border-color: rgba(14, 165, 233, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.1);
 }
 
 .cvTop {
@@ -368,31 +383,41 @@
 
 .userIcon {
   font-size: 28px;
-  color: rgba(148, 163, 184, 0.85);
+  color: rgba(100, 116, 139, 0.5);
 }
 
 .candidate h4 {
   font-size: 0.92rem;
   margin: 0;
-  color: #e2e8f0;
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .candidate p {
   font-size: 0.72rem;
   margin: 0;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .scoreBadge {
   font-size: 0.85rem;
   font-weight: 800;
-  color: #22c55e;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 163, 74, 0.15);
+  height: fit-content;
 }
 
 /* progress */
+.progressSection {
+  margin-bottom: 4px;
+}
+
 .barContainer {
   height: 6px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 999px;
   overflow: hidden;
   margin-bottom: 12px;
@@ -401,6 +426,8 @@
 .barFill {
   height: 100%;
   background: linear-gradient(90deg, #22d3ee, #0ea5e9);
+  border-radius: 999px;
+  transition: width 0.6s ease;
 }
 
 .skills {
@@ -412,76 +439,92 @@
 
 .sTag {
   font-size: 0.68rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-
+  background: rgba(14, 165, 233, 0.06);
+  border: 1px solid rgba(14, 165, 233, 0.12);
   padding: 5px 10px;
   border-radius: 999px;
-  color: #cbd5e1;
+  color: #475569;
+  font-weight: 500;
 }
 
 .viewBtn {
   width: 100%;
   padding: 11px 12px;
-
   border-radius: 14px;
-  border: 1px solid rgba(34, 211, 238, 0.25);
-
-  background: rgba(34, 211, 238, 0.1);
-  color: #22d3ee;
-
+  border: 1px solid rgba(14, 165, 233, 0.2);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.06),
+    rgba(34, 211, 238, 0.06)
+  );
+  color: #0ea5e9;
   font-size: 0.82rem;
   font-weight: 700;
-
   cursor: pointer;
-  transition: 0.2s ease;
-
+  transition: all 0.22s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  font-family: inherit;
 }
 
 .viewBtn:hover {
-  background: rgba(34, 211, 238, 0.16);
-  border-color: rgba(34, 211, 238, 0.45);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.12),
+    rgba(34, 211, 238, 0.12)
+  );
+  border-color: rgba(14, 165, 233, 0.4);
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.12);
 }
 
 /* EMPTY + NO JOB */
-
 .emptyResults,
 .noJobSelected {
   margin-top: 22px;
-
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 18px;
-
-  padding: 26px;
+  padding: 48px 26px;
   text-align: center;
-  color: #cbd5e1;
+  color: #0f1d28;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.emptyResults h3,
+.noJobSelected h4 {
+  color: #8795a8;
+  margin: 12px 0 6px;
+}
+
+.emptyResults p {
+  color: #64748b;
+  font-size: 0.88rem;
 }
 
 .emptyIcon {
   font-size: 34px;
-  color: #22d3ee;
-  opacity: 0.9;
+  color: #0ea5e9;
+  opacity: 0.8;
   margin-bottom: 8px;
 }
 
-/* ================= MODAL OVERLAY ================= */
+.noJobSelected svg {
+  color: #8795a8;
+  margin-bottom: 12px;
+}
 
+/* ================= MODAL OVERLAY ================= */
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 17, 28, 0.65);
-  backdrop-filter: blur(10px);
-
+  background: rgba(15, 23, 42, 0.25);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-
   z-index: 1000;
   animation: fadeIn 0.2s ease;
 }
@@ -498,14 +541,13 @@
 .modal {
   width: 620px;
   max-width: 92%;
-
-  background: rgba(3, 17, 28, 0.92);
+  background: #ffffff;
   border-radius: 20px;
   overflow: hidden;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
-
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(14, 165, 233, 0.05);
   animation: slideUp 0.25s ease;
 }
 
@@ -522,19 +564,17 @@
 
 .modalHeader {
   padding: 22px 26px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(248, 250, 252, 0.8);
 }
 
 .modalHeader h2 {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: #e2e8f0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
   margin: 0;
 }
 
@@ -542,23 +582,21 @@
   width: 40px;
   height: 40px;
   border-radius: 14px;
-
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  color: #94a3b8;
-
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
   transition: 0.2s ease;
+  font-size: 0.9rem;
 }
 
 .closeBtn:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #22d3ee;
-  border-color: rgba(34, 211, 238, 0.22);
+  background: rgba(14, 165, 233, 0.06);
+  color: #0ea5e9;
+  border-color: rgba(14, 165, 233, 0.2);
 }
 
 .unifiedForm {
@@ -584,7 +622,7 @@
 .fGroup label {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -594,36 +632,38 @@
 .fGroup textarea {
   width: 100%;
   padding: 12px 14px;
-
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-
-  background: rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
-
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fafbfc;
+  color: #1e293b;
   font-size: 0.9rem;
   font-weight: 500;
-
   transition: 0.2s ease;
   outline: none;
+  font-family: inherit;
 }
 
 .fGroup input:hover,
 .fGroup select:hover,
 .fGroup textarea:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(0, 0, 0, 0.16);
 }
 
 .fGroup input:focus,
 .fGroup select:focus,
 .fGroup textarea:focus {
-  border-color: rgba(34, 211, 238, 0.45);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.12);
+  border-color: rgba(14, 165, 233, 0.5);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  background: #fff;
 }
 
 .fGroup textarea {
   resize: none;
   min-height: 130px;
+}
+
+.fGroup select {
+  cursor: pointer;
 }
 
 .modalActions {
@@ -636,49 +676,46 @@
 .cancelBtn {
   padding: 11px 18px;
   border-radius: 14px;
-
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.04);
-
-  color: #e2e8f0;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.02);
+  color: #475569;
   font-size: 0.85rem;
   font-weight: 700;
-
   cursor: pointer;
   transition: 0.2s ease;
+  font-family: inherit;
 }
 
 .cancelBtn:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.14);
 }
 
 .saveBtn {
-  padding: 11px 20px;
+  padding: 11px 22px;
   border-radius: 14px;
-
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  background: rgba(34, 211, 238, 0.16);
-  color: #22d3ee;
-
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  background: linear-gradient(135deg, #0ea5e9, #22d3ee);
+  color: #ffffff;
   font-size: 0.85rem;
   font-weight: 800;
-
   cursor: pointer;
-  transition: 0.2s ease;
-  box-shadow: 0 10px 24px rgba(34, 211, 238, 0.14);
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.25);
+  font-family: inherit;
 }
 
 .saveBtn:hover {
-  background: rgba(34, 211, 238, 0.22);
-  border-color: rgba(34, 211, 238, 0.55);
+  background: linear-gradient(135deg, #0891d2, #06b6d4);
   transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.35);
 }
 
 /* ================= RESPONSIVE ================= */
-
 @media (max-width: 980px) {
   .jobsPanel {
     width: 320px;
+    min-width: 280px;
   }
 }
 

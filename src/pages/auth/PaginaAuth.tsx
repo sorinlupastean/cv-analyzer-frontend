@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../routs/paths";
-import "./PaginaAuth.css";
+import styles from "./PaginaAuth.module.css";
 
 import ParticlesBackground from "../../components/ParticlesBackground/ParticlesBackground";
 import Notification from "../../components/Notification/Notification";
@@ -162,7 +162,11 @@ const PaginaAuth: React.FC = () => {
   };
 
   return (
-    <div className={`container ${isSignUpMode ? "sign-up-mode" : ""}`}>
+    <div
+      className={`${styles.container} ${
+        isSignUpMode ? styles["sign-up-mode"] : ""
+      }`}
+    >
       {notification && (
         <Notification
           type={notification.type}
@@ -172,18 +176,27 @@ const PaginaAuth: React.FC = () => {
         />
       )}
 
-      {/* Particulele sunt pe fundal, z-index mic */}
       <ParticlesBackground />
 
-      <div className="forms-container">
-        <div className="signin-signup">
+      <div className={styles["forms-container"]}>
+        <div className={styles["signin-signup"]}>
           {/* ----- LOGIN FORM ----- */}
-          <form className="sign-in-form" onSubmit={handleSignIn} noValidate>
-            <h2 className="title">Conectare</h2>
-            <div className={`input-field ${errors.email ? "error" : ""}`}>
-              <div className="icon-wrapper">
+          <form
+            className={`${styles.authForm} ${styles.signInForm}`}
+            onSubmit={handleSignIn}
+            noValidate
+          >
+            <h2 className={styles.title}>Conectare</h2>
+
+            <div
+              className={`${styles["input-field"]} ${
+                errors.email ? styles.error : ""
+              }`}
+            >
+              <div className={styles["icon-wrapper"]}>
                 <EnvelopeIcon />
               </div>
+
               <input
                 type="email"
                 placeholder="Email"
@@ -194,13 +207,19 @@ const PaginaAuth: React.FC = () => {
                 }}
                 autoComplete="email"
               />
-              <div className="glow-bar"></div>
+
+              <div className={styles["glow-bar"]} />
             </div>
 
-            <div className={`input-field ${errors.password ? "error" : ""}`}>
-              <div className="icon-wrapper">
+            <div
+              className={`${styles["input-field"]} ${
+                errors.password ? styles.error : ""
+              }`}
+            >
+              <div className={styles["icon-wrapper"]}>
                 <LockIcon />
               </div>
+
               <input
                 type={showPasswordSignIn ? "text" : "password"}
                 placeholder="Parolă"
@@ -211,43 +230,60 @@ const PaginaAuth: React.FC = () => {
                 }}
                 autoComplete="current-password"
               />
+
               <button
                 type="button"
-                className="password-toggle"
-                onClick={() => setShowPasswordSignIn(!showPasswordSignIn)}
+                className={styles["password-toggle"]}
+                onClick={() => setShowPasswordSignIn((v) => !v)}
+                aria-label={
+                  showPasswordSignIn ? "Ascunde parola" : "Afișează parola"
+                }
               >
                 {showPasswordSignIn ? <EyeSlashIcon /> : <EyeIcon />}
               </button>
-              <div className="glow-bar"></div>
+
+              <div className={styles["glow-bar"]} />
             </div>
 
-            <button type="submit" className="btn btn-liquid">
+            <button
+              type="submit"
+              className={`${styles.btn} ${styles["btn-liquid"]}`}
+            >
               Autentificare
             </button>
 
-            <div className="social-divider">
-              <span></span>
+            <div className={styles["social-divider"]}>
+              <span />
               <p>sau</p>
-              <span></span>
+              <span />
             </div>
 
             <button
               type="button"
-              className="btn-social"
+              className={styles["btn-social"]}
               onClick={handleGoogleAuth}
             >
-              <GoogleIcon className="google-icon" /> Google
+              <GoogleIcon className={styles["google-icon"]} /> Google
             </button>
           </form>
 
           {/* ----- REGISTER FORM ----- */}
-          <form className="sign-up-form" onSubmit={handleSignUp} noValidate>
-            <h2 className="title">Înregistrare</h2>
+          <form
+            className={`${styles.authForm} ${styles.signUpForm}`}
+            onSubmit={handleSignUp}
+            noValidate
+          >
+            <h2 className={styles.title}>Înregistrare</h2>
 
-            <div className={`input-field ${errors.nume ? "error" : ""}`}>
-              <div className="icon-wrapper">
+            <div
+              className={`${styles["input-field"]} ${
+                errors.nume ? styles.error : ""
+              }`}
+            >
+              <div className={styles["icon-wrapper"]}>
                 <UserIcon />
               </div>
+
               <input
                 type="text"
                 placeholder="Nume"
@@ -257,13 +293,19 @@ const PaginaAuth: React.FC = () => {
                   clearError("nume");
                 }}
               />
-              <div className="glow-bar"></div>
+
+              <div className={styles["glow-bar"]} />
             </div>
 
-            <div className={`input-field ${errors.prenume ? "error" : ""}`}>
-              <div className="icon-wrapper">
+            <div
+              className={`${styles["input-field"]} ${
+                errors.prenume ? styles.error : ""
+              }`}
+            >
+              <div className={styles["icon-wrapper"]}>
                 <UserIcon />
               </div>
+
               <input
                 type="text"
                 placeholder="Prenume"
@@ -273,13 +315,19 @@ const PaginaAuth: React.FC = () => {
                   clearError("prenume");
                 }}
               />
-              <div className="glow-bar"></div>
+
+              <div className={styles["glow-bar"]} />
             </div>
 
-            <div className={`input-field ${errors.email ? "error" : ""}`}>
-              <div className="icon-wrapper">
+            <div
+              className={`${styles["input-field"]} ${
+                errors.email ? styles.error : ""
+              }`}
+            >
+              <div className={styles["icon-wrapper"]}>
                 <EnvelopeIcon />
               </div>
+
               <input
                 type="email"
                 placeholder="Email"
@@ -290,13 +338,19 @@ const PaginaAuth: React.FC = () => {
                 }}
                 autoComplete="email"
               />
-              <div className="glow-bar"></div>
+
+              <div className={styles["glow-bar"]} />
             </div>
 
-            <div className={`input-field ${errors.password ? "error" : ""}`}>
-              <div className="icon-wrapper">
+            <div
+              className={`${styles["input-field"]} ${
+                errors.password ? styles.error : ""
+              }`}
+            >
+              <div className={styles["icon-wrapper"]}>
                 <LockIcon />
               </div>
+
               <input
                 type={showPasswordSignUp ? "text" : "password"}
                 placeholder="Parolă"
@@ -307,68 +361,84 @@ const PaginaAuth: React.FC = () => {
                 }}
                 autoComplete="new-password"
               />
+
               <button
                 type="button"
-                className="password-toggle"
-                onClick={() => setShowPasswordSignUp(!showPasswordSignUp)}
+                className={styles["password-toggle"]}
+                onClick={() => setShowPasswordSignUp((v) => !v)}
+                aria-label={
+                  showPasswordSignUp ? "Ascunde parola" : "Afișează parola"
+                }
               >
                 {showPasswordSignUp ? <EyeSlashIcon /> : <EyeIcon />}
               </button>
-              <div className="glow-bar"></div>
+
+              <div className={styles["glow-bar"]} />
             </div>
 
-            <button type="submit" className="btn btn-liquid">
+            <button
+              type="submit"
+              className={`${styles.btn} ${styles["btn-liquid"]}`}
+            >
               Creează Cont
             </button>
 
-            <div className="social-divider">
-              <span></span>
+            <div className={styles["social-divider"]}>
+              <span />
               <p>sau</p>
-              <span></span>
+              <span />
             </div>
 
             <button
               type="button"
-              className="btn-social"
+              className={styles["btn-social"]}
               onClick={handleGoogleAuth}
             >
-              <GoogleIcon className="google-icon" /> Google
+              <GoogleIcon className={styles["google-icon"]} /> Google
             </button>
           </form>
         </div>
       </div>
 
-      <div className="panels-container">
-        <div className="panel left-panel">
-          <div className="content hero-content-left">
-            <div className="hero-logo-left">
-              <img src={Logo} />
+      <div className={styles["panels-container"]}>
+        <div className={`${styles.panel} ${styles["left-panel"]}`}>
+          <div className={`${styles.content} ${styles["hero-content-left"]}`}>
+            <div className={styles["hero-logo-left"]}>
+              <img src={Logo} alt="Logo" />
             </div>
-            <h1 className="hero-title-left">Bine ai venit!</h1>
-            <p className="hero-subtitle-left">
+
+            <h1 className={styles["hero-title-left"]}>Bine ai venit!</h1>
+
+            <p className={styles["hero-subtitle-left"]}>
               Nu ai un cont încă? Creează unul rapid.
             </p>
+
             <button
-              className="hero-button-left"
+              className={styles["hero-button-left"]}
               onClick={() => setIsSignUpMode(true)}
+              type="button"
             >
               Înregistrare
             </button>
           </div>
         </div>
 
-        <div className="panel right-panel">
-          <div className="content hero-content-right">
-            <div className="hero-logo-right">
-              <img src={Logo} />
+        <div className={`${styles.panel} ${styles["right-panel"]}`}>
+          <div className={`${styles.content} ${styles["hero-content-right"]}`}>
+            <div className={styles["hero-logo-right"]}>
+              <img src={Logo} alt="Logo" />
             </div>
-            <h1 className="hero-title-right">Salutare!</h1>
-            <p className="hero-subtitle-right">
+
+            <h1 className={styles["hero-title-right"]}>Salutare!</h1>
+
+            <p className={styles["hero-subtitle-right"]}>
               Ai deja cont? Conectează-te aici.
             </p>
+
             <button
-              className="hero-button-right"
+              className={styles["hero-button-right"]}
               onClick={() => setIsSignUpMode(false)}
+              type="button"
             >
               Conectare
             </button>

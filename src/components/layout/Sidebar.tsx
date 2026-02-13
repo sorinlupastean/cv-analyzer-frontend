@@ -66,19 +66,14 @@ const Sidebar: React.FC = () => {
       path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`,
     },
     {
-      name: "Creează Job",
+      name: "Locuri de muncă",
       IconComponent: CreateJobIcon,
       path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.CREATE_JOB}`,
     },
     {
-      name: "Încarcă CV-uri",
+      name: "Încarcă CV",
       IconComponent: UploadIcon,
       path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
-    },
-    {
-      name: "Rezultate",
-      IconComponent: ResultsIcon,
-      path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.RESULTS}`,
     },
   ];
 

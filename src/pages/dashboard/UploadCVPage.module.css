@@ -1,0 +1,587 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+
+/* ================= PAGE SHELL ================= */
+.pageShell {
+  height: 100vh;
+  display: flex;
+  font-family: "Montserrat", sans-serif;
+  background:
+    radial-gradient(
+      900px 500px at 15% 20%,
+      rgba(34, 211, 238, 0.06),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 85% 80%,
+      rgba(14, 165, 233, 0.05),
+      transparent 60%
+    ),
+    #f8fafc;
+  color: #1e293b;
+}
+
+.container {
+  flex: 1;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ================= LEFT PANEL ================= */
+.jobsPanel {
+  width: 360px;
+  min-width: 320px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px);
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 18px;
+}
+
+.brandBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.heroTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin: 0;
+  color: #0f172a;
+}
+
+.heroTitle span {
+  color: #0ea5e9;
+}
+
+.heroSubtitle {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+/* search */
+.searchWrapper {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.searchWrapper input {
+  width: 100%;
+  padding: 11px 12px 11px 38px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.7);
+  color: #1e293b;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: 0.2s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.searchWrapper input::placeholder {
+  color: rgba(100, 116, 139, 0.7);
+}
+
+.searchWrapper input:focus {
+  border-color: rgba(14, 165, 233, 0.5);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+  background: #fff;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  color: rgba(100, 116, 139, 0.7);
+}
+
+.jobScrollList {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.jobScrollList::-webkit-scrollbar {
+  width: 5px;
+}
+
+.jobScrollList::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.18);
+  border-radius: 999px;
+}
+
+.jobScrollList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.jobMiniCard {
+  width: 100%;
+  text-align: left;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.22s ease;
+}
+
+.jobMiniCard:hover {
+  border-color: rgba(14, 165, 233, 0.3);
+  background: rgba(14, 165, 233, 0.04);
+  box-shadow: 0 2px 12px rgba(14, 165, 233, 0.08);
+  transform: translateY(-1px);
+}
+
+.activeJob {
+  border-color: rgba(14, 165, 233, 0.45) !important;
+  background: rgba(14, 165, 233, 0.07) !important;
+  box-shadow: 0 2px 16px rgba(14, 165, 233, 0.12);
+}
+
+.miniCardLeft {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.miniIconBox {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.1),
+    rgba(34, 211, 238, 0.08)
+  );
+  color: #0ea5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.jobText {
+  min-width: 0;
+}
+
+.jobText h4 {
+  font-size: 0.88rem;
+  margin: 0;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.jobText p {
+  font-size: 0.72rem;
+  margin: 0;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rightMeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.countPill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #0ea5e9;
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.14);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.emptyPanel {
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  color: #64748b;
+  text-align: center;
+}
+
+/* ================= MAIN AREA ================= */
+.mainArea {
+  flex: 1;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+.contentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.jobMainInfo h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.78rem;
+  align-items: center;
+}
+
+.typeTag {
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.1),
+    rgba(34, 211, 238, 0.08)
+  );
+  color: #0ea5e9;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.dateTag {
+  color: #64748b;
+}
+
+.statsCircle {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  border: 1.5px solid rgba(14, 165, 233, 0.2);
+  color: #0f172a;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 16px rgba(14, 165, 233, 0.1);
+  flex-shrink: 0;
+}
+
+.statsCircle strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0ea5e9;
+  line-height: 1;
+}
+
+.statsCircle span {
+  font-size: 0.62rem;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* ================= CARDS ================= */
+.card {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
+  padding: 18px;
+  border-radius: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  margin-bottom: 18px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #0ea5e9;
+}
+
+.sectionTitle h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+/* ================= UPLOAD ZONE ================= */
+.uploadZone {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1.5px dashed rgba(14, 165, 233, 0.28);
+  background: rgba(14, 165, 233, 0.03);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.uploadZone:hover {
+  border-color: rgba(14, 165, 233, 0.45);
+  background: rgba(14, 165, 233, 0.05);
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.08);
+}
+
+.uploadZone input {
+  display: none;
+}
+
+.uploadIconPulse {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0ea5e9;
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.12),
+    rgba(34, 211, 238, 0.1)
+  );
+  border: 1px solid rgba(14, 165, 233, 0.18);
+  animation: pulseIcon 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulseIcon {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+.uploadText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.uploadText span {
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 0.92rem;
+}
+
+.uploadText small {
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* ================= TABLE ================= */
+.tableWrap {
+  overflow: hidden;
+}
+
+.crystalTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.crystalTable th {
+  text-align: left;
+  padding: 14px 12px;
+  color: #64748b;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  letter-spacing: 0.4px;
+}
+
+.crystalTable td {
+  padding: 14px 12px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  color: #0f172a;
+}
+
+.fileNameCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  min-width: 0;
+}
+
+.pdfIcon {
+  color: #ef4444;
+  flex-shrink: 0;
+}
+
+.deleteBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  color: rgba(100, 116, 139, 0.8);
+  cursor: pointer;
+  transition: 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deleteBtn:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.22);
+  color: #ef4444;
+  transform: translateY(-1px);
+}
+
+/* ================= PRIMARY BUTTON ================= */
+.primaryBtn {
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.1),
+    rgba(34, 211, 238, 0.1)
+  );
+  color: #0ea5e9;
+  padding: 9px 14px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.primaryBtn:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(14, 165, 233, 0.18),
+    rgba(34, 211, 238, 0.18)
+  );
+  border-color: rgba(14, 165, 233, 0.55);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.15);
+}
+
+.primaryBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ================= EMPTY STATES ================= */
+.emptyState {
+  padding: 34px 18px;
+  text-align: center;
+  color: #64748b;
+  border-radius: 16px;
+  border: 1px dashed rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.emptyIcon {
+  font-size: 34px;
+  opacity: 0.6;
+  margin-bottom: 10px;
+}
+
+.emptyState h4 {
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-weight: 800;
+}
+
+.emptyState p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* NO JOB SELECTED */
+.noJobSelected {
+  margin-top: 22px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 18px;
+  padding: 48px 26px;
+  text-align: center;
+  color: #0f1d28;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.noJobSelected h4 {
+  color: #8795a8;
+  margin: 12px 0 6px;
+}
+
+.noJobSelected p {
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 980px) {
+  .jobsPanel {
+    width: 320px;
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 860px) {
+  .jobsPanel {
+    display: none;
+  }
+  .mainArea {
+    padding: 18px;
+  }
+}

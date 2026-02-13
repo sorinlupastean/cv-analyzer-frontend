@@ -12,7 +12,6 @@ import PaginaAuth from "./pages/auth/PaginaAuth";
 import HomePage from "./pages/dashboard/HomePage";
 import CreateJobPage from "./pages/dashboard/CreateJobPage";
 import UploadCVPage from "./pages/dashboard/UploadCVPage";
-import ResultsPage from "./pages/dashboard/ResultsPage";
 import CVDetailsPage from "./pages/dashboard/CVDetailsPage";
 
 import "./App.css";
@@ -54,8 +53,10 @@ const App: React.FC = () => {
               path={PATHS.DASHBOARD.UPLOAD_CV}
               element={<UploadCVPage />}
             />
-            <Route path={PATHS.DASHBOARD.RESULTS} element={<ResultsPage />} />
-            <Route path={`cv/:id`} element={<CVDetailsPage />} />
+            <Route
+              path={PATHS.DASHBOARD.CV_DETAILS()}
+              element={<CVDetailsPage />}
+            />
           </Route>
         </Route>
 
