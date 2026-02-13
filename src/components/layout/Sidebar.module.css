@@ -1,0 +1,160 @@
+.sidebar {
+  width: 240px;
+  height: 100vh;
+
+  background: rgba(3, 17, 28, 0.95);
+  backdrop-filter: blur(20px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  padding: 20px 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ================= PROFILE ================= */
+
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* AVATAR MODERN */
+.profileAvatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    rgba(34, 211, 238, 0.25),
+    rgba(14, 165, 233, 0.35)
+  );
+
+  border: 1px solid rgba(34, 211, 238, 0.4);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 0 20px rgba(34, 211, 238, 0.2),
+    inset 0 0 15px rgba(34, 211, 238, 0.15);
+
+  transition: 0.3s ease;
+}
+
+.profileAvatar:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 30px rgba(34, 211, 238, 0.4),
+    inset 0 0 20px rgba(34, 211, 238, 0.25);
+}
+
+.avatarInitial {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #22d3ee;
+}
+
+.profileIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, #22d3ee, #0ea5e9);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 10px;
+}
+
+.profileIcon svg {
+  width: 22px;
+  height: 22px;
+  color: white;
+}
+
+.profileName {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #cbd5e1;
+}
+
+/* ================= NAVIGATION ================= */
+
+.navMain {
+  flex: 1;
+  padding: 20px 12px;
+}
+
+.navBottom {
+  padding: 15px 12px 0 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 14px;
+  margin-bottom: 6px;
+
+  border-radius: 8px;
+
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+
+  color: #94a3b8;
+  transition: all 0.25s ease;
+}
+
+.navIcon {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+/* Hover */
+.navLink:hover {
+  background: rgba(34, 211, 238, 0.08);
+  color: #22d3ee;
+}
+
+.navLink:hover .navIcon {
+  color: #22d3ee;
+}
+
+/* Active */
+.active {
+  background: rgba(34, 211, 238, 0.15);
+  color: #22d3ee;
+  font-weight: 600;
+}
+
+.active .navIcon {
+  color: #22d3ee;
+}
+
+/* Logout */
+.logoutBtn {
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}

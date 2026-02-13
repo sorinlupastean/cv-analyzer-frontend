@@ -1,19 +1,15 @@
-// src/components/layout/DashboardLayout.tsx
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import styles from "./Dashboard.module.css"; // Importă ca modul
+import styles from "./DashboardLayout.module.css";
 
 const DashboardLayout: React.FC = () => {
   return (
-    <div className={styles.dashboardAppContainerNew}>
-      {/* Sidebar Fix */}
+    <div className={styles.dashboardContainer}>
       <Sidebar />
 
-      {/* Zona de Conținut */}
-      <div className={styles.mainContentAreaNew}>
-        <main className={styles.pageContentWrapperNew}>
-          {/* Aici vor fi randate paginile (Home, CreateJob, etc) */}
+      <div className={styles.mainContentArea}>
+        <main className={styles.pageContentWrapper}>
           <Outlet />
         </main>
       </div>

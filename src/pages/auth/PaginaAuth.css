@@ -1,40 +1,37 @@
-/* Importăm Cinzel (Titluri) și Montserrat (Text/Inputuri) */
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap");
-
-:root {
-  /* --- PALETA EXACTĂ DIN IMAGINE (AVATAR DAYLIGHT) --- */
-
-  /* 1. ADÂNCURI & CREATURĂ (Dark tones) */
-  --deep-abyss: #03111c; /* Pielea creaturii / Fundal adânc */
-  --shadow-depth: #304857; /* Umbre și contururi */
-
-  /* 2. OCEANUL & CORPUL APEI (Mid tones) */
-  --ocean-mid: #3b7f9b; /* Culoarea principală a apei */
-  --ocean-sat: #3295b7; /* Panouri și elemente solide */
-
-  /* 3. LUMINA & CERUL (Light tones) */
-  --sky-highlight: #39a3c4; /* Hover și accente lichide */
-  --ui-detail: #5da7bf; /* Detalii fine UI */
-  --electric-glow: #4acfee; /* GLOW PRINCIPAL (Bioluminescență) */
-  --mist-cyan: #99deeb; /* Gradient fin, partea de sus */
-
-  /* 4. ATMOSFERĂ & NORI */
-  --text-white: #daeeef; /* Text, ceață, lumină difuză */
-  --cloud-white: #e9f0ed; /* Highlights nori */
-
-  /* 5. ACCENTE "WOW" */
-  --accent-green: #23ffbf; /* Verde-Turcoaz (vegetație insule) */
-  --wing-gold: #bfaa50; /* AURIUL DIN ARIPI (Accentul "Creatură") */
-
-  /* Setări sticlă și glow */
-  --glass-surface: rgba(3, 17, 28, 0.65); /* Sticla e întunecată (creatura) */
-  --text-glow-effect: 0 0 12px rgba(74, 207, 238, 0.6);
-}
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap");
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: "Montserrat", sans-serif !important;
+}
+
+:root {
+  --deep-abyss: #03111c;
+  --shadow-depth: #304857;
+
+  --ocean-mid: #3b7f9b;
+  --ocean-sat: #3295b7;
+
+  --sky-highlight: #39a3c4;
+  --ui-detail: #5da7bf;
+  --electric-glow: #4acfee;
+  --mist-cyan: #99deeb;
+
+  --text-white: #daeeef;
+  --cloud-white: #e9f0ed;
+
+  --accent-green: #23ffbf;
+  --wing-gold: #bfaa50;
+
+  --glass-surface: rgba(3, 17, 28, 0.65);
+  --text-glow-effect: 0 0 12px rgba(74, 207, 238, 0.6);
+
+  --error-main: #d94f04;
+  --error-soft: rgba(217, 79, 4, 0.25);
+  --error-glow: rgba(217, 79, 4, 0.4);
+  --error-bg: rgba(30, 12, 8, 0.95);
 }
 
 body {
@@ -45,7 +42,7 @@ body {
 }
 
 /* =========================================
-   1. BACKGROUND - "O POVESTE VIZUALĂ"
+   1. BACKGROUND 
    ========================================= */
 .container {
   position: relative;
@@ -55,103 +52,8 @@ body {
   background-color: var(--deep-abyss);
 }
 
-.ocean-depths {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  background: radial-gradient(
-    circle at 50% -10%,
-    #faffff 0%,
-    #b4f4ff 20%,
-    #4de2ff 45%,
-    #0eb3d6 70%,
-    #056d8f 100%
-  );
-  filter: contrast(1.1) saturate(1.3);
-}
-
-.sun-rays {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  z-index: 1;
-  pointer-events: none;
-  background: repeating-conic-gradient(
-    from 0deg at 50% 50%,
-    rgba(255, 255, 255, 0) 0deg,
-    rgba(255, 255, 255, 0.03) 15deg,
-    rgba(255, 255, 255, 0.15) 30deg,
-    rgba(255, 255, 255, 0.03) 45deg,
-    rgba(255, 255, 255, 0) 60deg
-  );
-  mix-blend-mode: overlay;
-  filter: blur(8px);
-  animation: rotateRays 90s linear infinite;
-}
-
-.caustics-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.007' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 700px 700px;
-  mix-blend-mode: soft-light;
-  filter: brightness(2.5) contrast(1.5);
-  opacity: 0.6;
-  animation: rippleBase 20s linear infinite;
-}
-
-.caustics-overlay::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.005' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-  background-size: 500px 500px;
-  mix-blend-mode: overlay;
-  animation: rippleTop 15s linear infinite reverse;
-}
-
-@keyframes rotateRays {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes rippleBase {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: 100px 200px;
-  }
-}
-
-@keyframes rippleTop {
-  0% {
-    background-position: 0 0;
-  }
-  100% {
-    background-position: -200px 100px;
-  }
-}
-
 /* =========================================
-   2. CARDUL (CREATURA) - FORMS
+   2. CARDUL 
    ========================================= */
 .forms-container {
   position: absolute;
@@ -181,7 +83,8 @@ form {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 3rem 2.5rem;
+  padding: 2.6rem 2.2rem;
+  max-width: 380px;
   background: linear-gradient(
     145deg,
     rgba(12, 40, 60, 0.75) 0%,
@@ -200,7 +103,6 @@ form {
   overflow: hidden;
   grid-column: 1 / 2;
   grid-row: 1 / 2;
-  max-width: 420px;
   width: 100%;
   margin: 0 auto;
 }
@@ -224,21 +126,21 @@ form.sign-in-form {
 }
 
 .title {
-  font-family: "Cinzel", serif;
-  font-size: 2.8rem;
-  margin-bottom: 10px;
-  letter-spacing: 3px;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  line-height: 1.2;
+  margin-bottom: 16px;
   text-align: center;
   text-transform: uppercase;
 
   background: linear-gradient(180deg, #ffffff 15%, #a5f3fc 50%, #0891b2 100%);
-
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  filter: drop-shadow(0 0 20px rgba(34, 211, 238, 0.5));
+
+  filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.45));
   transition: filter 0.3s ease;
 }
 
@@ -248,24 +150,24 @@ form.sign-in-form {
 
 .subtitle {
   font-family: "Montserrat", sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  margin-bottom: 28px;
+  line-height: 1.5;
   color: var(--mist-cyan);
-  margin-bottom: 30px;
+
   font-weight: 400;
   letter-spacing: 0.5px;
   text-align: center;
 }
 
-/* --- INPUTS --- */
 .input-field {
   position: relative;
   width: 100%;
-  height: 55px;
-  margin: 10px 0;
+  height: 45px;
+  margin: 12px 0;
   display: flex;
   align-items: center;
 
-  /* Inputurile sunt "solzii" - puțin mai deschiși decât pielea */
   background: rgba(48, 72, 87, 0.4); /* --shadow-depth */
   border-radius: 12px;
   border: 1px solid rgba(74, 207, 238, 0.1);
@@ -281,7 +183,7 @@ form.sign-in-form {
 }
 
 .icon-wrapper {
-  width: 50px;
+  width: 46px;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -315,11 +217,11 @@ form.sign-in-form {
   padding: 0 15px;
   color: var(--cloud-white);
   font-family: "Montserrat", sans-serif;
-  font-size: 1rem;
   font-weight: 500;
-  letter-spacing: 0.3px;
   display: flex;
   align-items: center;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
 }
 
 .input-field input::placeholder {
@@ -339,7 +241,6 @@ form.sign-in-form {
   left: 0;
   height: 2px;
   width: 0%;
-  /* BARA DE ACCENT: Gradient de la Cyan la AURIU (aripi) */
   background: linear-gradient(90deg, var(--electric-glow), var(--wing-gold));
   box-shadow: 0 -2px 10px var(--wing-gold);
   transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -349,10 +250,13 @@ form.sign-in-form {
   width: 100%;
 }
 
-/* BUTTON - "SPLASH-UL DE CULOARE" */
 .btn.btn-liquid {
+  height: 45px;
+  font-size: 0.85rem;
+  letter-spacing: 1.6px;
+  margin-top: 22px;
+
   width: 100%;
-  height: 55px;
   border: none;
   outline: none;
   border-radius: 12px;
@@ -370,9 +274,6 @@ form.sign-in-form {
   font-family: "Montserrat", sans-serif;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 2px;
-  margin-top: 25px;
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
@@ -380,7 +281,6 @@ form.sign-in-form {
 }
 
 .btn.btn-liquid:hover {
-  /* La hover devine și mai luminos, spre Verde-Turcoaz */
   background: linear-gradient(
     135deg,
     var(--sky-highlight) 0%,
@@ -408,103 +308,47 @@ form.sign-in-form {
 .panel {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   justify-content: center;
-  text-align: center;
-  z-index: 6;
-  padding: 0 10%;
+  align-items: flex-start;
+  text-align: left;
+  padding: 0 12%;
+  gap: 18px;
 }
 
 .left-panel {
-  padding-right: 15%;
+  padding-right: 50%;
+  padding-bottom: 20%;
   pointer-events: all;
 }
 
 .right-panel {
-  padding-left: 15%;
+  padding-left: 50%;
+  padding-bottom: 20%;
   align-items: flex-start;
   pointer-events: all;
 }
 
-/* --- TEXTUL (Holographic Projection) --- */
 .panel .content {
   transition: transform 1.1s cubic-bezier(0.19, 1, 0.22, 1); /* Miscare mai fluidă */
   transition-delay: 0.5s;
   color: #fff;
-  /* Textul are un backdrop subtil pentru a se citi pe planeta strălucitoare */
   text-shadow: 0 2px 15px rgba(2, 12, 20, 0.8);
   position: relative;
+  align-items: center;
+
+  justify-content: center;
   z-index: 10;
-}
-
-.panel h3 {
-  font-family: "Cinzel", serif;
-  font-size: 2.8rem; /* Mai mare pentru impact */
-  margin-bottom: 15px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: #fff;
-  /* Glow puternic pe titlu */
-  filter: drop-shadow(0 0 15px rgba(74, 207, 238, 0.8));
-  background: linear-gradient(to bottom, #fff, #b4f4ff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.panel p {
-  font-family: "Montserrat", sans-serif;
-  font-size: 1.1rem;
-  line-height: 1.7;
-  margin-bottom: 30px;
-  max-width: 320px;
-  color: #e0f7fa;
-  font-weight: 500;
-  /* Lizibilitate maximă */
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* --- BUTONUL TRANSPARENT (Inelul de Gheață) --- */
-.btn.transparent {
-  background: rgba(255, 255, 255, 0.05); /* Aproape invizibil */
-  border: 2px solid rgba(255, 255, 255, 0.6); /* Margine de gheață */
-  border-radius: 50px;
-  padding: 14px 45px;
-  color: #fff;
-  font-family: "Montserrat", sans-serif;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  backdrop-filter: blur(8px); /* Blur în spatele butonului */
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Efect de strălucire la hover pe buton */
-.btn.transparent:hover {
-  background: rgba(255, 255, 255, 1);
-  color: var(--deep-abyss); /* Textul devine închis */
-  box-shadow:
-    0 0 30px rgba(255, 255, 255, 0.8),
-    /* Glow alb */ 0 0 60px rgba(74, 207, 238, 0.6); /* Glow cyan */
-  border-color: #fff;
-  transform: scale(1.05);
 }
 
 /* =========================================
    ELEMENTUL MAGIC: "THE DEEP BLUE VORTEX"
-   (Planeta Texturată - Avatar Blue Edition)
    ========================================= */
 .container:before {
   content: "";
   position: absolute;
-  width: 2000px;
-  height: 2000px;
-  left: -80%;
+  width: 1700px;
+  height: 1600px;
+  left: -61%;
   top: -10%;
   border-radius: 50%;
   z-index: 5;
@@ -552,7 +396,6 @@ form.sign-in-form {
   filter: contrast(1.25) brightness(1.1) saturate(1.25);
 }
 
-/* Animația de "Respirație a Oceanului" */
 @media (prefers-reduced-motion: no-preference) {
   .container:before {
     animation: oceanicPulse 8s ease-in-out infinite;
@@ -582,17 +425,6 @@ form.sign-in-form {
   }
 }
 
-/* Când se mută planeta (Slide) */
-.container.sign-up-mode:before {
-  transform: translate3d(2400px, -50%, 0);
-  /* Schimbăm ușor textura când se mișcă */
-  filter: contrast(1.1) brightness(1.3) hue-rotate(-10deg);
-}
-
-/* Slide state, mutăm ambele straturi identic */
-.container.sign-up-mode:before {
-  transform: translate3d(100%, -50%, 0);
-}
 .container.sign-up-mode:after {
   transform: translate3d(100%, -50%, 0);
 }
@@ -611,32 +443,8 @@ form.sign-in-form {
 /* Starea când planeta se mută (Slide Animation) */
 .container.sign-up-mode:before {
   transform: translate(100%, -50%);
-  right: 52%;
-  box-shadow:
-    inset 0 0 100px rgba(0, 0, 0, 0.8),
-    0 0 150px rgba(100, 255, 218, 0.3),
-    /* Mai verde (Turcoaz) */ 0 0 400px rgba(15, 96, 122, 0.5);
 }
 
-/* Efect de "Pulse" lent pentru Planetă - O face să pară vie */
-@keyframes planetPulse {
-  0% {
-    transform: translateY(-50%) scale(1);
-    filter: brightness(1);
-  }
-  50% {
-    transform: translateY(-50%) scale(1.02);
-    filter: brightness(1.1);
-  }
-  100% {
-    transform: translateY(-50%) scale(1);
-    filter: brightness(1);
-  }
-}
-
-/* Putem aplica animația doar dacă nu afectează tranzitia de slide. 
-   De regulă, pentru slide fluid, evităm animațiile pe transform, 
-   dar putem anima filtrul */
 .container:before {
   animation: atmosphereShift 20s infinite linear;
 }
@@ -653,13 +461,6 @@ form.sign-in-form {
   }
 }
 
-/* =========================================
-   5. ANIMATION STATES (Layout neschimbat)
-   ========================================= */
-.container.sign-up-mode:before {
-  transform: translate(100%, -50%);
-  right: 52%;
-}
 .container.sign-up-mode .left-panel .content,
 .container.sign-up-mode .left-panel .hologram-wrapper {
   transform: translateX(-800px);
@@ -688,163 +489,33 @@ form.sign-in-form {
   transform: translateX(800px);
 }
 
-/* =========================================
-   6. RESPONSIVE
-   ========================================= */
-@media (max-width: 870px) {
-  .container {
-    min-height: 800px;
-    height: 100vh;
-  }
-  .signin-signup {
-    width: 100%;
-    top: 95%;
-    left: 50%;
-    transform: translate(-50%, -100%);
-    transition: 1s 0.8s ease-in-out;
-  }
-  .panels-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 2fr 1fr;
-  }
-  .panel {
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    padding: 2.5rem 8%;
-    grid-column: 1 / 2;
-  }
-  .right-panel {
-    grid-row: 3 / 4;
-  }
-  .left-panel {
-    grid-row: 1 / 2;
-  }
-  .hologram-wrapper {
-    display: none;
-  }
-
-  .container:before {
-    width: 1500px;
-    height: 1500px;
-    transform: translateX(-50%);
-    left: 30%;
-    bottom: 68%;
-    right: initial;
-    top: initial;
-  }
-  .container.sign-up-mode:before {
-    transform: translate(-50%, 100%);
-    bottom: 32%;
-    right: initial;
-  }
-  .container.sign-up-mode .signin-signup {
-    top: 5%;
-    transform: translate(-50%, 0);
-  }
-}
-
-@media (max-width: 570px) {
-  form {
-    padding: 2rem 1.5rem;
-  }
-  .container {
-    padding: 1.5rem;
-  }
-  .panel .content {
-    padding: 0.5rem 1rem;
-  }
-}
-
-/* --- PARTICLES & EFFECTS --- */
-.particles-container {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  pointer-events: none;
-  overflow: hidden;
-  top: 0;
-  left: 0;
-}
-
-.particle {
-  position: absolute;
-  border-radius: 50%;
-  animation: floatUp infinite ease-in-out;
-}
-
-/* Spirit Seeds (Atokirina) - Albe și strălucitoare */
-.spirit-seed {
-  background: #fff;
-  box-shadow:
-    0 0 10px var(--electric-glow),
-    0 0 25px var(--electric-glow);
-}
-
-/* Bule - Cyan transparent */
-.bubble {
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 255, 255, 0.4),
-    transparent
-  );
-  border: 1px solid rgba(153, 222, 235, 0.4);
-  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.2);
-}
-
-@keyframes floatUp {
-  0% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.8;
-  }
-  80% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translateY(-120vh) translateX(var(--float-range));
-    opacity: 0;
-  }
-}
-
-/* --- STAREA DE EROARE (MAGMA STYLE) --- */
-/* Se aplică atunci când userul greșește un câmp */
+/* --- STAREA DE EROARE (REFINED VERSION) --- */
 
 .input-field.error {
-  /* Bordură roșie-portocalie */
-  border-color: #ff4500;
-  /* Fundal ușor roșiatic */
-  background: rgba(69, 10, 10, 0.6);
-  /* Animație de tremurat (Shake) pentru a atrage atenția */
-  animation: shake 0.4s ease-in-out;
+  border-color: var(--error-main);
+  background: rgba(217, 79, 4, 0.08);
+  animation: shake 0.25s ease-in-out;
 }
 
-/* Glow-ul exterior devine ca focul */
 .input-field.error:focus-within {
   box-shadow:
-    0 0 20px rgba(255, 69, 0, 0.4),
-    inset 0 0 10px rgba(255, 69, 0, 0.2);
+    0 0 12px var(--error-glow),
+    inset 0 0 6px rgba(217, 79, 4, 0.15);
 }
 
-/* Iconița devine roșie */
 .input-field.error .icon-wrapper {
-  color: #ff4500;
-  border-right-color: rgba(255, 69, 0, 0.3);
+  color: var(--error-main);
+  border-right-color: var(--error-soft);
 }
 
-/* Textul introdus devine alb-gălbui (ca miezul focului) */
 .input-field.error input {
-  color: #ffccbc;
+  color: #ffd9cc;
 }
 
-/* Bara de jos devine lavă */
 .input-field.error .glow-bar {
-  background: linear-gradient(90deg, #ff4500, #ffcc00);
-  box-shadow: 0 -2px 15px #ff4500;
-  width: 100% !important; /* Rămâne aprinsă ca să arate eroarea */
+  background: linear-gradient(90deg, var(--error-main), #ff784f);
+  box-shadow: 0 -2px 10px var(--error-glow);
+  width: 100% !important;
 }
 
 /* Animația Shake (Scuturare scurtă) */
@@ -858,5 +529,761 @@ form.sign-in-form {
   }
   75% {
     transform: translateX(5px);
+  }
+}
+
+/* =========================================
+   HERO LEFT PANEL – CINEMATIC WOW
+   ========================================= */
+
+.hero-content-left {
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  gap: 18px;
+  position: relative;
+}
+
+/* Glow ambiental diferit față de dreapta */
+.hero-content-left::before {
+  content: "";
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(74, 207, 238, 0.2) 0%,
+    rgba(74, 207, 238, 0.08) 40%,
+    transparent 70%
+  );
+  filter: blur(60px);
+  z-index: -1;
+}
+
+/* LOGO */
+.hero-logo-left svg {
+  width: 85px;
+  height: 85px;
+  filter: drop-shadow(0 0 20px rgba(74, 207, 238, 0.5));
+  transition: transform 0.4s ease;
+}
+
+.hero-logo-left svg:hover {
+  transform: scale(1.05);
+}
+
+/* TITLU */
+.hero-title-left {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  max-width: 420px;
+
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    var(--mist-cyan) 50%,
+    var(--electric-glow) 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow: 0 0 20px rgba(74, 207, 238, 0.4);
+}
+
+/* SUBTITLU */
+.hero-subtitle-left {
+  max-width: 360px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* BUTON */
+.hero-button-left {
+  margin-top: 12px;
+
+  padding: 12px 32px;
+  font-size: 0.85rem;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(
+    135deg,
+    var(--electric-glow),
+    var(--sky-highlight)
+  );
+
+  color: var(--deep-abyss);
+
+  box-shadow:
+    0 10px 30px rgba(74, 207, 238, 0.35),
+    0 0 40px rgba(74, 207, 238, 0.3);
+
+  transition: all 0.3s ease;
+}
+
+.hero-button-left:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 15px 45px rgba(74, 207, 238, 0.6),
+    0 0 60px rgba(74, 207, 238, 0.6);
+}
+
+/* =========================================
+   HERO RIGHT PANEL – PREMIUM
+   ========================================= */
+
+.hero-content-right {
+  width: 100%;
+  height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  gap: 18px;
+  position: relative;
+}
+
+/* Glow ambiental subtil diferit */
+.hero-content-right::before {
+  content: "";
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(74, 207, 238, 0.2) 0%,
+    rgba(74, 207, 238, 0.08) 40%,
+    transparent 70%
+  );
+  filter: blur(60px);
+  z-index: -1;
+}
+
+/* LOGO */
+.hero-logo-right svg {
+  width: 85px;
+  height: 85px;
+  filter: drop-shadow(0 0 20px rgba(74, 207, 238, 0.5));
+  transition: transform 0.4s ease;
+}
+
+.hero-logo-right svg:hover {
+  transform: scale(1.04);
+}
+
+/* TITLU */
+.hero-title-right {
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+  max-width: 420px;
+
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    var(--mist-cyan) 50%,
+    var(--electric-glow) 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow: 0 0 20px rgba(74, 207, 238, 0.4);
+}
+
+/* SUBTITLU */
+.hero-subtitle-right {
+  max-width: 360px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* BUTON */
+.hero-button-right {
+  margin-top: 12px;
+
+  padding: 12px 32px;
+  font-size: 0.85rem;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+
+  border: none;
+  cursor: pointer;
+
+  background: linear-gradient(
+    135deg,
+    var(--electric-glow),
+    var(--sky-highlight)
+  );
+
+  color: var(--deep-abyss);
+
+  box-shadow:
+    0 10px 30px rgba(74, 207, 238, 0.35),
+    0 0 40px rgba(74, 207, 238, 0.3);
+
+  transition: all 0.3s ease;
+}
+
+.hero-button-right:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 15px 45px rgba(74, 207, 238, 0.6),
+    0 0 60px rgba(74, 207, 238, 0.6);
+}
+
+/* =========================================
+   SOCIAL AUTH – PREMIUM INTEGRATION
+   ========================================= */
+
+.social-divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin: 20px 0 10px 0;
+  gap: 12px;
+  opacity: 0.8;
+}
+
+.social-divider span {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(74, 207, 238, 0.4),
+    transparent
+  );
+}
+
+.social-divider p {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: rgba(218, 238, 239, 0.6);
+  text-transform: uppercase;
+}
+
+/* GOOGLE BUTTON GLASS STYLE */
+
+.btn-social {
+  width: 100%;
+  height: 45px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  background: rgba(48, 72, 87, 0.4);
+  border: 1px solid rgba(74, 207, 238, 0.15);
+  border-radius: 12px;
+
+  color: var(--cloud-white);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(12px);
+}
+
+.btn-social:hover {
+  background: rgba(74, 207, 238, 0.08);
+  border-color: var(--electric-glow);
+  box-shadow: 0 0 25px rgba(74, 207, 238, 0.25);
+  transform: translateY(-2px);
+}
+
+/* Google icon subtle */
+.google-icon {
+  font-size: 16px;
+  color: #db4437;
+}
+
+/* =========================================
+   PASSWORD TOGGLE – PREMIUM STYLE
+   ========================================= */
+
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(218, 238, 239, 0.5);
+  transition: all 0.3s ease;
+  z-index: 6;
+}
+
+.password-toggle svg {
+  width: 16px;
+  height: 16px;
+  transition: all 0.3s ease;
+}
+
+.password-toggle:hover {
+  color: var(--electric-glow);
+}
+
+.password-toggle:hover svg {
+  filter: drop-shadow(0 0 6px var(--electric-glow));
+  transform: scale(1.08);
+}
+
+/* focus glow subtil */
+.input-field:focus-within .password-toggle {
+  color: var(--mist-cyan);
+}
+
+/* =========================================
+   MOBILE RESPONSIVE – PREMIUM ADAPTATION
+   ========================================= */
+
+@media (max-width: 1024px) {
+  .signin-signup {
+    width: 70%;
+    left: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  /* 1️⃣ Păstrăm containerul normal */
+  .container {
+    display: block;
+  }
+
+  /* 2️⃣ Header peste planetă */
+  .panels-container {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 120px 20px 40px 20px;
+    z-index: 15;
+    background: transparent; /* IMPORTANT */
+  }
+
+  .panel {
+    padding: 0;
+    align-items: center;
+    text-align: center;
+  }
+
+  .left-panel,
+  .right-panel {
+    padding: 0;
+  }
+
+  /* Arătăm doar panoul activ */
+  .container:not(.sign-up-mode) .right-panel {
+    display: none;
+  }
+
+  .container.sign-up-mode .left-panel {
+    display: none;
+  }
+
+  /* 3️⃣ Hero perfect centrat peste planetă */
+  .hero-content-left,
+  .hero-content-right {
+    gap: 12px;
+    max-width: 100%;
+    position: relative;
+    z-index: 20;
+  }
+
+  .hero-logo-left svg,
+  .hero-logo-right svg {
+    width: 70px;
+    height: 70px;
+  }
+
+  .hero-title-left,
+  .hero-title-right {
+    font-size: 1.3rem;
+  }
+
+  .hero-subtitle-left,
+  .hero-subtitle-right {
+    font-size: 0.9rem;
+  }
+
+  .hero-button-left,
+  .hero-button-right {
+    padding: 10px 26px;
+    font-size: 0.75rem;
+    border-radius: 22px;
+  }
+
+  /* 4️⃣ Formular sub header */
+  .forms-container {
+    position: relative;
+    height: auto;
+    margin-top: 10px;
+  }
+
+  .signin-signup {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto 60px auto;
+    transition: none;
+  }
+
+  /* 5️⃣ Oprim animațiile desktop */
+  .container.sign-up-mode .signin-signup {
+    left: auto;
+  }
+
+  .container.sign-up-mode form.sign-up-form,
+  .container.sign-up-mode form.sign-in-form {
+    transform: none;
+  }
+
+  /* 6️⃣ Planeta poziționată corect sus */
+  .container:before {
+    width: 1100px;
+    height: 1100px;
+    left: -60%;
+    top: -45%;
+    opacity: 0.9;
+  }
+}
+@media (max-width: 768px) {
+  /* Card mai compact */
+  form {
+    max-width: 340px; /* înainte era 400px */
+    padding: 1.6rem 1.2rem; /* redus din 2rem 1.5rem */
+    border-radius: 22px;
+  }
+
+  /* Titlu mai proporțional */
+  .title {
+    font-size: 1.3rem;
+    margin-bottom: 14px;
+  }
+
+  /* Input mai aerisit, dar nu mare */
+  .input-field {
+    height: 42px; /* înainte 45px */
+    margin: 8px 0; /* înainte 12px */
+    border-radius: 10px;
+  }
+
+  /* Iconițe mai fine */
+  .icon-wrapper {
+    width: 38px; /* înainte 46px */
+  }
+
+  .icon-wrapper svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Text input proporțional */
+  .input-field input {
+    font-size: 0.85rem;
+    padding: 0 12px;
+  }
+
+  /* Eye icon */
+  .password-toggle svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Buton principal */
+  .btn.btn-liquid {
+    height: 42px;
+    font-size: 0.75rem;
+    margin-top: 16px;
+    border-radius: 12px;
+  }
+
+  /* Divider */
+  .social-divider {
+    margin: 14px 0 8px 0;
+  }
+
+  .social-divider p {
+    font-size: 0.65rem;
+  }
+
+  /* Google button */
+  .btn-social {
+    height: 42px;
+    font-size: 0.75rem;
+    border-radius: 12px;
+  }
+  /* 1️⃣ Layout Vertical: Hero sus, Formular jos */
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* 2️⃣ Planeta centrată sus ca fundal pentru Hero */
+  .container:before {
+    width: 900px;
+    height: 900px;
+    left: 50%;
+    top: -600px;
+    transform: translateX(-50%) !important;
+    z-index: 1;
+    opacity: 0.8;
+    animation: oceanicPulseMobile 10s ease-in-out infinite !important;
+  }
+
+  @keyframes oceanicPulseMobile {
+    0%,
+    100% {
+      transform: translateX(-50%) scale(1);
+    }
+    50% {
+      transform: translateX(-50%) scale(1.03);
+    }
+  }
+
+  /* 3️⃣ Panourile Hero (Titlu + Buton Switch) mutate SUS */
+  .panels-container {
+    position: relative;
+    display: block; /* Dezactivăm grid-ul de desktop */
+    width: 100%;
+    height: auto;
+    z-index: 80;
+    order: 1; /* Forțăm panoul să fie primul */
+    padding: 60px 20px 20px 20px;
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    min-height: auto;
+  }
+
+  /* Resetăm poziția conținutului (eliminăm acei 800px de pe desktop) */
+  .panel .content {
+    transform: translateX(0) !important;
+    transition: none;
+  }
+
+  /* Logica de afișare: Arătăm Hero-ul invers față de formularul activ */
+  /* Dacă suntem în sign-up-mode, arătăm panoul care te trimite la login (Right) */
+  .container.sign-up-mode .left-panel {
+    display: none;
+  }
+  .container:not(.sign-up-mode) .right-panel {
+    display: none;
+  }
+
+  /* =========================
+   HERO SCALARE PROPORȚIONALĂ
+========================= */
+
+  /* Logo mai mic și proporțional */
+  .hero-content-left img,
+  .hero-content-right img {
+    width: 55px;
+    height: 55px;
+  }
+
+  /* Titlu mai compact */
+  .hero-title-left,
+  .hero-title-right {
+    font-size: 1.2rem;
+    margin: 6px 0;
+    letter-spacing: 0.3px;
+  }
+
+  /* Subtitlu mai fin */
+  .hero-subtitle-left,
+  .hero-subtitle-right {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  /* Buton mai compact și proporțional */
+  .hero-button-left,
+  .hero-button-right {
+    padding: 6px 18px;
+    font-size: 0.7rem;
+    border-radius: 16px;
+  }
+
+  /* Spațiere generală mai echilibrată */
+  .hero-content-left,
+  .hero-content-right {
+    gap: 8px;
+  }
+
+  /* 4️⃣ Containerul de formulare sub Hero */
+  .forms-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    top: auto;
+    left: auto;
+    padding: 0 20px 40px 20px;
+    z-index: 25;
+    order: 2; /* Formularul vine după Hero */
+  }
+
+  .signin-signup {
+    position: relative;
+    width: 100%;
+    left: 0 !important;
+    transform: none !important;
+    display: flex;
+    justify-content: center;
+  }
+
+  form {
+    max-width: 400px;
+    margin: 0 auto;
+    background: rgba(12, 40, 60, 0.85);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(165, 243, 252, 0.2);
+    padding: 2rem 1.5rem;
+  }
+
+  /* Arătăm doar formularul corect */
+  .container.sign-up-mode form.sign-in-form {
+    display: none;
+  }
+  .container:not(.sign-up-mode) form.sign-up-form {
+    display: none;
+  }
+
+  form.sign-in-form,
+  form.sign-up-form {
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: all !important;
+    position: relative;
+  }
+
+  /* 5️⃣ Particulele rămân sub tot conținutul */
+  #tsparticles {
+    z-index: 0;
+  }
+}
+
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Ridicăm planeta */
+  .container:before {
+    top: -650px; /* înainte era -550px */
+  }
+
+  /* Micșorăm padding-ul de sus al hero */
+  .panels-container {
+    padding: 30px 20px 60px 20px;
+  }
+
+  .hero-content-left img,
+  .hero-content-right img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .hero-title-left,
+  .hero-title-right {
+    font-size: 1.1rem;
+  }
+
+  .hero-subtitle-left,
+  .hero-subtitle-right {
+    font-size: 0.75rem;
+  }
+
+  .hero-button-left,
+  .hero-button-right {
+    padding: 5px 16px;
+    font-size: 0.65rem;
+  }
+
+  .hero-content-left,
+  .hero-content-right {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .signin-signup {
+    padding-top: 60px;
+  }
+
+  form {
+    padding: 1.8rem 1.2rem;
+    border-radius: 18px;
+  }
+
+  .title {
+    font-size: 1.4rem;
+  }
+
+  .input-field {
+    height: 46px;
+    margin: 10px 0;
+  }
+
+  .icon-wrapper {
+    width: 42px;
+  }
+
+  .password-toggle {
+    right: 10px;
+  }
+
+  .btn.btn-liquid,
+  .btn-social {
+    height: 46px;
+  }
+
+  .social-divider {
+    margin: 18px 0 8px 0;
   }
 }

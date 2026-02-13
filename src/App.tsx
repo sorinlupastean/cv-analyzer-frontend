@@ -18,31 +18,18 @@ import CVDetailsPage from "./pages/dashboard/CVDetailsPage";
 import "./App.css";
 
 const App: React.FC = () => {
-  // Ideal acest state ar trebui să fie într-un Context sau Redux/Zustand
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-  };
+  const isAuthenticated = !!localStorage.getItem("access_token");
 
   return (
     <BrowserRouter>
       <Routes>
-        {/* --- RUTA PUBLICĂ (LOGIN) --- */}
+        {/* PUBLIC ROUTE */}
         <Route
           path={PATHS.ROOT}
           element={
             !isAuthenticated ? (
-              <PaginaAuth onAuthSuccess={handleAuthSuccess} />
+              <PaginaAuth />
             ) : (
-              // Dacă e deja logat, trimite-l direct în dashboard
               <Navigate
                 to={`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`}
                 replace
@@ -51,19 +38,13 @@ const App: React.FC = () => {
           }
         />
 
-        {/* --- RUTE PROTEJATE --- */}
-        {/* 1. Verificăm autentificarea */}
-        <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
-          {/* 2. Aplicăm Layout-ul Dashboard-ului */}
+        {/* PROTECTED ROUTES */}
+        <Route element={<ProtectedRoute />}>
           <Route path={PATHS.DASHBOARD.ROOT} element={<DashboardLayout />}>
-            {/* 3. Rutele efective (copiii Outlet-ului din Layout) */}
-
-            {/* Redirect automat de la /dashboard la /dashboard/home */}
             <Route
               index
               element={<Navigate to={PATHS.DASHBOARD.HOME} replace />}
             />
-
             <Route path={PATHS.DASHBOARD.HOME} element={<HomePage />} />
             <Route
               path={PATHS.DASHBOARD.CREATE_JOB}
@@ -74,13 +55,10 @@ const App: React.FC = () => {
               element={<UploadCVPage />}
             />
             <Route path={PATHS.DASHBOARD.RESULTS} element={<ResultsPage />} />
-
-            {/* Ruta dinamică pentru detalii CV */}
             <Route path={`cv/:id`} element={<CVDetailsPage />} />
           </Route>
         </Route>
 
-        {/* --- 404 NOT FOUND (Opțional, dar recomandat) --- */}
         <Route path="*" element={<Navigate to={PATHS.ROOT} replace />} />
       </Routes>
     </BrowserRouter>

@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "../../routs/paths";
-import styles from "./Dashboard.module.css";
+import styles from "./Sidebar.module.css";
+import { getCurrentUser } from "../../api/auth.service";
 
-// --- ICONS ---
 import {
   FaHome,
   FaPlusCircle,
@@ -11,20 +11,17 @@ import {
   FaChartBar,
   FaCog,
   FaSignOutAlt,
-  FaUserCircle,
 } from "react-icons/fa";
 
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
-// --- FIX TYPESCRIPT ICONS ---
 const HomeIcon = FaHome as unknown as ComponentType<IconBaseProps>;
 const CreateJobIcon = FaPlusCircle as unknown as ComponentType<IconBaseProps>;
 const UploadIcon = FaCloudUploadAlt as unknown as ComponentType<IconBaseProps>;
 const ResultsIcon = FaChartBar as unknown as ComponentType<IconBaseProps>;
 const SettingsIcon = FaCog as unknown as ComponentType<IconBaseProps>;
 const LogoutIcon = FaSignOutAlt as unknown as ComponentType<IconBaseProps>;
-const ProfileIcon = FaUserCircle as unknown as ComponentType<IconBaseProps>;
 
 interface NavItem {
   name: string;
@@ -32,17 +29,36 @@ interface NavItem {
   path: string;
 }
 
+interface User {
+  firstName: string;
+  lastName: string;
+}
+
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // --- LOGOUT LOGIC ---
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const data = await getCurrentUser();
+        setUser(data);
+      } catch {
+        localStorage.removeItem("access_token");
+        navigate(PATHS.ROOT, { replace: true });
+      }
+    };
+
+    fetchUser();
+  }, [navigate]);
+
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     navigate(PATHS.ROOT, { replace: true });
   };
 
-  // --- MAIN NAV ---
   const mainNav: NavItem[] = [
     {
       name: "Acasă",
@@ -60,7 +76,7 @@ const Sidebar: React.FC = () => {
       path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
     },
     {
-      name: "Rezultate Analiză",
+      name: "Rezultate",
       IconComponent: ResultsIcon,
       path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.RESULTS}`,
     },
@@ -68,18 +84,24 @@ const Sidebar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const fullName = user
+    ? `${user.firstName} ${user.lastName}`
+    : "Se încarcă...";
+
+  const initial = user
+    ? `${user.lastName?.charAt(0) || ""}${user.firstName?.charAt(0) || ""}`.toUpperCase()
+    : "U";
+
   return (
-    <aside className={styles.sidebarContainerNew}>
-      {/* --- PROFILE --- */}
+    <aside className={styles.sidebar}>
       <div className={styles.profileSection}>
-        <div className={styles.profileIcon}>
-          <ProfileIcon />
+        <div className={styles.profileAvatar}>
+          <span className={styles.avatarInitial}>{initial}</span>
         </div>
-        <span className={styles.profileName}>Utilizator Autentificat</span>
+        <span className={styles.profileName}>{fullName}</span>
       </div>
 
-      {/* --- MAIN NAVIGATION --- */}
-      <nav className={styles.sidebarNavMain}>
+      <nav className={styles.navMain}>
         <ul>
           {mainNav.map((item) => (
             <li key={item.name}>
@@ -89,18 +111,15 @@ const Sidebar: React.FC = () => {
                   isActive(item.path) ? styles.active : ""
                 }`}
               >
-                <span className={styles.navIcon}>
-                  <item.IconComponent />
-                </span>
-                {item.name}
+                <item.IconComponent className={styles.navIcon} />
+                <span>{item.name}</span>
               </Link>
             </li>
           ))}
         </ul>
       </nav>
 
-      {/* --- BOTTOM NAV --- */}
-      <nav className={styles.sidebarNavBottom}>
+      <nav className={styles.navBottom}>
         <ul>
           <li>
             <Link
@@ -111,10 +130,8 @@ const Sidebar: React.FC = () => {
                   : ""
               }`}
             >
-              <span className={styles.navIcon}>
-                <SettingsIcon />
-              </span>
-              Setări
+              <SettingsIcon className={styles.navIcon} />
+              <span>Setări</span>
             </Link>
           </li>
 
@@ -124,10 +141,8 @@ const Sidebar: React.FC = () => {
               className={`${styles.navLink} ${styles.logoutBtn}`}
               onClick={handleLogout}
             >
-              <span className={styles.navIcon}>
-                <LogoutIcon />
-              </span>
-              Delogare
+              <LogoutIcon className={styles.navIcon} />
+              <span>Delogare</span>
             </button>
           </li>
         </ul>
