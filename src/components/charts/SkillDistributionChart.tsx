@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import styles from "./SkillDistributionChart.module.css";
 
@@ -8,35 +8,40 @@ type SkillDatum = {
   color: string;
 };
 
-// Culori actualizate pentru tema "Surface / Reef"
 const data: SkillDatum[] = [
-  { name: "Technical Skills", value: 35, color: "#06b6d4" }, // Cyan-500
-  { name: "Communication", value: 25, color: "#3b82f6" }, // Blue-500
-  { name: "Leadership", value: 18, color: "#0ea5e9" }, // Sky-500
-  { name: "Problem Solving", value: 15, color: "#6366f1" }, // Indigo-500
-  { name: "Creativity", value: 7, color: "#2dd4bf" }, // Teal-400
+  { name: "Technical Skills", value: 35, color: "#0ea5e9" },
+  { name: "Communication", value: 25, color: "#60a5fa" },
+  { name: "Leadership", value: 18, color: "#22d3ee" },
+  { name: "Problem Solving", value: 15, color: "#6366f1" },
+  { name: "Creativity", value: 7, color: "#2dd4bf" },
 ];
 
 export default function SkillDistributionChart() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  // Dacă nu e nimic hover, afișăm primul element ca default (opțional)
-  const activeData = activeIndex !== null ? data[activeIndex] : null;
+  const activeData = useMemo(() => {
+    if (activeIndex === null) return null;
+    return data[activeIndex] ?? null;
+  }, [activeIndex]);
 
   return (
     <div className={styles.wrapper}>
       {/* HEADER */}
       <div className={styles.header}>
         <div>
-          <h3 className={styles.title}>Distribuția Abilităților</h3>
+          <h3 className={styles.title}>Distribuția abilităților</h3>
           <p className={styles.subtitle}>Top competențe identificate</p>
         </div>
-        <div className={styles.miniIcon} />
+
+        <div className={styles.badge}>
+          <span className={styles.badgeDot} />
+          Live
+        </div>
       </div>
 
-      {/* CONȚINUT */}
+      {/* CONTENT */}
       <div className={styles.content}>
-        {/* CHART AREA */}
+        {/* CHART SIDE */}
         <div className={styles.chartSide}>
           <div className={styles.chartInner}>
             <ResponsiveContainer width="100%" height="100%">
@@ -46,23 +51,22 @@ export default function SkillDistributionChart() {
                   dataKey="value"
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={85}
+                  innerRadius={62}
+                  outerRadius={88}
                   paddingAngle={4}
-                  cornerRadius={6} // Colțuri rotunjite la segmente
+                  cornerRadius={7}
                   onMouseEnter={(_, index) => setActiveIndex(index)}
                   onMouseLeave={() => setActiveIndex(null)}
-                  stroke="none" // Fără bordură implicită
+                  stroke="none"
                 >
                   {data.map((entry, index) => (
                     <Cell
                       key={entry.name}
                       fill={entry.color}
-                      // Efect de "selecție" prin opacitate
                       fillOpacity={
-                        activeIndex === null || activeIndex === index ? 1 : 0.3
+                        activeIndex === null || activeIndex === index ? 1 : 0.28
                       }
-                      stroke={activeIndex === index ? "#fff" : "none"}
+                      stroke={activeIndex === index ? "#ffffff" : "none"}
                       strokeWidth={3}
                     />
                   ))}
@@ -70,9 +74,9 @@ export default function SkillDistributionChart() {
               </PieChart>
             </ResponsiveContainer>
 
-            {/* BUBBLE CENTRAL - Apare doar la hover */}
+            {/* CENTER BUBBLE */}
             {activeData && (
-              <div className={styles.centerBubble}>
+              <div className={styles.centerBubble} aria-live="polite">
                 <span className={styles.centerLabel}>{activeData.name}</span>
                 <span
                   className={styles.centerValue}
@@ -85,14 +89,25 @@ export default function SkillDistributionChart() {
           </div>
         </div>
 
-        {/* LEGENDĂ */}
+        {/* LEGEND SIDE */}
         <div className={styles.legendSide}>
           {data.map((item, index) => (
             <div
               key={item.name}
-              className={`${styles.legendRow} ${index === activeIndex ? styles.active : ""}`}
+              className={`${styles.legendRow} ${
+                index === activeIndex ? styles.active : ""
+              }`}
               onMouseEnter={() => setActiveIndex(index)}
               onMouseLeave={() => setActiveIndex(null)}
+              role="button"
+              tabIndex={0}
+              onFocus={() => setActiveIndex(index)}
+              onBlur={() => setActiveIndex(null)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") setActiveIndex(index);
+                if (e.key === "Escape") setActiveIndex(null);
+              }}
+              aria-label={`${item.name}: ${item.value}%`}
             >
               <div className={styles.rowTop}>
                 <div className={styles.left}>
@@ -102,12 +117,12 @@ export default function SkillDistributionChart() {
                   />
                   <span className={styles.label}>{item.name}</span>
                 </div>
+
                 <span className={styles.value} style={{ color: item.color }}>
                   {item.value}%
                 </span>
               </div>
 
-              {/* Progress Bar umplut */}
               <div className={styles.track}>
                 <div
                   className={styles.fill}

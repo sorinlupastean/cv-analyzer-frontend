@@ -1,251 +1,329 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
 
-/* --- LAYOUT & ANIMATIONS --- */
+/* ================= PAGE WRAPPER ================= */
+:root {
+  --deep-abyss: #03111c;
+  --ocean-mid: #3b7f9b;
+  --ocean-sat: #3295b7;
+  --sky-highlight: #39a3c4;
+  --electric-glow: #4acfee;
+  --mist-cyan: #99deeb;
+
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+}
+
 .wrapper {
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  gap: 24px;
+  gap: 18px;
   font-family: "Montserrat", sans-serif;
+  padding: 20px;
 
-  /* Animație de intrare pentru toată pagina */
-  animation: pageFadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  overflow: hidden; /* important: scoate scroll-ul */
+
+  background:
+    radial-gradient(
+      900px 500px at 15% 20%,
+      rgba(74, 207, 238, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 85% 80%,
+      rgba(57, 163, 196, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 420px at 55% 45%,
+      rgba(153, 222, 235, 0.1),
+      transparent 65%
+    ),
+    #f8fafc;
+
+  color: var(--text-dark);
 }
 
-@keyframes pageFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* --- HERO SECTION (The Horizon) --- */
-.hero {
-  height: 130px;
+/* ================= HEADER CARD (CONSISTENT) ================= */
+.headerCard {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
   border-radius: 24px;
-  padding: 30px;
-  position: relative;
-  overflow: hidden;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 1);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.04);
+}
 
-  /* Gradient: Apă de suprafață */
-  background: linear-gradient(120deg, #22d3ee 0%, #0ea5e9 100%);
-
-  /* Umbră colorată */
-  box-shadow: 0 15px 35px rgba(14, 165, 233, 0.3);
-
+.headerLeft {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  color: #fff;
+  gap: 6px;
 }
 
-/* Textura de valuri pe Hero */
-.hero::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.2) 2px,
-    transparent 3px
-  );
-  background-size: 30px 30px;
-  opacity: 0.3;
-  transform: rotate(15deg);
+.title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-dark);
 }
 
-.heroTitle {
-  font-family: "Cinzel", serif;
-  font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  z-index: 1;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.heroSubtitle {
-  font-size: 0.95rem;
+.subtitle {
+  margin: 0;
+  font-size: 0.86rem;
+  color: var(--text-muted);
   font-weight: 500;
-  opacity: 0.95;
-  z-index: 1;
-  max-width: 600px;
+  max-width: 720px;
 }
 
-/* --- GRID LAYOUT --- */
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 9px 12px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(74, 207, 238, 0.16),
+    rgba(57, 163, 196, 0.12)
+  );
+  border: 1px solid rgba(74, 207, 238, 0.26);
+  color: var(--ocean-mid);
+
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.pillDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--electric-glow);
+  box-shadow: 0 0 0 3px rgba(74, 207, 238, 0.18);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+/* ================= GRID ================= */
 .grid {
   flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: 140px 1fr; /* Rândul 1 fix, restul flexibil */
-  gap: 24px;
-  padding-bottom: 20px;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: 140px 1fr;
+  gap: 18px;
 }
 
-/* --- METRIC CARDS (Crystal Datapads) --- */
+/* ================= BASE CARD (SAME AS APP) ================= */
 .card {
-  position: relative;
-  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
 
-  /* STICLĂ DE CRISTAL */
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+.card:hover {
+  border-color: rgba(14, 165, 233, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.1);
+}
 
-  /* Bordură fină albă */
-  border: 1px solid rgba(255, 255, 255, 0.8);
+/* ================= METRIC CARDS ================= */
+.metric {
+  grid-column: span 3;
+  height: 140px; /* fix, ca să se potrivească pe rândul 1 */
+  min-height: 0;
 
-  /* Umbră turcoaz difuză */
-  box-shadow:
-    0 10px 30px rgba(34, 211, 238, 0.1),
-    inset 0 0 20px rgba(255, 255, 255, 0.5);
-
-  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  overflow: hidden;
+  gap: 6px;
 }
 
-/* Hover Effect: Ridicare și Glow */
-.card:hover {
-  transform: translateY(-5px);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 20px 40px rgba(34, 211, 238, 0.2);
-  border-color: #22d3ee;
-}
-
-.cardHeader {
+.metricHeader {
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-/* ICON BOX: Bule de apă */
+.metricLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
 .iconBox {
   width: 42px;
   height: 42px;
   border-radius: 12px;
 
-  /* Gradient fin */
-  background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-  color: #0284c7; /* Albastru iconic */
+  background: linear-gradient(
+    135deg,
+    rgba(74, 207, 238, 0.16),
+    rgba(57, 163, 196, 0.12)
+  );
+  border: 1px solid rgba(74, 207, 238, 0.24);
 
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(14, 165, 233, 0.15);
-  transition: 0.3s;
+  color: var(--ocean-mid);
+  box-shadow: 0 2px 12px rgba(74, 207, 238, 0.12);
+  flex-shrink: 0;
 }
 
-.card:hover .iconBox {
-  background: #0ea5e9;
-  color: #fff;
-  transform: scale(1.1) rotate(5deg);
-}
-
-.cardLabel {
-  font-size: 0.9rem;
-  color: #64748b; /* Slate-500 */
-  font-weight: 600;
+.metricLabel {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* VALUE: Deep Navy */
-.cardValue {
-  font-family: "Montserrat", sans-serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #0f172a; /* Aproape negru, albastru foarte închis */
-  margin: 10px 0;
-  letter-spacing: -1px;
-}
-
-/* --- PROGRESS BAR (Bioluminescent Vein) --- */
-.sparkline {
-  height: 6px;
-  background: rgba(34, 211, 238, 0.15);
-  border-radius: 10px;
+  white-space: nowrap;
   overflow: hidden;
-  position: relative;
+  text-overflow: ellipsis;
 }
 
-.sparkFill {
+.badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #16a34a;
+  background: rgba(22, 163, 74, 0.08);
+  border: 1px solid rgba(22, 163, 74, 0.15);
+  padding: 4px 10px;
+  border-radius: 999px;
+  height: fit-content;
+  flex-shrink: 0;
+}
+
+.badgeInfo {
+  color: var(--ocean-mid);
+  background: rgba(74, 207, 238, 0.14);
+  border-color: rgba(74, 207, 238, 0.22);
+}
+
+.metricValue {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #0f172a;
+  letter-spacing: -0.6px;
+}
+
+.miniHint {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Progress */
+.progressTrack {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressFill {
   height: 100%;
-  border-radius: 10px;
-
-  /* Gradient Electric */
+  border-radius: 999px;
   background: linear-gradient(90deg, #22d3ee, #0ea5e9);
-
-  /* Glow Effect */
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
-
-  animation: loadLine 1.5s ease-out forwards;
+  transition: width 0.6s ease;
 }
 
-@keyframes loadLine {
-  from {
-    width: 0;
-  }
-}
+/* ================= CHART CARDS ================= */
+.chartCard {
+  grid-column: span 6;
+  min-height: 0;
+  height: 100%;
 
-/* --- LARGE CARDS (Chart Screens) --- */
-.cardLarge {
-  grid-column: span 2;
-
-  /* Același stil de sticlă de cristal */
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(25px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-
-  padding: 30px;
   display: flex;
   flex-direction: column;
-  position: relative;
-  transition: 0.3s;
+  gap: 12px;
+  padding: 16px; /* puțin mai mic ca să încapi fără scroll */
 }
 
-.cardLarge:hover {
-  box-shadow: 0 15px 40px rgba(34, 211, 238, 0.1);
+.chartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-/* Chart Container */
-.chartContainer {
-  width: 100%;
+.chartTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.chartSub {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.chartBody {
+  flex: 1;
+  min-height: 0;
   height: 100%;
-  /* Asigurăm că graficele au culori potrivite */
-  filter: saturate(1.1);
 }
 
-/* --- RESPONSIVE --- */
+/* ================= RESPONSIVE ================= */
 @media (max-width: 1200px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: auto;
+  .metric {
+    grid-column: span 6;
   }
-  .cardLarge {
-    grid-column: span 2;
-    height: 350px;
+
+  .chartCard {
+    grid-column: span 12;
   }
 }
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
+@media (max-width: 720px) {
+  .wrapper {
+    padding: 18px;
   }
-  .cardLarge {
-    grid-column: span 1;
+
+  .headerCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .metric {
+    grid-column: span 12;
   }
 }

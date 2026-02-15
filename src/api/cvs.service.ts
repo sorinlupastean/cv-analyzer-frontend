@@ -67,10 +67,7 @@ export const cvsApi = {
 
   // opțional: util pentru CVDetailsPage
   getPdfUrl: (cv: Cv): string | null => {
-    if (!API_URL) return null;
-    if (!cv.filePath) return null;
-
-    // dacă în DB ai "uploads/cvs/xxx.pdf" îl transformăm în "/uploads/cvs/xxx.pdf"
+    if (!API_URL || !cv.filePath) return null;
     const normalized = cv.filePath
       .replace(/\\/g, "/")
       .replace(/^uploads\//, "");
@@ -78,7 +75,7 @@ export const cvsApi = {
   },
 
   analyze: async (cvId: number): Promise<Cv> => {
-    const { data } = await http.post<Cv>(`/cvs/${cvId}/analyze`);
+    const { data } = await http.post<Cv>(`/cvs/${cvId}/analyze`, {});
     return data;
   },
 };

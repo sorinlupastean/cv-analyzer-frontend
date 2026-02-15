@@ -1,121 +1,160 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+
+/* ================= THEME TOKENS (Sidebar palette, light usage) ================= */
+:root {
+  --deep-abyss: #03111c;
+  --ocean-mid: #3b7f9b;
+  --ocean-sat: #3295b7;
+  --sky-highlight: #39a3c4;
+  --electric-glow: #4acfee;
+  --mist-cyan: #99deeb;
+
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --text-body: #475569;
+}
+
 /* CONTAINER */
 .chartWrapper {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  /* Fundalul transparent (este în interiorul cardului de sticlă) */
+  gap: 12px;
+  padding: 0;
   background: transparent;
+  font-family: "Montserrat", sans-serif;
 }
 
 /* HEADER */
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .title {
-  font-family: "Cinzel", serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0e7490; /* Cyan-800 */
   margin: 0;
-  letter-spacing: 0.5px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--text-dark);
+  letter-spacing: -0.2px;
 }
 
 .subtitle {
-  font-family: "Montserrat", sans-serif;
+  margin: 6px 0 0 0;
   font-size: 0.8rem;
-  margin: 4px 0 0 0;
-  color: #64748b; /* Slate-500 */
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
-/* BADGE */
+/* BADGE (sidebar palette, light theme) */
 .badge {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(34, 211, 238, 0.15); /* Cyan deschis */
-  padding: 6px 12px;
-  border-radius: 12px;
+  gap: 8px;
 
-  /* Text Cyan Electric */
-  color: #0891b2;
-  font-size: 0.75rem;
-  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: 999px;
 
-  /* Bordură fină */
-  border: 1px solid rgba(34, 211, 238, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba(74, 207, 238, 0.16),
+    rgba(57, 163, 196, 0.12)
+  );
+  border: 1px solid rgba(74, 207, 238, 0.26);
+  color: var(--ocean-mid);
+
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-/* TOOLTIP (Glass Popup) */
+.badge svg {
+  opacity: 0.9;
+}
+
+/* CHART AREA */
+.chartArea {
+  flex: 1;
+  min-height: 0;
+}
+
+/* TOOLTIP (consistent glass + sidebar palette accents) */
 .tooltipBox {
-  background: rgba(255, 255, 255, 0.85);
-  padding: 12px 16px;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 12px 14px;
 
-  /* Efect de sticlă mată */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 10px 30px rgba(14, 165, 233, 0.15);
-  font-size: 0.85rem;
-  min-width: 140px;
+  box-shadow: 0 14px 30px rgba(74, 207, 238, 0.14);
+  min-width: 160px;
 }
 
 .tooltipLabel {
-  font-family: "Cinzel", serif;
-  font-weight: 700;
-  color: #164e63; /* Deep Navy */
-  margin-bottom: 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  padding-bottom: 4px;
+  margin: 0 0 8px 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--text-dark);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 6px;
 }
 
 .tooltipRow {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
   margin: 6px 0;
-  font-weight: 500;
-  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-body);
 }
 
-.tooltipRow span {
-  font-weight: 700;
-  color: #0ea5e9; /* Sky-500 */
+.tooltipValueScore {
+  font-weight: 900;
+  color: var(--ocean-mid);
 }
 
-/* LEGENDĂ */
+.tooltipValueCandidates {
+  font-weight: 900;
+  color: var(--sky-highlight);
+}
+
+/* LEGEND */
 .legend {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   margin-top: auto;
-  padding-top: 10px;
+  padding-top: 6px;
   font-size: 0.78rem;
-  font-weight: 600;
-  color: #475569;
-  justify-content: flex-start;
+  font-weight: 700;
+  color: var(--text-body);
 }
 
 .legendItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.legendItem:hover {
-  color: #0ea5e9;
+  user-select: none;
 }
 
 .legendDot {
-  width: 12px;
-  height: 12px;
-  border-radius: 4px; /* Mai tech, nu rotund perfect */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 10px;
+  height: 10px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(74, 207, 238, 0.14);
+}
+
+/* RESPONSIVE */
+@media (max-width: 720px) {
+  .badge {
+    display: none;
+  }
 }

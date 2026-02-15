@@ -1,17 +1,12 @@
 import React from "react";
 import ScoreEvolutionChart from "../../components/charts/ScoreEvolutionChart";
 import SkillDistributionChart from "../../components/charts/SkillDistributionChart";
-
 import styles from "./HomePage.module.css";
 
-// --- 1. IMPORT REACT ICONS ---
 import { FaFileAlt, FaUsers, FaBullseye, FaBell } from "react-icons/fa";
-
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
-// --- 2. FIX TYPESCRIPT (Standardizat) ---
-// Transformăm iconițele în componente compatibile perfect
 const DocumentIcon = FaFileAlt as unknown as ComponentType<IconBaseProps>;
 const UsersIcon = FaUsers as unknown as ComponentType<IconBaseProps>;
 const TargetIcon = FaBullseye as unknown as ComponentType<IconBaseProps>;
@@ -20,90 +15,110 @@ const BellIcon = FaBell as unknown as ComponentType<IconBaseProps>;
 const HomePage: React.FC = () => {
   return (
     <div className={styles.wrapper}>
-      {/* HERO SECTION */}
-      <div className={styles.hero}>
-        <h2 className={styles.heroTitle}>Panou principal</h2>
-        <p className={styles.heroSubtitle}>
-          Vizualizare centralizată a proceselor de recrutare și a datelor
-          asociate.
-        </p>
-      </div>
+      <header className={styles.headerCard}>
+        <div className={styles.headerLeft}>
+          <h2 className={styles.title}>Panou principal</h2>
+          <p className={styles.subtitle}>
+            Vizualizare centralizată a proceselor de recrutare și a datelor
+            asociate.
+          </p>
+        </div>
 
-      {/* GRID SECTION */}
+        <div className={styles.headerRight}>
+          <div className={styles.pill}>
+            <span className={styles.pillDot} />
+            Sistem activ
+          </div>
+        </div>
+      </header>
+
       <section className={styles.grid}>
-        {/* CARD 1: CV-uri */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <div className={styles.iconBox}>
-              {/* Folosim noua componentă din react-icons */}
-              <DocumentIcon size={20} />
+        {/* METRIC 1 */}
+        <div className={`${styles.card} ${styles.metric}`}>
+          <div className={styles.metricHeader}>
+            <div className={styles.metricLeft}>
+              <div className={styles.iconBox}>
+                <DocumentIcon size={18} />
+              </div>
+              <p className={styles.metricLabel}>CV-uri procesate</p>
             </div>
-            <span className={styles.cardLabel}>CV-uri Procesate</span>
+            <span className={`${styles.badge} ${styles.badgeInfo}`}>+12%</span>
           </div>
-          <h3 className={styles.cardValue}>12,847</h3>
-          <div className={styles.sparkline}>
-            <div className={styles.sparkFill} style={{ width: "70%" }} />
+
+          <h3 className={styles.metricValue}>12,847</h3>
+          <p className={styles.miniHint}>Ultimele 30 de zile</p>
+
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: "70%" }} />
           </div>
         </div>
 
-        {/* CARD 2: Candidați */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <div className={styles.iconBox}>
-              <UsersIcon size={20} />
+        {/* METRIC 2 */}
+        <div className={`${styles.card} ${styles.metric}`}>
+          <div className={styles.metricHeader}>
+            <div className={styles.metricLeft}>
+              <div className={styles.iconBox}>
+                <UsersIcon size={18} />
+              </div>
+              <p className={styles.metricLabel}>Candidați activi</p>
             </div>
-            <span className={styles.cardLabel}>Candidați Activi</span>
+            <span className={styles.badge}>OK</span>
           </div>
-          <h3 className={styles.cardValue}>3,429</h3>
-          <div className={styles.sparkline}>
-            <div className={styles.sparkFill} style={{ width: "55%" }} />
+
+          <h3 className={styles.metricValue}>3,429</h3>
+          <p className={styles.miniHint}>În pipeline</p>
+
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: "55%" }} />
           </div>
         </div>
 
-        {/* CARD 3: Match Rate */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <div className={styles.iconBox}>
-              <TargetIcon size={20} />
+        {/* METRIC 3 */}
+        <div className={`${styles.card} ${styles.metric}`}>
+          <div className={styles.metricHeader}>
+            <div className={styles.metricLeft}>
+              <div className={styles.iconBox}>
+                <TargetIcon size={18} />
+              </div>
+              <p className={styles.metricLabel}>Rată compatibilitate</p>
             </div>
-            <span className={styles.cardLabel}>Rată Compatibilitate</span>
+            <span className={`${styles.badge} ${styles.badgeInfo}`}>High</span>
           </div>
-          <h3 className={styles.cardValue}>94.2%</h3>
-          <div className={styles.sparkline}>
-            <div className={styles.sparkFill} style={{ width: "94%" }} />
+
+          <h3 className={styles.metricValue}>94.2%</h3>
+          <p className={styles.miniHint}>Medie globală</p>
+        </div>
+
+        {/* METRIC 4 */}
+        <div className={`${styles.card} ${styles.metric}`}>
+          <div className={styles.metricHeader}>
+            <div className={styles.metricLeft}>
+              <div className={styles.iconBox}>
+                <BellIcon size={18} />
+              </div>
+              <p className={styles.metricLabel}>Notificări</p>
+            </div>
+            <span className={`${styles.badge} ${styles.badgeInfo}`}>5</span>
+          </div>
+
+          <h3 className={styles.metricValue}>5</h3>
+          <p className={styles.miniHint}>Necesită atenție</p>
+
+          <div className={styles.progressTrack}>
+            <div className={styles.progressFill} style={{ width: "30%" }} />
           </div>
         </div>
 
-        {/* CARD 4: Notificări */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <div className={styles.iconBox}>
-              <BellIcon size={20} />
-            </div>
-            <span className={styles.cardLabel}>Notificări Sistem</span>
-          </div>
-          <h3 className={styles.cardValue}>5</h3>
-          <div className={styles.sparkline}>
-            <div className={styles.sparkFill} style={{ width: "30%" }} />
-          </div>
-        </div>
-
-        {/* LARGE CHART 1 */}
-        <div className={styles.cardLarge}>
-          <div className={styles.cardHeader} style={{ marginBottom: "20px" }}>
-            <span className={styles.cardLabel}>Evoluție Scor Performanță</span>
-          </div>
-          <div className={styles.chartContainer}>
+        {/* CHART 1 */}
+        <div className={`${styles.card} ${styles.chartCard}`}>
+          <div className={styles.chartBody}>
             <ScoreEvolutionChart />
           </div>
         </div>
 
-        {/* LARGE CHART 2 */}
-        <div className={styles.cardLarge}>
-          <div className={styles.cardHeader} style={{ marginBottom: "20px" }}>
-            <span className={styles.cardLabel}>Distribuție Abilități</span>
-          </div>
-          <div className={styles.chartContainer}>
+        {/* CHART 2 */}
+        <div className={`${styles.card} ${styles.chartCard}`}>
+          <div className={styles.chartBody}>
             <SkillDistributionChart />
           </div>
         </div>

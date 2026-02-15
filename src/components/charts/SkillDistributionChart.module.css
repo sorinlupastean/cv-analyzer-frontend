@@ -1,12 +1,30 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
 
+/* ================= THEME TOKENS (Sidebar palette, light usage) ================= */
+:root {
+  --deep-abyss: #03111c;
+  --ocean-mid: #3b7f9b;
+  --ocean-sat: #3295b7;
+  --sky-highlight: #39a3c4;
+  --electric-glow: #4acfee;
+  --mist-cyan: #99deeb;
+
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --text-body: #475569;
+  --text-strong: #334155;
+}
+
+/* WRAPPER */
 .wrapper {
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 10px;
+  gap: 12px;
+  padding: 0;
   background: transparent;
+  font-family: "Montserrat", sans-serif;
 }
 
 /* HEADER */
@@ -14,61 +32,68 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  gap: 12px;
 }
 
 .title {
-  font-family: "Cinzel", serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0e7490; /* Cyan-800 */
   margin: 0;
-  letter-spacing: 0.5px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--text-dark);
+  letter-spacing: -0.2px;
 }
 
 .subtitle {
-  font-family: "Montserrat", sans-serif;
+  margin: 6px 0 0 0;
   font-size: 0.8rem;
-  margin: 4px 0 0 0;
-  color: #64748b; /* Slate-500 */
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
-/* ICONIȚĂ DECORATIVĂ (Mini Chart) */
-.miniIcon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(34, 211, 238, 0.1);
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  display: flex;
-  justify-content: center;
+/* BADGE (sidebar palette, light) */
+.badge {
+  display: inline-flex;
   align-items: center;
-  position: relative;
+  gap: 8px;
+
+  padding: 8px 12px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(74, 207, 238, 0.16),
+    rgba(57, 163, 196, 0.12)
+  );
+  border: 1px solid rgba(74, 207, 238, 0.26);
+  color: var(--ocean-mid);
+
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
-/* Desenăm un mic Pie Chart cu CSS */
-.miniIcon::before {
-  content: "";
-  width: 16px;
-  height: 16px;
+.badgeDot {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  border: 3px solid #06b6d4;
-  border-top-color: transparent;
-  transform: rotate(45deg);
+  background: var(--electric-glow);
+  box-shadow: 0 0 0 3px rgba(74, 207, 238, 0.18);
 }
 
-/* CONȚINUT */
+/* CONTENT */
 .content {
   flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
 }
 
-/* --- CHART AREA --- */
+/* CHART SIDE */
 .chartSide {
-  width: 45%;
+  width: 46%;
   height: 100%;
+  min-height: 0;
   position: relative;
   display: flex;
   justify-content: center;
@@ -78,59 +103,58 @@
 .chartInner {
   width: 100%;
   height: 100%;
-  /* Efect de glow în spatele graficului */
-  filter: drop-shadow(0 0 15px rgba(34, 211, 238, 0.2));
+  filter: drop-shadow(0 10px 22px rgba(74, 207, 238, 0.14));
 }
 
-/* BUBBLE CENTRAL (Informații la hover) */
+/* CENTER BUBBLE */
 .centerBubble {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100px;
-  height: 100px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
 
-  /* Sticlă Mată */
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 5px 20px rgba(14, 165, 233, 0.15);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  box-shadow: 0 14px 30px rgba(74, 207, 238, 0.14);
 
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
-  /* Animație de apariție */
-  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: popIn 0.22s ease;
   pointer-events: none;
 }
 
 .centerLabel {
-  font-family: "Montserrat", sans-serif;
-  font-size: 0.7rem;
-  color: #64748b;
+  font-size: 0.66rem;
+  font-weight: 900;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
-  max-width: 80px;
-  line-height: 1.1;
+  max-width: 86px;
+  line-height: 1.15;
   margin-bottom: 4px;
 }
 
 .centerValue {
-  font-family: "Cinzel", serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #0891b2; /* Cyan-700 */
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -0.6px;
 }
 
 @keyframes popIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8);
+    transform: translate(-50%, -50%) scale(0.92);
   }
   to {
     opacity: 1;
@@ -138,9 +162,9 @@
   }
 }
 
-/* --- LEGEND AREA --- */
+/* LEGEND */
 .legendSide {
-  width: 55%;
+  width: 54%;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -151,64 +175,100 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 8px 12px;
-  border-radius: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid transparent;
+  outline: none;
 }
 
-/* Efect interactiv la hover pe legendă */
 .legendRow:hover,
-.legendRow.active {
+.legendRow:focus-visible {
   background: rgba(255, 255, 255, 0.6);
-  border-color: rgba(34, 211, 238, 0.3);
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.1);
-  transform: translateX(5px);
+  border-color: rgba(74, 207, 238, 0.22);
+  box-shadow: 0 6px 18px rgba(74, 207, 238, 0.12);
+  transform: translateX(4px);
+}
+
+.active {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(74, 207, 238, 0.22);
+  box-shadow: 0 6px 18px rgba(74, 207, 238, 0.12);
+  transform: translateX(4px);
 }
 
 .rowTop {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
 .left {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .dot {
   width: 10px;
   height: 10px;
-  border-radius: 3px; /* Pătrat rotunjit (Tech look) */
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(74, 207, 238, 0.14);
+  flex-shrink: 0;
 }
 
 .label {
   font-size: 0.85rem;
-  font-weight: 600;
-  color: #334155;
+  font-weight: 700;
+  color: var(--text-strong);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .value {
   font-size: 0.85rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-weight: 900;
+  flex-shrink: 0;
 }
 
-/* PROGRESS BAR */
+/* PROGRESS */
 .track {
   width: 100%;
   height: 6px;
-  background: rgba(226, 232, 240, 0.6);
-  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 999px;
   overflow: hidden;
 }
 
 .fill {
   height: 100%;
-  border-radius: 10px;
+  border-radius: 999px;
   transition: width 0.5s ease-out;
+}
+
+/* RESPONSIVE */
+@media (max-width: 920px) {
+  .content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chartSide,
+  .legendSide {
+    width: 100%;
+  }
+
+  .chartSide {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .badge {
+    display: none;
+  }
 }
