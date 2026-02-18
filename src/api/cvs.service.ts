@@ -1,5 +1,43 @@
 import { http } from "./http";
 
+export type CandidateExperience = {
+  title: string;
+  company?: string;
+  startDate?: string;
+  endDate?: string;
+  location?: string;
+  responsibilities?: string[];
+  technologies?: string[];
+};
+
+export type CandidateEducation = {
+  school: string;
+  degree?: string;
+  field?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+export type Recommendation = "INVITA" | "REVIZUIRE" | "RESPINGE";
+
+export type GeminiJobCvAnalysis = {
+  candidateName: string;
+  email: string | null;
+  phone: string | null;
+
+  languages: string[];
+  domains: string[];
+
+  skills: string[];
+  experience: CandidateExperience[];
+  education: CandidateEducation[];
+
+  summary: string;
+  matchScore: number;
+  recommendation: Recommendation;
+  reasoningShort: string;
+};
+
 export type Cv = {
   id: number;
   fileName: string;
@@ -16,8 +54,15 @@ export type Cv = {
   filePath?: string | null;
   fileSize?: number | null;
   mimeType?: string | null;
+
+  // NOU: le primesti direct din backend
+  email?: string | null;
+  phone?: string | null;
+  languages?: string[];
+  domains?: string[];
+
   analysisSummary?: string | null;
-  analysisRaw?: any | null;
+  analysisRaw?: GeminiJobCvAnalysis | any | null;
 
   job?: { id: number; title?: string };
 };
@@ -25,13 +70,13 @@ export type Cv = {
 export type CreateCvBody = {
   fileName: string;
   candidateName: string;
-  uploadDate: string; // ISO, ex: "2026-02-13"
+  uploadDate: string;
   matchScore: number;
   status: string;
   skills: string[];
 };
 
-const API_URL = process.env.REACT_APP_API_URL; // ex: http://localhost:3001
+const API_URL = process.env.REACT_APP_API_URL;
 
 export const cvsApi = {
   listForJob: async (jobId: number): Promise<Cv[]> => {
@@ -51,7 +96,7 @@ export const cvsApi = {
 
   uploadForJob: async (jobId: number, file: File): Promise<Cv> => {
     const fd = new FormData();
-    fd.append("file", file); // trebuie să bată cu FileInterceptor("file")
+    fd.append("file", file);
 
     const { data } = await http.post<Cv>(`/jobs/${jobId}/cvs/upload`, fd, {
       headers: { "Content-Type": "multipart/form-data" },
@@ -65,7 +110,6 @@ export const cvsApi = {
     return data;
   },
 
-  // opțional: util pentru CVDetailsPage
   getPdfUrl: (cv: Cv): string | null => {
     if (!API_URL || !cv.filePath) return null;
     const normalized = cv.filePath
@@ -76,6 +120,14 @@ export const cvsApi = {
 
   analyze: async (cvId: number): Promise<Cv> => {
     const { data } = await http.post<Cv>(`/cvs/${cvId}/analyze`, {});
+    return data;
+  },
+
+  analyzeForJob: async (jobId: number, cvId: number): Promise<Cv> => {
+    const { data } = await http.post<Cv>(
+      `/jobs/${jobId}/cvs/${cvId}/analyze`,
+      {},
+    );
     return data;
   },
 };

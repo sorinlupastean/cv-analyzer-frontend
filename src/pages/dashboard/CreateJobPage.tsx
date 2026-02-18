@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./CreateJobPage.module.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { jobsApi, type JobStatus } from "../../api/jobs.service";
 import { PATHS } from "../../routs/paths";
@@ -8,8 +8,6 @@ import { PATHS } from "../../routs/paths";
 import {
   FaBriefcase,
   FaUserCircle,
-  FaEye,
-  FaEyeSlash,
   FaLightbulb,
   FaPlus,
   FaSearch,
@@ -18,14 +16,13 @@ import {
   FaEdit,
   FaCalendarAlt,
   FaGraduationCap,
+  FaFileAlt,
 } from "react-icons/fa";
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
 const Briefcase = FaBriefcase as unknown as ComponentType<IconBaseProps>;
 const UserCircle = FaUserCircle as unknown as ComponentType<IconBaseProps>;
-const Eye = FaEye as unknown as ComponentType<IconBaseProps>;
-const EyeSlash = FaEyeSlash as unknown as ComponentType<IconBaseProps>;
 const Lightbulb = FaLightbulb as unknown as ComponentType<IconBaseProps>;
 const Plus = FaPlus as unknown as ComponentType<IconBaseProps>;
 const SearchIcon = FaSearch as unknown as ComponentType<IconBaseProps>;
@@ -34,6 +31,7 @@ const Times = FaTimes as unknown as ComponentType<IconBaseProps>;
 const EditIcon = FaEdit as unknown as ComponentType<IconBaseProps>;
 const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 const CategoryIcon = FaGraduationCap as unknown as ComponentType<IconBaseProps>;
+const FileIcon = FaFileAlt as unknown as ComponentType<IconBaseProps>;
 
 interface CVResult {
   id: number;
@@ -74,7 +72,6 @@ const CreateJobPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [hoveredCv, setHoveredCv] = useState<number | null>(null);
   const navigate = useNavigate();
 
   const [form, setForm] = useState<JobForm>({
@@ -87,12 +84,27 @@ const CreateJobPage: React.FC = () => {
     status: "ACTIVE",
   });
 
+  const location = useLocation();
+  const openJobId = (location.state as any)?.openJobId as number | undefined;
+
+  useEffect(() => {
+    if (!openJobId) return;
+    if (!jobs.length) return;
+
+    const found = jobs.find((j) => j.id === openJobId);
+    if (found) setSelectedJob(found);
+  }, [openJobId, jobs]);
+
   useEffect(() => {
     (async () => {
       try {
-        const data = await jobsApi.list();
+        const data = (await jobsApi.list()) as any[];
         setJobs(data as any);
-        setSelectedJob((data as any).length ? (data as any)[0] : null);
+
+        const openId = (location.state as any)?.openJobId as number | undefined;
+        const found = openId ? data.find((j) => j.id === openId) : null;
+
+        setSelectedJob(found ?? (data.length ? data[0] : null));
       } catch {
         toast.error("Nu pot încărca job-urile din backend");
       }
@@ -240,6 +252,13 @@ const CreateJobPage: React.FC = () => {
     }
   };
 
+  // sus, lângă celelalte state-uri
+  const [reqExpanded, setReqExpanded] = useState(false);
+
+  useEffect(() => {
+    setReqExpanded(false);
+  }, [selectedJob?.id]);
+
   return (
     <div className={styles.pageShell}>
       <div className={styles.container}>
@@ -258,14 +277,14 @@ const CreateJobPage: React.FC = () => {
             </div>
 
             <button className={styles.primaryBtn} onClick={openCreate}>
-              <Plus /> Nou
+              <Plus size={12} /> Nou
             </button>
           </div>
 
           <div className={styles.searchWrapper}>
             <SearchIcon className={styles.searchIcon} />
             <input
-              placeholder="Caută în joburi..."
+              placeholder="Caută posturi..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -403,9 +422,25 @@ const CreateJobPage: React.FC = () => {
               <section className={styles.reqCard}>
                 <div className={styles.reqHeader}>
                   <p className={styles.reqTitle}>Cerințe</p>
+
+                  <button
+                    type="button"
+                    className={styles.reqToggleBtn}
+                    onClick={() => setReqExpanded((v) => !v)}
+                    title={reqExpanded ? "Micșorează" : "Vezi mai mult"}
+                  >
+                    {reqExpanded ? "Micșorează" : "Vezi mai mult"}
+                  </button>
                 </div>
 
-                <p className={styles.reqText}>
+                <p
+                  className={[
+                    styles.reqText,
+                    reqExpanded
+                      ? styles.reqTextExpanded
+                      : styles.reqTextClamped,
+                  ].join(" ")}
+                >
                   {selectedJob.requirements?.trim()
                     ? selectedJob.requirements
                     : "—"}
@@ -415,62 +450,81 @@ const CreateJobPage: React.FC = () => {
               <div className={styles.cvContainer}>
                 {selectedJob.cvs.length > 0 ? (
                   <div className={styles.cvGrid}>
-                    {selectedJob.cvs.map((cv) => (
-                      <div key={cv.id} className={styles.cvCard}>
-                        <div className={styles.cvTop}>
-                          <div className={styles.candidate}>
-                            <UserCircle className={styles.userIcon} />
-                            <div>
-                              <h4>{cv.candidateName}</h4>
-                              <p>{cv.fileName}</p>
+                    {selectedJob.cvs.map((cv) => {
+                      const topSkills = (cv.skills ?? [])
+                        .filter(Boolean)
+                        .slice(0, 2);
+
+                      const remainingSkills = Math.max(
+                        (cv.skills?.length ?? 0) - topSkills.length,
+                        0,
+                      );
+
+                      return (
+                        <div key={cv.id} className={styles.cvCard}>
+                          <div className={styles.cvTop}>
+                            <div className={styles.candidate}>
+                              <UserCircle className={styles.userIcon} />
+                              <div>
+                                <h4>{cv.candidateName}</h4>
+                                <p>{cv.fileName}</p>
+                              </div>
+                            </div>
+                            <div className={styles.scoreBadge}>
+                              {cv.matchScore}%
                             </div>
                           </div>
-                          <div className={styles.scoreBadge}>
-                            {cv.matchScore}%
+
+                          <div className={styles.progressSection}>
+                            <div className={styles.barContainer}>
+                              <div
+                                className={styles.barFill}
+                                style={{ width: `${cv.matchScore}%` }}
+                              />
+                            </div>
                           </div>
-                        </div>
 
-                        <div className={styles.progressSection}>
-                          <div className={styles.barContainer}>
-                            <div
-                              className={styles.barFill}
-                              style={{ width: `${cv.matchScore}%` }}
-                            />
+                          <div className={styles.skills}>
+                            {topSkills.length > 0 ? (
+                              topSkills.map((s: string) => (
+                                <span key={s} className={styles.sTag}>
+                                  {s}
+                                </span>
+                              ))
+                            ) : (
+                              <span className={styles.skillsEmpty}>
+                                Competențe neidentificate
+                              </span>
+                            )}
                           </div>
-                        </div>
 
-                        <div className={styles.skills}>
-                          {cv.skills.map((s) => (
-                            <span key={s} className={styles.sTag}>
-                              {s}
-                            </span>
-                          ))}
-                        </div>
+                          <p className={styles.skillsHint}>
+                            Competențe principale (din CV)
+                          </p>
 
-                        <button
-                          className={styles.viewBtn}
-                          disabled={isClosed}
-                          title={
-                            isClosed
-                              ? "Post închis, acțiunile sunt blocate"
-                              : "Vezi profil"
-                          }
-                          onMouseEnter={() => setHoveredCv(cv.id)}
-                          onMouseLeave={() => setHoveredCv(null)}
-                          onClick={() =>
-                            navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
-                              state: {
-                                fromResults: true,
-                                jobId: selectedJob.id,
-                              },
-                            })
-                          }
-                        >
-                          {hoveredCv === cv.id ? <Eye /> : <EyeSlash />}
-                          Vezi Profil
-                        </button>
-                      </div>
-                    ))}
+                          <button
+                            className={styles.viewBtn}
+                            disabled={isClosed}
+                            title={
+                              isClosed
+                                ? "Post închis, acțiunile sunt blocate"
+                                : "Vezi detalii CV"
+                            }
+                            onClick={() =>
+                              navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
+                                state: {
+                                  fromResults: true,
+                                  jobId: selectedJob.id,
+                                },
+                              })
+                            }
+                          >
+                            <FileIcon />
+                            Vezi detalii
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className={styles.emptyState}>
@@ -513,7 +567,7 @@ const CreateJobPage: React.FC = () => {
             </>
           ) : (
             <div className={styles.noJobSelected}>
-              <Briefcase size={30} />
+              <Briefcase size={20} />
               <h4>Selectează un post pentru a vedea datele</h4>
             </div>
           )}

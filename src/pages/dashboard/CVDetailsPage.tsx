@@ -1,20 +1,69 @@
 import React, { useEffect, useMemo, useState } from "react";
-import styles from "./CVDetailsPage.module.css";
-
-import UserIcon from "../../assets/user-animated.svg";
-import EmailIcon from "../../assets/email.svg";
-import PhoneIcon from "../../assets/phone.svg";
-import Briefcase from "../../assets/briefcase.svg";
-import SchoolIcon from "../../assets/school.svg";
-import AwardIcon from "../../assets/award.svg";
-
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import styles from "./CVDetailsPage.module.css";
+import { PATHS } from "../../routs/paths";
+
 import { cvsApi, type Cv } from "../../api/cvs.service";
+
+import {
+  FaChevronLeft,
+  FaMagic,
+  FaFileSignature,
+  FaFingerprint,
+  FaChartLine,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaGlobeEurope,
+  FaLanguage,
+  FaBriefcase,
+  FaGraduationCap,
+  FaAward,
+  FaRobot,
+  FaFilePdf,
+  FaCalendar,
+} from "react-icons/fa";
+
+import type { ComponentType } from "react";
+import type { IconBaseProps } from "react-icons";
+
+const ChevronLeft = FaChevronLeft as unknown as ComponentType<IconBaseProps>;
+const MagicIcon = FaMagic as unknown as ComponentType<IconBaseProps>;
+const FileSignature =
+  FaFileSignature as unknown as ComponentType<IconBaseProps>;
+const Fingerprint = FaFingerprint as unknown as ComponentType<IconBaseProps>;
+const ChartLine = FaChartLine as unknown as ComponentType<IconBaseProps>;
+const Envelope = FaEnvelope as unknown as ComponentType<IconBaseProps>;
+const PhoneAlt = FaPhoneAlt as unknown as ComponentType<IconBaseProps>;
+const GlobeEurope = FaGlobeEurope as unknown as ComponentType<IconBaseProps>;
+const LanguageIcon = FaLanguage as unknown as ComponentType<IconBaseProps>;
+const Briefcase = FaBriefcase as unknown as ComponentType<IconBaseProps>;
+const GraduationCap =
+  FaGraduationCap as unknown as ComponentType<IconBaseProps>;
+const Award = FaAward as unknown as ComponentType<IconBaseProps>;
+const RobotIcon = FaRobot as unknown as ComponentType<IconBaseProps>;
+const FilePdf = FaFilePdf as unknown as ComponentType<IconBaseProps>;
+const CalendarIcon = FaCalendar as unknown as ComponentType<IconBaseProps>;
 
 type LocationState = {
   fromResults?: boolean;
   jobId?: number;
+};
+
+type ExperienceItem = {
+  title?: string;
+  company?: string;
+  location?: string;
+  startDate?: string;
+  endDate?: string;
+  responsibilities?: string[];
+  technologies?: string[];
+};
+
+type EducationItem = {
+  school?: string;
+  degree?: string;
+  field?: string;
 };
 
 const CVDetailsPage: React.FC = () => {
@@ -42,7 +91,7 @@ const CVDetailsPage: React.FC = () => {
         setLoading(true);
         const data = await cvsApi.getById(cvId);
         if (!cancelled) setCv(data);
-      } catch (e: any) {
+      } catch {
         if (!cancelled) {
           setCv(null);
           toast.error("Nu pot încărca detaliile CV-ului");
@@ -67,7 +116,7 @@ const CVDetailsPage: React.FC = () => {
   }, [match]);
 
   const uploadDateText = useMemo(() => {
-    const raw = cv?.uploadDate ?? cv?.createdAt ?? null;
+    const raw = (cv as any)?.uploadDate ?? (cv as any)?.createdAt ?? null;
     if (!raw) return "—";
     const d = new Date(raw);
     return Number.isNaN(d.getTime())
@@ -75,38 +124,57 @@ const CVDetailsPage: React.FC = () => {
       : d.toLocaleDateString("ro-RO");
   }, [cv]);
 
-  const pdfUrl = useMemo(() => {
-    if (!cv) return null;
-    return cvsApi.getPdfUrl(cv);
-  }, [cv]);
+  const pdfUrl = useMemo(() => (cv ? cvsApi.getPdfUrl(cv) : null), [cv]);
 
-  const recommendation = useMemo(() => {
-    if (!cv) return "Revizuire manuală";
-    if (cv.status?.toLowerCase().includes("analizat") && cv.matchScore >= 75)
-      return "Invită la interviu";
-    if (cv.matchScore >= 85) return "Invită la interviu";
-    if (cv.matchScore >= 60) return "Interviu tehnic scurt";
-    return "Revizuire manuală";
-  }, [cv]);
-
-  const analysisSummary = useMemo(() => {
-    // dacă salvezi rezumatul în cv.analysisSummary, îl arătăm
-    if (cv?.analysisSummary?.trim()) return cv.analysisSummary.trim();
-
-    // fallback dacă ai analysisRaw.summary
-    const raw = cv?.analysisRaw;
-    if (raw && typeof raw === "object" && typeof raw.summary === "string") {
-      return raw.summary.trim();
-    }
-
+  const analysis = useMemo(() => {
+    const raw = (cv as any)?.analysisRaw;
+    if (raw && typeof raw === "object") return raw as any;
     return null;
   }, [cv]);
+
+  const email: string | null = (cv as any)?.email ?? analysis?.email ?? null;
+  const phone: string | null = (cv as any)?.phone ?? analysis?.phone ?? null;
+
+  const languages: string[] = (cv as any)?.languages?.length
+    ? (cv as any).languages
+    : analysis?.languages || [];
+
+  const domains: string[] = (cv as any)?.domains?.length
+    ? (cv as any).domains
+    : analysis?.domains || [];
+
+  const experience = (analysis?.experience ?? []) as ExperienceItem[];
+  const education = (analysis?.education ?? []) as EducationItem[];
+
+  const recommendationUi = useMemo(() => {
+    const rec = String(analysis?.recommendation || "").toUpperCase();
+    if (rec === "INVITA")
+      return { label: "Invită la interviu", tone: "ok" as const };
+    if (rec === "RESPINGE") return { label: "Respinge", tone: "warn" as const };
+    return { label: "Revizuire manuală", tone: "neutral" as const };
+  }, [analysis]);
+
+  const reasoningShort = useMemo(() => {
+    const s = analysis?.reasoningShort;
+    return typeof s === "string" && s.trim().length ? s.trim() : null;
+  }, [analysis]);
+
+  const analysisSummary = useMemo(() => {
+    if ((cv as any)?.analysisSummary?.trim())
+      return (cv as any).analysisSummary.trim();
+    if (analysis && typeof (analysis as any).summary === "string")
+      return String((analysis as any).summary).trim();
+    return null;
+  }, [cv, analysis]);
 
   const onBack = () => {
     const state = (location.state ?? {}) as LocationState;
 
     if (state.fromResults && state.jobId) {
-      navigate("/dashboard/results", { state: { openJobId: state.jobId } });
+      navigate(`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.CREATE_JOB}`, {
+        state: { openJobId: state.jobId },
+        replace: true,
+      });
       return;
     }
 
@@ -118,7 +186,7 @@ const CVDetailsPage: React.FC = () => {
 
     try {
       toast.loading("Rulez analiza...", { id: "analyze" });
-      const updated = await cvsApi.analyze(cv.id);
+      const updated = await cvsApi.analyze((cv as any).id);
       setCv(updated);
       toast.success("Analiza a fost salvată!", { id: "analyze" });
     } catch {
@@ -126,178 +194,527 @@ const CVDetailsPage: React.FC = () => {
     }
   };
 
+  const safeFileName: string = (cv as any)?.fileName ?? "—";
+  const safeCandidateName: string = (cv as any)?.candidateName?.trim?.()
+    ? (cv as any).candidateName
+    : "Nume indisponibil";
+
+  const allSkills: string[] = ((cv as any)?.skills ?? []).filter(Boolean);
+  const MAX_SKILLS = 10;
+
+  const [skillsExpanded, setSkillsExpanded] = useState(false);
+
+  const visibleSkills = useMemo(() => {
+    if (skillsExpanded) return allSkills;
+    return allSkills.slice(0, MAX_SKILLS);
+  }, [allSkills, skillsExpanded]);
+
+  const hiddenCount = Math.max(0, allSkills.length - MAX_SKILLS);
+
+  const buildGmailComposeUrl = (to: string, subject: string, body: string) => {
+    const params = new URLSearchParams();
+    params.set("view", "cm");
+    params.set("fs", "1");
+    params.set("tf", "1");
+    params.set("to", to);
+    params.set("su", subject);
+    params.set("body", body);
+
+    return `https://mail.google.com/mail/?${params.toString()}`;
+  };
+
+  const onEmailCandidate = () => {
+    const to = String(email || "").trim();
+    if (!to) {
+      toast.error("Nu există email detectat pentru candidat.");
+      return;
+    }
+
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to);
+    if (!isValidEmail) {
+      toast.error("Email-ul detectat pare invalid.");
+      return;
+    }
+
+    const candidateSafe = String(safeCandidateName || "").trim() || "Candidat";
+
+    const jobTitleSafe = String((location.state as any)?.jobTitle || "").trim();
+    const jobPart = jobTitleSafe ? ` – ${jobTitleSafe}` : "";
+    const signatureSafe = "Compania mea";
+
+    const rec = String(analysis?.recommendation || "").toUpperCase(); // "INVITA" | "RESPINGE" | altceva
+
+    let subject = "";
+    let body = "";
+
+    if (rec === "INVITA") {
+      subject = `Invitație la interviu${jobPart}`;
+
+      body = `Bună, ${candidateSafe},
+
+Îți mulțumim pentru aplicația transmisă${jobTitleSafe ? ` pentru poziția de ${jobTitleSafe}` : ""}.
+În urma evaluării, dorim să continuăm procesul de recrutare și să te invităm la un interviu.
+
+Te rugăm să ne confirmi disponibilitatea ta în următoarele zile și intervale, sau să propui alternative:
+• [Ziua / intervalul 1]
+• [Ziua / intervalul 2]
+• [Ziua / intervalul 3]
+
+Detalii:
+• Format: [online / la sediu]
+• Durată estimată: [30–45 min]
+• Persoană de contact: [Nume / rol]
+
+Cu stimă,
+${signatureSafe}
+`;
+    } else if (rec === "RESPINGE") {
+      subject = `Actualizare privind aplicația${jobPart}`;
+
+      body = `Bună, ${candidateSafe},
+
+Îți mulțumim pentru interesul acordat${jobTitleSafe ? ` poziției de ${jobTitleSafe}` : ""} și pentru timpul investit.
+În urma evaluării aplicației, am decis să continuăm procesul de selecție cu alți candidați, ale căror profiluri se potrivesc mai bine cerințelor curente.
+
+Apreciem implicarea ta și îți dorim mult succes în demersurile profesionale viitoare.
+Dacă dorești, putem păstra datele tale în baza noastră pentru oportunități viitoare.
+
+Cu stimă,
+${signatureSafe}
+`;
+    } else {
+      subject = `Clarificări privind aplicația${jobPart}`;
+
+      body = `Bună, ${candidateSafe},
+
+Îți mulțumim pentru aplicația transmisă${jobTitleSafe ? ` pentru poziția de ${jobTitleSafe}` : ""}.
+Pentru a finaliza evaluarea, am avea nevoie de câteva clarificări:
+
+1) [Întrebare / detaliu necesar]
+2) [Întrebare / detaliu necesar]
+3) [Întrebare / detaliu necesar]
+
+Te rugăm să ne răspunzi la acest email cu informațiile de mai sus, iar apoi revenim cu pașii următori.
+
+Cu stimă,
+${signatureSafe}
+`;
+    }
+
+    const url = buildGmailComposeUrl(to, subject, body);
+
+    window.location.href = url;
+  };
+
   return (
-    <div className={styles.pageWrapper}>
-      <button className={styles.backButton} onClick={onBack}>
-        Înapoi la rezultate
-      </button>
+    <div className={styles.pageShell}>
+      <div className={styles.container}>
+        <header className={styles.topBar}>
+          <div className={styles.topBarLeft}>
+            <button type="button" className={styles.backBtn} onClick={onBack}>
+              <ChevronLeft className={styles.iconNav} />
+              <span>Înapoi</span>
+            </button>
 
-      {loading ? (
-        <div style={{ padding: 20 }}>Se încarcă...</div>
-      ) : !cv ? (
-        <div style={{ padding: 20 }}>
-          CV inexistent sau nu poate fi încărcat.
-        </div>
-      ) : (
-        <>
-          <div className={styles.grid}>
-            {/* LEFT CARD */}
-            <div className={styles.leftCard}>
-              <h2 className={styles.sectionTitle}>Scor potrivire</h2>
+            <div className={styles.verticalSeparator} />
 
-              <div className={styles.scoreNumber}>{match}%</div>
-
-              <div className={styles.progressBar}>
-                <div
-                  className={styles.progressFill}
-                  style={{ width: `${Math.min(100, Math.max(0, match))}%` }}
-                />
+            <div className={styles.profileBadge}>
+              <div className={styles.badgeIcon}>
+                <Fingerprint />
               </div>
-
-              <p className={styles.scoreLabel}>{scoreLabel}</p>
-
-              <hr className={styles.divider} />
-
-              <h3 className={styles.subsectionTitle}>Informații fișier</h3>
-
-              <div className={styles.infoRow}>
-                <span>Nume fișier:</span>
-                <strong>{cv.fileName}</strong>
+              <div className={styles.badgeText}>
+                <span className={styles.badgeLabel}>ID CANDIDAT</span>
+                <span className={styles.badgeValue}>#{cvId || "000"}</span>
               </div>
+            </div>
+          </div>
 
-              <div className={styles.infoRow}>
-                <span>Data upload:</span>
-                <strong>{uploadDateText}</strong>
+          <div className={styles.topBarCenter}>
+            <div className={styles.glassHeader}>
+              <div className={styles.headerTitleGroup}>
+                <FileSignature className={styles.titleIcon} />
+                <h1 className={styles.pageTitle}>Dosar Candidat</h1>
               </div>
-
-              <div className={styles.infoRow}>
-                <span>Status:</span>
-                <span className={styles.statusBadge}>{cv.status}</span>
+              <div className={styles.headerStatusRow}>
+                <div className={styles.statusIndicator}>
+                  <span className={styles.pulseDot} />
+                  {(cv as any)?.status || "Inactiv"}
+                </div>
+                <div className={styles.dotSeparator} />
+                <span className={styles.dateInfo}>
+                  Actualizat: {uploadDateText}
+                </span>
               </div>
+            </div>
+          </div>
 
-              {/* buton optional: analizează acum */}
-              <div style={{ marginTop: 14 }}>
+          <div className={styles.topBarRight}>
+            <div className={styles.actionGroup}>
+              <button
+                type="button"
+                className={styles.magicBtn}
+                onClick={onAnalyzeNow}
+                disabled={!cv || loading}
+              >
+                <div className={styles.magicGlow} />
+                <MagicIcon className={styles.magicIcon} />
+                <span>Re-analizează</span>
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {loading ? (
+          <div className={styles.stateWrap}>
+            <div className={styles.stateCard}>Se încarcă...</div>
+          </div>
+        ) : !cv ? (
+          <div className={styles.stateWrap}>
+            <div className={styles.stateCard}>
+              CV inexistent sau nu poate fi încărcat.
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className={styles.grid}>
+              <aside className={styles.leftColumn}>
+                <section className={styles.fileMetadataArtefact}>
+                  <div className={styles.artefactHeader}>
+                    <FileSignature className={styles.headerIcon} />
+                    <h3 className={styles.artefactSmallTitle}>
+                      Specificații Fișier
+                    </h3>
+                  </div>
+
+                  <div className={styles.metadataCloud}>
+                    <div className={styles.metaRowWow}>
+                      <div className={styles.metaIconWrap}>
+                        <FilePdf />
+                      </div>
+                      <div className={styles.metaTextGroup}>
+                        <span className={styles.metaLabel}>
+                          Denumire document:
+                        </span>
+                        <span className={styles.metaValue} title={safeFileName}>
+                          {safeFileName}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className={styles.metaRowWow}>
+                      <div className={styles.metaIconWrap}>
+                        <CalendarIcon />
+                      </div>
+                      <div className={styles.metaTextGroup}>
+                        <span className={styles.metaLabel}>
+                          Document indexat la:
+                        </span>
+                        <span className={styles.metaValue}>
+                          {uploadDateText}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.divineGlowInternal} />
+                </section>
+                <section className={styles.glassScoreCard}>
+                  <div className={styles.scoreHeader}>
+                    <ChartLine className={styles.scoreIconHeader} />
+                    <h3>Scor Analitic</h3>
+                  </div>
+
+                  <div className={styles.visualScore}>
+                    <svg viewBox="0 0 36 36" className={styles.circularChart}>
+                      <path
+                        className={styles.circleBg}
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      />
+                      <path
+                        className={styles.circle}
+                        strokeDasharray={`${match}, 100`}
+                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                      />
+                    </svg>
+                    <div className={styles.percentageText}>
+                      <strong>{match}%</strong>
+                    </div>
+                  </div>
+
+                  <div className={styles.scoreInfo}>
+                    <div className={styles.labelStatus}>
+                      <span className={styles.dotPulse} />
+                      {scoreLabel}
+                    </div>
+                    <p className={styles.scoreDesc}>
+                      Potrivire calculată pe baza algoritmului Studio AI.
+                    </p>
+                  </div>
+                </section>
+
                 <button
                   type="button"
-                  onClick={onAnalyzeNow}
-                  className={styles.backButton}
-                  style={{ marginBottom: 0 }}
+                  className={[
+                    styles.decisionArtefact,
+                    recommendationUi.tone === "ok"
+                      ? styles.artefactOk
+                      : recommendationUi.tone === "warn"
+                        ? styles.artefactWarn
+                        : styles.artefactNeutral,
+                  ].join(" ")}
+                  onClick={onEmailCandidate}
+                  disabled={!email}
+                  title={
+                    !email
+                      ? "Nu există email detectat"
+                      : "Deschide email precompletat"
+                  }
                 >
-                  Rulează analiza acum
-                </button>
-              </div>
-            </div>
-
-            {/* RIGHT SIDE */}
-            <div className={styles.rightColumn}>
-              {/* Informații candidat */}
-              <div className={styles.infoCard}>
-                <h2 className={styles.cardTitle}>
-                  <img src={UserIcon} alt="" />
-                  Informații candidat
-                </h2>
-
-                <p className={styles.name}>
-                  {cv.candidateName?.trim()
-                    ? cv.candidateName
-                    : "Nume indisponibil"}
-                </p>
-
-                <div className={styles.detailRow}>
-                  <img src={EmailIcon} alt="" />
-                  email indisponibil
-                </div>
-
-                <div className={styles.detailRow}>
-                  <img src={PhoneIcon} alt="" />
-                  telefon indisponibil
-                </div>
-              </div>
-
-              {/* Experiență */}
-              <div className={styles.infoCard}>
-                <h2 className={styles.cardTitle}>
-                  <img src={Briefcase} alt="" />
-                  Experiență profesională
-                </h2>
-                <p>Va fi completată după analiza CV-ului.</p>
-              </div>
-
-              {/* Educație */}
-              <div className={styles.infoCard}>
-                <h2 className={styles.cardTitle}>
-                  <img src={SchoolIcon} alt="" />
-                  Educație
-                </h2>
-                <p>Va fi completată după analiza CV-ului.</p>
-              </div>
-
-              {/* Skills */}
-              <div className={styles.infoCard}>
-                <h2 className={styles.cardTitle}>
-                  <img src={AwardIcon} alt="" />
-                  Competențe tehnice
-                </h2>
-
-                <div className={styles.skillsList}>
-                  {cv.skills?.length ? (
-                    cv.skills.map((s) => (
-                      <span key={s} className={styles.skillTag}>
-                        {s}
-                      </span>
-                    ))
+                  {recommendationUi.tone === "ok" ? (
+                    <MagicIcon className={styles.artefactIcon} />
                   ) : (
-                    <span style={{ color: "#475472" }}>
-                      Nicio competență extrasă încă.
-                    </span>
+                    <Fingerprint className={styles.artefactIcon} />
                   )}
+                  <span className={styles.artefactLabel}>
+                    {recommendationUi.label}
+                  </span>
+                </button>
+              </aside>
+
+              <div className={styles.rightColumn}>
+                <section
+                  className={`${styles.card} ${styles.identityEliteCard}`}
+                >
+                  <div className={styles.identityPrimaryLayout}>
+                    {/* Avatar Section with Ethereal Aura */}
+                    <div className={styles.avatarAuraContainer}>
+                      <div className={styles.avatarAuraBreathing} />
+                      <div className={styles.avatarGlassElement}>
+                        {safeCandidateName[0]}
+                      </div>
+                    </div>
+
+                    {/* Identity Text Content */}
+                    <div className={styles.identityInfoContent}>
+                      <div className={styles.nameHeaderGroup}>
+                        <h2 className={styles.candidateNameDisplay}>
+                          {safeCandidateName}
+                        </h2>
+                      </div>
+
+                      <div className={styles.contactInformationGrid}>
+                        <div className={styles.contactGlassChip}>
+                          <div className={styles.chipIconContainer}>
+                            <Envelope />
+                          </div>
+                          <span className={styles.chipDataText}>
+                            {email || "email indisponibil"}
+                          </span>
+                        </div>
+                        <div className={styles.contactGlassChip}>
+                          <div className={styles.chipIconContainer}>
+                            <PhoneAlt />
+                          </div>
+                          <span className={styles.chipDataText}>
+                            {phone || "telefon indisponibil"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.horizontalStructuralDivider} />
+
+                  {/* Tags Section with Subtle Lighting */}
+                  <div className={styles.expertiseTagsContainer}>
+                    {domains.map((d: string) => (
+                      <span key={d} className={styles.domainEliteTag}>
+                        <GlobeEurope /> {d}
+                      </span>
+                    ))}
+                    {languages.map((l: string) => (
+                      <span key={l} className={styles.languageEliteTag}>
+                        <LanguageIcon /> {l}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className={styles.divineAtmosphericRay} />
+                </section>
+
+                <section className={styles.card}>
+                  <div className={styles.sectionHeaderWow}>
+                    <Briefcase className={styles.headerIconWow} />
+                    <div>
+                      <h3>Parcurs Profesional</h3>
+                    </div>
+                  </div>
+
+                  {experience.length ? (
+                    <div className={styles.timelineWow}>
+                      {experience.map((e: ExperienceItem, idx: number) => (
+                        <div key={idx} className={styles.timelineItemWow}>
+                          <div className={styles.timelineLine} />
+                          <div className={styles.timelineDotWow} />
+                          <div className={styles.timelineContentWow}>
+                            <div className={styles.timelineTopWow}>
+                              <h4>{e.title || "Rol Profesional"}</h4>
+                              <span className={styles.timelineDate}>
+                                {e.startDate}{" "}
+                                {e.endDate ? `- ${e.endDate}` : "- Prezent"}
+                              </span>
+                            </div>
+                            <p className={styles.companyWow}>
+                              {e.company} • {e.location}
+                            </p>
+
+                            {e.responsibilities?.length ? (
+                              <ul className={styles.responsibilitiesWow}>
+                                {e.responsibilities
+                                  .slice(0, 4)
+                                  .map((r: string, i: number) => (
+                                    <li key={i}>- {r}</li>
+                                  ))}
+                              </ul>
+                            ) : null}
+
+                            {e.technologies?.length ? (
+                              <div className={styles.techPillsWow}>
+                                {e.technologies.slice(0, 8).map((t: string) => (
+                                  <span key={t}>{t}</span>
+                                ))}
+                              </div>
+                            ) : null}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={styles.emptyInlineWow}>
+                      Nicio experiență detectată.
+                    </div>
+                  )}
+                </section>
+
+                <div className={styles.twoColGrid}>
+                  <section
+                    className={`${styles.card} ${styles.simplePanelCard}`}
+                  >
+                    <div className={styles.sectionHeaderClean}>
+                      <div className={styles.headerIconChip}>
+                        <GraduationCap className={styles.headerIconClean} />
+                      </div>
+                      <h3 className={styles.sectionTitleClean}>Educație</h3>
+                    </div>
+
+                    <div className={styles.educationList}>
+                      {education.map((ed: EducationItem, i: number) => (
+                        <div key={i} className={styles.educationItem}>
+                          <strong className={styles.educationSchool}>
+                            {ed.school || "Instituție"}
+                          </strong>
+                          <p className={styles.educationMeta}>
+                            {ed.degree || ""} {ed.field || ""}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section
+                    className={`${styles.card} ${styles.simplePanelCard}`}
+                  >
+                    <div className={styles.sectionHeaderClean}>
+                      <div className={styles.headerIconChip}>
+                        <Award className={styles.headerIconClean} />
+                      </div>
+
+                      <div className={styles.headerTitleRowClean}>
+                        <h3 className={styles.sectionTitleClean}>
+                          Skill-uri Cheie
+                        </h3>
+
+                        {hiddenCount > 0 ? (
+                          <button
+                            type="button"
+                            className={styles.inlineToggleBtn}
+                            onClick={() => setSkillsExpanded((v) => !v)}
+                          >
+                            {skillsExpanded
+                              ? "Restrânge"
+                              : `Afișează toate (+${hiddenCount})`}
+                          </button>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    {visibleSkills.length ? (
+                      <div className={styles.skillsCloud}>
+                        {visibleSkills.map((s: string) => (
+                          <span key={s} className={styles.skillPill} title={s}>
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className={styles.emptyInline}>
+                        Nu sunt skill-uri detectate.
+                      </div>
+                    )}
+                  </section>
                 </div>
-              </div>
 
-              {/* Analiză automată */}
-              <div className={styles.analysisCard}>
-                <h2 className={styles.analysisTitle}>Analiză automată</h2>
+                <section className={`${styles.card} ${styles.aiReportCard}`}>
+                  <div className={styles.aiReportHeader}>
+                    <RobotIcon className={styles.aiRobotIcon} />
+                    <div>
+                      <h3>Raport de Evaluare AI</h3>
+                      <p>Analiză semantică și logică a profilului</p>
+                    </div>
+                  </div>
 
-                {analysisSummary ? (
-                  <p style={{ marginBottom: 12, color: "#475472" }}>
-                    {analysisSummary}
-                  </p>
-                ) : (
-                  <p style={{ marginBottom: 12, color: "#475472" }}>
-                    Nu există încă un rezumat generat.
-                  </p>
-                )}
+                  <div className={styles.aiSummaryContent}>
+                    <p className={styles.aiTextMain}>
+                      {analysisSummary || "Nu există un rezumat generat."}
+                    </p>
 
-                <ul className={styles.checkList}>
-                  <li>Status: {cv.status}</li>
-                  <li>Scor: {cv.matchScore}%</li>
-                  <li>
-                    Skills: {cv.skills?.length ? cv.skills.join(", ") : "—"}
-                  </li>
-                  <li>Recomandare: {recommendation}</li>
-                </ul>
+                    {reasoningShort ? (
+                      <div className={styles.reasoningContainerWow}>
+                        <div className={styles.reasoningLabel}>
+                          LOGICA DECIZIEI
+                        </div>
+                        <code className={styles.reasoningCode}>
+                          {reasoningShort}
+                        </code>
+                      </div>
+                    ) : null}
+                  </div>
+                </section>
               </div>
             </div>
-          </div>
 
-          {/* PDF VIEWER */}
-          <div className={styles.pdfWrapper}>
-            <h2 className={styles.pdfTitle}>Document PDF</h2>
-
-            {pdfUrl ? (
-              <iframe
-                src={pdfUrl}
-                className={styles.pdfViewer}
-                title="PDF Viewer"
-              />
-            ) : (
-              <div style={{ padding: 12, color: "#475472" }}>
-                PDF indisponibil. CV-ul nu are fișier asociat (filePath lipsă).
+            <section className={styles.pdfCard}>
+              <div className={styles.pdfHeader}>
+                <h2 className={styles.pdfTitle}>Document PDF</h2>
+                <span className={styles.helperPill}>Preview</span>
               </div>
-            )}
-          </div>
-        </>
-      )}
+
+              {pdfUrl ? (
+                <iframe
+                  src={pdfUrl}
+                  className={styles.pdfViewer}
+                  title="PDF Viewer"
+                />
+              ) : (
+                <div className={styles.pdfFallback}>
+                  PDF indisponibil. CV-ul nu are fișier asociat (filePath
+                  lipsă).
+                </div>
+              )}
+            </section>
+          </>
+        )}
+      </div>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import {
   FaRobot,
   FaBriefcase,
   FaSearch,
+  FaCalendarAlt,
 } from "react-icons/fa";
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
@@ -23,6 +24,7 @@ const TrashAlt = FaTrashAlt as unknown as ComponentType<IconBaseProps>;
 const Robot = FaRobot as unknown as ComponentType<IconBaseProps>;
 const Briefcase = FaBriefcase as unknown as ComponentType<IconBaseProps>;
 const SearchIcon = FaSearch as unknown as ComponentType<IconBaseProps>;
+const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 
 type JobLite = {
   id: number;
@@ -30,6 +32,7 @@ type JobLite = {
   location?: string;
   type?: string;
   createdAt?: string;
+  status?: "ACTIVE" | "CLOSED" | string;
 };
 
 const UploadCVPage: React.FC = () => {
@@ -44,21 +47,38 @@ const UploadCVPage: React.FC = () => {
     title: string;
     message: string;
   } | null>(null);
+  const [cvCounts, setCvCounts] = useState<Record<number, number>>({});
 
-  // 1) Load jobs once
+  // Load jobs once
   useEffect(() => {
     (async () => {
       try {
-        const data = await jobsApi.list(); // recomandat să fie tipat Promise<Job[]>
-        setJobs(data as any);
-        setSelectedJobId((data as any).length ? (data as any)[0].id : null);
+        const data = (await jobsApi.list()) as any[];
+        const jobsList = data as JobLite[];
+
+        setJobs(jobsList);
+        setSelectedJobId(jobsList.length ? (jobsList[0] as any).id : null);
+
+        // ia count pentru fiecare job
+        const pairs = await Promise.all(
+          jobsList.map(async (j) => {
+            try {
+              const list = await cvsApi.listForJob(j.id);
+              return [j.id, list.length] as const;
+            } catch {
+              return [j.id, 0] as const;
+            }
+          }),
+        );
+
+        setCvCounts(Object.fromEntries(pairs));
       } catch {
         toast.error("Nu pot încărca job-urile din backend");
       }
     })();
   }, []);
 
-  // 2) Load CVs whenever selectedJobId changes
+  // Load CVs whenever selectedJobId changes
   useEffect(() => {
     if (!selectedJobId) {
       setCvs([]);
@@ -67,8 +87,7 @@ const UploadCVPage: React.FC = () => {
 
     (async () => {
       try {
-        const data = await cvsApi.listForJob(selectedJobId);
-        setCvs(data);
+        await refreshCvs(selectedJobId);
       } catch {
         toast.error("Nu pot încărca CV-urile pentru job");
       }
@@ -86,6 +105,36 @@ const UploadCVPage: React.FC = () => {
     [jobs, selectedJobId],
   );
 
+  const isClosed = selectedJob?.status === "CLOSED";
+
+  const formatDate = (value?: string | null) => {
+    if (!value) return "—";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return value;
+    return d.toLocaleDateString("ro-RO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const formatSize = (bytes?: number | null) => {
+    if (!bytes && bytes !== 0) return "—";
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    return `${(kb / 1024).toFixed(1)} MB`;
+  };
+
+  const refreshCvs = async (jobId: number) => {
+    const refreshed = await cvsApi.listForJob(jobId);
+    setCvs(refreshed);
+
+    setCvCounts((prev) => ({
+      ...prev,
+      [jobId]: refreshed.length,
+    }));
+  };
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
 
@@ -98,6 +147,15 @@ const UploadCVPage: React.FC = () => {
       return;
     }
 
+    if (isClosed) {
+      setNotification({
+        type: "error",
+        title: "POST ÎNCHIS",
+        message: "Postul este închis, încărcarea este blocată.",
+      });
+      return;
+    }
+
     if (!files || files.length === 0) return;
 
     const fileArr = Array.from(files);
@@ -106,10 +164,7 @@ const UploadCVPage: React.FC = () => {
       await Promise.all(
         fileArr.map((f) => cvsApi.uploadForJob(selectedJobId, f)),
       );
-
-      // refresh list
-      const refreshed = await cvsApi.listForJob(selectedJobId);
-      setCvs(refreshed);
+      await refreshCvs(selectedJobId);
 
       setNotification({
         type: "success",
@@ -128,8 +183,7 @@ const UploadCVPage: React.FC = () => {
       await cvsApi.remove(cvId);
 
       if (selectedJobId) {
-        const refreshed = await cvsApi.listForJob(selectedJobId);
-        setCvs(refreshed);
+        await refreshCvs(selectedJobId);
       }
 
       setNotification({
@@ -142,45 +196,19 @@ const UploadCVPage: React.FC = () => {
     }
   };
 
-  const runMockAnalysis = () => {
-    setNotification({
-      type: "success",
-      title: "ANALIZĂ IA ACTIVATĂ",
-      message: "Scanăm abilitățile candidaților...",
-    });
-
-    window.setTimeout(() => {
-      setNotification({
-        type: "success",
-        title: "SINAPSĂ COMPLETĂ",
-        message: "Datele au fost agregate (mock).",
-      });
-    }, 1600);
-  };
-
-  const formatDate = (d?: string | null) => {
-    if (!d) return "—";
-    const dt = new Date(d);
-    if (Number.isNaN(dt.getTime())) return d; // fallback dacă vine deja formatat
-    return dt.toLocaleDateString("ro-RO");
-  };
-
-  const formatSize = (bytes?: number | null) => {
-    if (!bytes && bytes !== 0) return "—";
-    const kb = bytes / 1024;
-    if (kb < 1024) return `${kb.toFixed(1)} KB`;
-    return `${(kb / 1024).toFixed(1)} MB`;
-  };
-
   const runAnalysis = async () => {
     if (!selectedJobId || cvs.length === 0) return;
+    if (isClosed) {
+      toast.error("Post închis, analiza este blocată");
+      return;
+    }
 
     try {
-      // exemplu: analizează toate CV-urile din job
-      await Promise.all(cvs.map((cv) => cvsApi.analyze(cv.id)));
+      await Promise.all(
+        cvs.map((cv) => cvsApi.analyzeForJob(selectedJobId, cv.id)),
+      );
 
-      const refreshed = await cvsApi.listForJob(selectedJobId);
-      setCvs(refreshed);
+      await refreshCvs(selectedJobId);
 
       setNotification({
         type: "success",
@@ -194,27 +222,27 @@ const UploadCVPage: React.FC = () => {
 
   return (
     <div className={styles.pageShell}>
-      <Toaster position="bottom-right" />
-
-      {notification && (
-        <Notification
-          type={notification.type}
-          title={notification.title}
-          message={notification.message}
-          onClose={() => setNotification(null)}
-        />
-      )}
-
       <div className={styles.container}>
-        {/* LEFT PANEL: Jobs */}
+        <Toaster position="bottom-right" />
+
+        {notification && (
+          <Notification
+            type={notification.type}
+            title={notification.title}
+            message={notification.message}
+            onClose={() => setNotification(null)}
+          />
+        )}
+
+        {/* LEFT PANEL */}
         <aside className={styles.jobsPanel}>
           <div className={styles.panelHeader}>
             <div className={styles.brandBlock}>
               <h2 className={styles.heroTitle}>
-                Recruit<span>AI</span>
+                CV-Analyzer <span>Studio</span>
               </h2>
               <p className={styles.heroSubtitle}>
-                Upload CV-uri și pornește matching
+                Încarcă CV-uri și pornește matching
               </p>
             </div>
           </div>
@@ -222,39 +250,67 @@ const UploadCVPage: React.FC = () => {
           <div className={styles.searchWrapper}>
             <SearchIcon className={styles.searchIcon} />
             <input
-              placeholder="Caută în joburi..."
+              placeholder="Caută posturi..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
           <div className={styles.jobScrollList}>
-            {filteredJobs.map((job) => (
-              <button
-                key={job.id}
-                type="button"
-                className={`${styles.jobMiniCard} ${
-                  selectedJobId === job.id ? styles.activeJob : ""
-                }`}
-                onClick={() => setSelectedJobId(job.id)}
-              >
-                <div className={styles.miniCardLeft}>
-                  <div className={styles.miniIconBox}>
-                    <Briefcase />
-                  </div>
-                  <div className={styles.jobText}>
-                    <h4>{job.title}</h4>
-                    <p>{job.location || "—"}</p>
-                  </div>
-                </div>
+            {filteredJobs.map((job) => {
+              const isSelected = selectedJobId === job.id;
 
-                <div className={styles.rightMeta}>
-                  <span className={styles.countPill}>
-                    {selectedJobId === job.id ? cvs.length : "—"} CV
-                  </span>
-                </div>
-              </button>
-            ))}
+              return (
+                <button
+                  key={job.id}
+                  type="button"
+                  className={[
+                    styles.jobMiniCard,
+                    isSelected ? styles.activeJob : "",
+                    isSelected && job.status === "ACTIVE"
+                      ? styles.selectedActive
+                      : "",
+                    isSelected && job.status === "CLOSED"
+                      ? styles.selectedClosed
+                      : "",
+                  ].join(" ")}
+                  onClick={() => setSelectedJobId(job.id)}
+                >
+                  <div className={styles.miniCardLeft}>
+                    <div className={styles.miniIconBox}>
+                      <Briefcase />
+                    </div>
+
+                    <div className={styles.miniCardText}>
+                      <h4 className={styles.miniTitle}>{job.title}</h4>
+
+                      <div className={styles.miniSubtitleRow}>
+                        <p className={styles.miniSub}>{job.location || "—"}</p>
+
+                        {job.status && (
+                          <span
+                            className={[
+                              styles.statusPill,
+                              job.status === "ACTIVE"
+                                ? styles.statusPillActive
+                                : styles.statusPillClosed,
+                            ].join(" ")}
+                          >
+                            {job.status === "ACTIVE" ? "Activ" : "Închis"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className={styles.rightMeta}>
+                    <span className={styles.countPill}>
+                      {cvCounts[job.id] ?? 0} CV
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
 
             {jobs.length === 0 && (
               <div className={styles.emptyPanel}>
@@ -271,24 +327,61 @@ const UploadCVPage: React.FC = () => {
               <header className={styles.contentHeader}>
                 <div className={styles.jobMainInfo}>
                   <h1>{selectedJob.title}</h1>
+
                   <div className={styles.metaRow}>
                     {selectedJob.type && (
-                      <span className={styles.typeTag}>{selectedJob.type}</span>
+                      <span className={styles.typeTag}>
+                        <Briefcase className={styles.metaIcon} />
+                        {selectedJob.type}
+                      </span>
                     )}
+
                     {selectedJob.createdAt && (
                       <span className={styles.dateTag}>
+                        <CalendarIcon className={styles.metaIcon} />
                         {formatDate(selectedJob.createdAt)}
+                      </span>
+                    )}
+
+                    {selectedJob.status && (
+                      <span
+                        className={[
+                          styles.statusPill,
+                          selectedJob.status === "ACTIVE"
+                            ? styles.statusPillActive
+                            : styles.statusPillClosed,
+                        ].join(" ")}
+                      >
+                        {selectedJob.status === "ACTIVE" ? "Activ" : "Închis"}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <div className={styles.statsCircle}>
-                  <strong>{cvs.length}</strong>
-                  <span>CV-uri</span>
+                <div className={styles.headerRightActions}>
+                  <button
+                    type="button"
+                    className={styles.headerPrimaryBtn}
+                    onClick={runAnalysis}
+                    disabled={cvs.length === 0 || isClosed}
+                    title={
+                      isClosed
+                        ? "Post închis, acțiunile sunt blocate"
+                        : "Inițiază analiza"
+                    }
+                  >
+                    <Robot />
+                    Analizează
+                  </button>
+
+                  <div className={styles.statsCircle}>
+                    <strong>{cvs.length}</strong>
+                    <span>CV-uri</span>
+                  </div>
                 </div>
               </header>
 
+              {/* Upload card */}
               <section className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div className={styles.sectionTitle}>
@@ -296,24 +389,25 @@ const UploadCVPage: React.FC = () => {
                     <h3>Încărcare CV-uri</h3>
                   </div>
 
-                  <button
-                    type="button"
-                    className={styles.primaryBtn}
-                    onClick={runAnalysis}
-                    disabled={cvs.length === 0}
-                  >
-                    <Robot />
-                    Inițiază analiza
-                  </button>
+                  <span className={styles.helperPill}>PDF, DOCX, max 10MB</span>
                 </div>
 
-                <label className={styles.uploadZone}>
+                <label
+                  className={[
+                    styles.uploadZone,
+                    isClosed ? styles.uploadZoneDisabled : "",
+                  ].join(" ")}
+                  title={
+                    isClosed ? "Post închis, upload blocat" : "Încarcă CV-uri"
+                  }
+                >
                   <div className={styles.uploadIconPulse}>
                     <CloudUploadAlt />
                   </div>
+
                   <div className={styles.uploadText}>
                     <span>Drop CV-uri aici sau click pentru upload</span>
-                    <small>PDF, DOCX (max 10MB per fișier)</small>
+                    <small>Sistemul va atașa CV-urile jobului selectat.</small>
                   </div>
 
                   <input
@@ -321,27 +415,40 @@ const UploadCVPage: React.FC = () => {
                     multiple
                     accept=".pdf,.doc,.docx"
                     onChange={handleUpload}
+                    disabled={isClosed}
                   />
                 </label>
               </section>
 
-              <section className={styles.card}>
+              {/* Table card */}
+              <section className={`${styles.card} ${styles.tableCard}`}>
                 <div className={styles.cardHeader}>
                   <div className={styles.sectionTitle}>
                     <RegFilePdf />
                     <h3>Baza de date curentă</h3>
                   </div>
+
+                  <span className={styles.countPillStrong}>
+                    {cvs.length} fișiere
+                  </span>
                 </div>
 
-                <div className={styles.tableWrap}>
+                <div className={styles.tableScroll}>
                   {cvs.length === 0 ? (
                     <div className={styles.emptyState}>
-                      <RegFilePdf className={styles.emptyIcon} />
-                      <h4>Niciun fișier asociat</h4>
-                      <p>
-                        Încarcă CV-uri pentru acest job ca să începi
-                        matching-ul.
-                      </p>
+                      <div className={styles.emptyCard}>
+                        <div className={styles.emptyBadge}>
+                          <RegFilePdf className={styles.emptyIcon} />
+                        </div>
+
+                        <h3 className={styles.emptyTitle}>
+                          Niciun fișier asociat
+                        </h3>
+                        <p className={styles.emptyText}>
+                          Încarcă CV-uri pentru acest job ca să începi
+                          matching-ul.
+                        </p>
+                      </div>
                     </div>
                   ) : (
                     <table className={styles.crystalTable}>
@@ -358,10 +465,16 @@ const UploadCVPage: React.FC = () => {
                           <tr key={cv.id}>
                             <td className={styles.fileNameCell}>
                               <RegFilePdf className={styles.pdfIcon} />
-                              {cv.fileName}
+                              <span className={styles.fileNameText}>
+                                {cv.fileName}
+                              </span>
                             </td>
-                            <td>{formatSize(cv.fileSize ?? null)}</td>
-                            <td>{formatDate(cv.uploadDate ?? cv.createdAt)}</td>
+                            <td>{formatSize((cv as any).fileSize ?? null)}</td>
+                            <td>
+                              {formatDate(
+                                (cv as any).uploadDate ?? (cv as any).createdAt,
+                              )}
+                            </td>
                             <td>
                               <button
                                 type="button"
@@ -369,6 +482,7 @@ const UploadCVPage: React.FC = () => {
                                 onClick={() => handleDelete(cv.id)}
                                 aria-label="Șterge"
                                 title="Șterge"
+                                disabled={isClosed}
                               >
                                 <TrashAlt />
                               </button>
