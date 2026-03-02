@@ -1,0 +1,653 @@
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import styles from "./SettingsPage.module.css";
+import toast, { Toaster } from "react-hot-toast";
+import { usersApi } from "../../api/users.service";
+
+import {
+  FaUserCircle,
+  FaCamera,
+  FaTrash,
+  FaSave,
+  FaUndo,
+  FaEnvelope,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaBriefcase,
+  FaInfoCircle,
+  FaShieldAlt,
+  FaKey,
+  FaSignOutAlt,
+  FaChevronRight,
+  FaLink,
+} from "react-icons/fa";
+
+import type { ComponentType } from "react";
+import type { IconBaseProps } from "react-icons";
+
+const UserIcon = FaUserCircle as unknown as ComponentType<IconBaseProps>;
+const CameraIcon = FaCamera as unknown as ComponentType<IconBaseProps>;
+const TrashIcon = FaTrash as unknown as ComponentType<IconBaseProps>;
+const SaveIcon = FaSave as unknown as ComponentType<IconBaseProps>;
+const UndoIcon = FaUndo as unknown as ComponentType<IconBaseProps>;
+const EmailIcon = FaEnvelope as unknown as ComponentType<IconBaseProps>;
+const PhoneIcon = FaPhone as unknown as ComponentType<IconBaseProps>;
+const MarkerIcon = FaMapMarkerAlt as unknown as ComponentType<IconBaseProps>;
+const JobIcon = FaBriefcase as unknown as ComponentType<IconBaseProps>;
+const InfoIcon = FaInfoCircle as unknown as ComponentType<IconBaseProps>;
+const ShieldIcon = FaShieldAlt as unknown as ComponentType<IconBaseProps>;
+const KeyIcon = FaKey as unknown as ComponentType<IconBaseProps>;
+const LogoutIcon = FaSignOutAlt as unknown as ComponentType<IconBaseProps>;
+const RightIcon = FaChevronRight as unknown as ComponentType<IconBaseProps>;
+const WebLinkIcon = FaLink as unknown as ComponentType<IconBaseProps>;
+
+type Profile = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  location: string;
+  role: string;
+  website: string;
+  bio: string;
+  avatarDataUrl: string; // pentru preview local
+};
+
+const safeTrim = (s: string) => s.trim();
+const isValidEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+const isValidUrl = (s: string) => {
+  if (!s.trim()) return true;
+  try {
+    new URL(s.trim());
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const initialsFrom = (firstName: string, lastName: string) => {
+  const a = (lastName?.[0] || "").toUpperCase();
+  const b = (firstName?.[0] || "").toUpperCase();
+  return a + b || "U";
+};
+
+const SettingsPage: React.FC = () => {
+  const fileRef = useRef<HTMLInputElement | null>(null);
+
+  // TODO: înlocuiești cu getCurrentUserProfile() din API
+  const emptyProfile: Profile = useMemo(
+    () => ({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      location: "",
+      role: "",
+      website: "",
+      bio: "",
+      avatarDataUrl: "",
+    }),
+    [],
+  );
+
+  const [saved, setSaved] = useState<Profile>(emptyProfile);
+  const [form, setForm] = useState<Profile>(emptyProfile);
+  const [loadingProfile, setLoadingProfile] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setLoadingProfile(true);
+        const me = await usersApi.me();
+        if (cancelled) return;
+
+        const p: Profile = {
+          firstName: me.firstName || "",
+          lastName: me.lastName || "",
+          email: me.email || "",
+          phone: me.phone || "",
+          location: me.location || "",
+          role: me.role || "",
+          website: me.website || "",
+          bio: me.bio || "",
+          avatarDataUrl: me.avatarDataUrl || "",
+        };
+
+        setSaved(p);
+        setForm(p);
+      } catch (err: any) {
+        toast.error(err?.response?.data?.message || "Nu pot încărca profilul");
+      } finally {
+        if (!cancelled) setLoadingProfile(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const hasChanges = useMemo(() => {
+    return JSON.stringify(saved) !== JSON.stringify(form);
+  }, [saved, form]);
+
+  const onPickAvatar = () => fileRef.current?.click();
+
+  const onAvatarFile = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Te rog selectează o imagine.");
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      toast.error("Imaginea e prea mare. Max 3MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = String(reader.result || "");
+      setForm((p) => ({ ...p, avatarDataUrl: result }));
+      toast.success("Poză încărcată (preview)");
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeAvatar = () => {
+    setForm((p) => ({ ...p, avatarDataUrl: "" }));
+    toast.success("Poză eliminată");
+  };
+
+  const resetChanges = () => {
+    setForm(saved);
+    toast.success("Modificările au fost resetate");
+  };
+
+  const validate = (p: Profile) => {
+    if (!safeTrim(p.firstName) || !safeTrim(p.lastName)) {
+      return {
+        ok: false as const,
+        message: "Completează numele și prenumele.",
+      };
+    }
+    if (!safeTrim(p.email) || !isValidEmail(p.email)) {
+      return { ok: false as const, message: "Email invalid." };
+    }
+    if (!isValidUrl(p.website)) {
+      return { ok: false as const, message: "Website invalid." };
+    }
+    return { ok: true as const };
+  };
+
+  const onSave = async () => {
+    const v = validate(form);
+    if (!v.ok) {
+      toast.error(v.message);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const updated = await usersApi.updateMe({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        phone: form.phone,
+        location: form.location,
+        role: form.role,
+        website: form.website,
+        bio: form.bio,
+        avatarDataUrl: form.avatarDataUrl,
+      });
+
+      const next: Profile = {
+        firstName: updated.firstName || "",
+        lastName: updated.lastName || "",
+        email: updated.email || "",
+        phone: updated.phone || "",
+        location: updated.location || "",
+        role: updated.role || "",
+        website: updated.website || "",
+        bio: updated.bio || "",
+        avatarDataUrl: updated.avatarDataUrl || "",
+      };
+
+      setSaved(next);
+      setForm(next);
+      toast.success("Profil actualizat");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Nu am putut salva");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const securityAction = (label: string) => {
+    toast(`Acțiune: ${label}`, { icon: "🔒" });
+  };
+
+  if (loadingProfile) {
+    return (
+      <div className={styles.page}>
+        <Toaster position="bottom-right" />
+        <div style={{ padding: 24 }}>Se încarcă profilul...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.page}>
+      <Toaster position="bottom-right" />
+
+      <header className={styles.hero}>
+        <div className={styles.heroLeft}>
+          <div className={styles.heroBadge}>
+            <UserIcon size={26} />
+          </div>
+          <div className={styles.heroText}>
+            <h1>Setări cont</h1>
+            <p>
+              Personalizează profilul, datele de contact și setările de
+              securitate.
+            </p>
+          </div>
+        </div>
+
+        <div className={styles.heroRight}>
+          <button
+            type="button"
+            className={styles.secondaryBtn}
+            onClick={resetChanges}
+            disabled={!hasChanges || isSaving}
+            title="Resetează"
+          >
+            <UndoIcon /> Reset
+          </button>
+
+          <button
+            type="button"
+            className={styles.primaryBtn}
+            onClick={onSave}
+            disabled={!hasChanges || isSaving}
+            title="Salvează"
+          >
+            <SaveIcon /> {isSaving ? "Se salvează..." : "Salvează"}
+          </button>
+        </div>
+      </header>
+
+      <div className={styles.layout}>
+        {/* Left: profile card */}
+        <aside className={styles.sideCard}>
+          <div className={styles.profileTop}>
+            <div className={styles.avatarWrap}>
+              {form.avatarDataUrl ? (
+                <img
+                  className={styles.avatarImg}
+                  src={form.avatarDataUrl}
+                  alt="Avatar"
+                />
+              ) : (
+                <div className={styles.avatarFallback}>
+                  <span className={styles.avatarInitial}>
+                    {initialsFrom(form.firstName, form.lastName)}
+                  </span>
+                </div>
+              )}
+
+              <button
+                type="button"
+                className={styles.avatarEditBtn}
+                onClick={onPickAvatar}
+              >
+                <CameraIcon />
+              </button>
+            </div>
+
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className={styles.hiddenFile}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) void onAvatarFile(file);
+                e.currentTarget.value = "";
+              }}
+            />
+
+            <div className={styles.profileMeta}>
+              <div className={styles.nameLine}>
+                <strong title={`${form.firstName} ${form.lastName}`}>
+                  {form.firstName} {form.lastName}
+                </strong>
+                {hasChanges ? (
+                  <span className={styles.unsaved}>nesalvat</span>
+                ) : null}
+              </div>
+
+              <div className={styles.metaRow}>
+                <EmailIcon />
+                <span className={styles.metaText}>{form.email}</span>
+              </div>
+
+              {form.location ? (
+                <div className={styles.metaRow}>
+                  <MarkerIcon />
+                  <span className={styles.metaText}>{form.location}</span>
+                </div>
+              ) : null}
+
+              {form.role ? (
+                <div className={styles.metaRow}>
+                  <JobIcon />
+                  <span className={styles.metaText}>{form.role}</span>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className={styles.profileActions}>
+            <button
+              type="button"
+              className={styles.ghostBtn}
+              onClick={onPickAvatar}
+              disabled={isSaving}
+            >
+              <CameraIcon /> Schimbă poza
+            </button>
+
+            <button
+              type="button"
+              className={styles.dangerGhostBtn}
+              onClick={removeAvatar}
+              disabled={isSaving || !form.avatarDataUrl}
+              title={!form.avatarDataUrl ? "Nu ai poză setată" : "Elimină poza"}
+            >
+              <TrashIcon /> Elimină
+            </button>
+          </div>
+
+          <div className={styles.tipBox}>
+            <div className={styles.tipIcon}>
+              <InfoIcon />
+            </div>
+            <div>
+              <strong>Sfat</strong>
+              <p>
+                Folosește o poză clară, fundal simplu. Profilul arată mai
+                profesional și crește încrederea.
+              </p>
+            </div>
+          </div>
+        </aside>
+
+        {/* Right: settings sections */}
+        <main className={styles.main}>
+          {/* Personal */}
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <div>
+                <h2>Date personale</h2>
+                <p>Numele și informațiile publice din aplicație.</p>
+              </div>
+              <span className={styles.sectionPill}>Profil</span>
+            </div>
+
+            <div className={styles.formGrid}>
+              <div className={styles.field}>
+                <label>Prenume</label>
+                <input
+                  value={form.firstName}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, firstName: e.target.value }))
+                  }
+                  placeholder="Ex: Andrei"
+                />
+              </div>
+
+              <div className={styles.field}>
+                <label>Nume</label>
+                <input
+                  value={form.lastName}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, lastName: e.target.value }))
+                  }
+                  placeholder="Ex: Ionescu"
+                />
+              </div>
+
+              <div className={styles.field}>
+                <label>Rol (opțional)</label>
+                <input
+                  value={form.role}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, role: e.target.value }))
+                  }
+                  placeholder="Ex: Recruiter, HR, Manager"
+                />
+              </div>
+
+              <div className={styles.field}>
+                <label>Locație (opțional)</label>
+                <input
+                  value={form.location}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, location: e.target.value }))
+                  }
+                  placeholder="Ex: București, RO"
+                />
+              </div>
+
+              <div className={[styles.field, styles.full].join(" ")}>
+                <label>Bio (opțional)</label>
+                <textarea
+                  rows={4}
+                  value={form.bio}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, bio: e.target.value }))
+                  }
+                  placeholder="Scrie 2-3 rânduri despre tine..."
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* Contact */}
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <div>
+                <h2>Date de contact</h2>
+                <p>Email, telefon și website pentru comunicare.</p>
+              </div>
+              <span className={styles.sectionPill}>Contact</span>
+            </div>
+
+            <div className={styles.formGrid}>
+              <div className={styles.field}>
+                <label>Email</label>
+                <div className={styles.inputIcon}>
+                  <EmailIcon />
+                  <input
+                    value={form.email}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, email: e.target.value }))
+                    }
+                    placeholder="nume@email.com"
+                    inputMode="email"
+                  />
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label>Telefon (opțional)</label>
+                <div className={styles.inputIcon}>
+                  <PhoneIcon />
+                  <input
+                    value={form.phone}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, phone: e.target.value }))
+                    }
+                    placeholder="07xx xxx xxx"
+                    inputMode="tel"
+                  />
+                </div>
+              </div>
+
+              <div className={[styles.field, styles.full].join(" ")}>
+                <label>Website (opțional)</label>
+                <div className={styles.inputIcon}>
+                  <WebLinkIcon />
+                  <input
+                    value={form.website}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, website: e.target.value }))
+                    }
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Security */}
+          <section className={styles.card}>
+            <div className={styles.cardHeader}>
+              <div>
+                <h2>Securitate</h2>
+                <p>Gestionare parolă și sesiuni.</p>
+              </div>
+              <span className={styles.sectionPill}>Security</span>
+            </div>
+
+            <div className={styles.actionList}>
+              <button
+                type="button"
+                className={styles.actionRow}
+                onClick={() => securityAction("Schimbă parola")}
+              >
+                <span className={styles.actionLeft}>
+                  <span className={styles.actionIcon}>
+                    <KeyIcon />
+                  </span>
+                  <span className={styles.actionText}>
+                    <strong>Schimbă parola</strong>
+                    <small>
+                      Recomandat dacă folosești aceeași parolă în mai multe
+                      locuri.
+                    </small>
+                  </span>
+                </span>
+                <span className={styles.actionRight}>
+                  <RightIcon />
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={styles.actionRow}
+                onClick={() => securityAction("Sesiuni active")}
+              >
+                <span className={styles.actionLeft}>
+                  <span className={styles.actionIcon}>
+                    <ShieldIcon />
+                  </span>
+                  <span className={styles.actionText}>
+                    <strong>Sesiuni active</strong>
+                    <small>
+                      Vezi dispozitivele conectate și deconectează-le.
+                    </small>
+                  </span>
+                </span>
+                <span className={styles.actionRight}>
+                  <RightIcon />
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className={[styles.actionRow, styles.dangerRow].join(" ")}
+                onClick={() =>
+                  toast("Demo UI: delogare din toate sesiunile", { icon: "⚠️" })
+                }
+              >
+                <span className={styles.actionLeft}>
+                  <span
+                    className={[styles.actionIcon, styles.dangerIcon].join(" ")}
+                  >
+                    <LogoutIcon />
+                  </span>
+                  <span className={styles.actionText}>
+                    <strong>Deloghează-te peste tot</strong>
+                    <small>
+                      Închide toate sesiunile active (inclusiv aceasta).
+                    </small>
+                  </span>
+                </span>
+                <span className={styles.actionRight}>
+                  <RightIcon />
+                </span>
+              </button>
+            </div>
+          </section>
+
+          {/* Danger zone */}
+          <section className={[styles.card, styles.dangerCard].join(" ")}>
+            <div className={styles.cardHeader}>
+              <div>
+                <h2>Zona de risc</h2>
+                <p>Acțiuni ireversibile, folosește cu grijă.</p>
+              </div>
+              <span
+                className={[styles.sectionPill, styles.dangerPill].join(" ")}
+              >
+                Danger
+              </span>
+            </div>
+
+            <div className={styles.dangerZone}>
+              <div className={styles.dangerInfo}>
+                <strong>Șterge contul</strong>
+                <p>
+                  Demo UI. Când conectezi backend-ul, aici vei cere confirmare
+                  și vei apela endpoint-ul de delete.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.dangerBtn}
+                onClick={() => toast.error("Demo UI: confirmare ștergere cont")}
+              >
+                <TrashIcon size={11} /> Șterge contul
+              </button>
+            </div>
+          </section>
+
+          <div className={styles.mobileSaveBar}>
+            <button
+              type="button"
+              className={styles.secondaryBtn}
+              onClick={resetChanges}
+              disabled={!hasChanges || isSaving}
+            >
+              <UndoIcon /> Reset
+            </button>
+
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={onSave}
+              disabled={!hasChanges || isSaving}
+            >
+              <SaveIcon /> Salvează
+            </button>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default SettingsPage;
