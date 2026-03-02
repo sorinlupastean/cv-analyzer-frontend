@@ -11,11 +11,13 @@ import {
   FaChartBar,
   FaCog,
   FaSignOutAlt,
+  FaCalendarAlt,
 } from "react-icons/fa";
 
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
+const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 const HomeIcon = FaHome as unknown as ComponentType<IconBaseProps>;
 const CreateJobIcon = FaPlusCircle as unknown as ComponentType<IconBaseProps>;
 const UploadIcon = FaCloudUploadAlt as unknown as ComponentType<IconBaseProps>;
@@ -74,6 +76,11 @@ const Sidebar: React.FC = () => {
       name: "Încarcă CV",
       IconComponent: UploadIcon,
       path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
+    },
+    {
+      name: "Calendar",
+      IconComponent: CalendarIcon,
+      path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.CALENDAR}`,
     },
   ];
 
