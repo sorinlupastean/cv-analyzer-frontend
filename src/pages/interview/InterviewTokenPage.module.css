@@ -1,0 +1,253 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap");
+
+:root {
+  --primary-glow: #4acfee;
+  --sky-light: #99deeb;
+  --deep-abyss: #03111c;
+  --glass-white: rgba(255, 255, 255, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --text-soft: #475569;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  font-family: "Montserrat", sans-serif;
+  background-color: #fcfdfe;
+  /* Fundal Aurora extrem de fin */
+  background-image:
+    radial-gradient(at 10% 10%, rgba(74, 207, 238, 0.08) 0px, transparent 40%),
+    radial-gradient(at 90% 90%, rgba(168, 130, 255, 0.06) 0px, transparent 40%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Cardul: "The Floating Pearl" */
+.card {
+  position: relative;
+  width: 100%;
+  max-width: 460px; /* Mai restrâns pentru eleganță */
+  padding: 30px;
+  text-align: center;
+  border-radius: 45px; /* Mai rotund, mai organic */
+
+  /* Glassmorphism Ultra-Premium */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(30px) saturate(1.5);
+  -webkit-backdrop-filter: blur(30px) saturate(1.5);
+
+  /* Shadow tip "Cloud" - foarte difuz și fin */
+  box-shadow:
+    0 40px 100px -30px rgba(2, 6, 23, 0.12),
+    0 0 0 1px var(--glass-border) inset;
+
+  border: none;
+  animation: pearlAppear 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Spirit Glow - Aura din spatele perlei */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 45px;
+  background: radial-gradient(
+    circle at 20% 20%,
+    rgba(74, 207, 238, 0.15) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Iconița: "The Glowing Soul" */
+.iconCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%; /* Cerc perfect pentru minimalism */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 30px;
+  background: white;
+  color: var(--primary-glow);
+  font-size: 24px;
+  box-shadow:
+    0 10px 30px rgba(74, 207, 238, 0.25),
+    inset 0 0 15px rgba(74, 207, 238, 0.1);
+  position: relative;
+}
+
+/* Pulsul bioluminescent al iconiței */
+.iconCircle::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1px solid rgba(74, 207, 238, 0.3);
+  animation: pulseAura 3s ease-in-out infinite;
+}
+
+.iconDanger {
+  color: #ff784f;
+  box-shadow: 0 10px 30px rgba(255, 120, 79, 0.2);
+}
+.iconDanger::after {
+  border-color: rgba(255, 120, 79, 0.3);
+}
+
+.title {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--deep-abyss);
+  letter-spacing: -0.04em;
+}
+
+.textMuted {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  opacity: 0.8;
+}
+
+/* Mesajele: "Ethereal Pills" */
+.textOk,
+.textDanger {
+  margin-top: 20px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.textOk {
+  color: #10b981;
+}
+.textDanger {
+  color: #ef4444;
+}
+
+.actions {
+  margin-top: 45px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Butonul Primary: "Abyss Liquid" */
+.primaryBtn {
+  text-decoration: none;
+  background: var(--deep-abyss);
+  color: white;
+  padding: 14px;
+  border-radius: 22px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  box-shadow: 0 15px 35px rgba(3, 17, 28, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.primaryBtn:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 20px 45px rgba(74, 207, 238, 0.2);
+}
+
+/* Sclipirea din buton */
+.primaryBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(74, 207, 238, 0.2),
+    transparent
+  );
+  transition: 0.6s;
+}
+.primaryBtn:hover::before {
+  left: 100%;
+}
+
+/* Butonul Secondary: "Air Style" */
+.secondaryBtn,
+.ghostBtn {
+  background: transparent;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  color: var(--text-soft);
+  padding: 14px;
+  border-radius: 22px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.secondaryBtn:hover,
+.ghostBtn:hover {
+  background: white;
+  border-color: var(--primary-glow);
+  color: var(--deep-abyss);
+}
+
+/* Loader mistic */
+.loader {
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(74, 207, 238, 0.1);
+  border-top-color: var(--primary-glow);
+  border-radius: 50%;
+  animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pearlAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulseAura {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 50px 30px;
+    border-radius: 35px;
+  }
+}
