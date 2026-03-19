@@ -76,6 +76,29 @@ export type CreateCvBody = {
   skills: string[];
 };
 
+export type SendEmailBody = {
+  to: string; // email candidat
+  subject: string;
+  html?: string; // dacă trimiți HTML
+  text?: string; // dacă trimiți plain text
+};
+
+export type CandidatePickerItem = {
+  id: number;
+  fullName: string;
+  email: string;
+  label: string;
+};
+
+export const cvsPickerApi = {
+  search: async (q: string, limit = 20) => {
+    const { data } = await http.get<CandidatePickerItem[]>("/picker", {
+      params: { q, limit },
+    });
+    return data;
+  },
+};
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 export const cvsApi = {
@@ -110,12 +133,22 @@ export const cvsApi = {
     return data;
   },
 
-  getPdfUrl: (cv: Cv): string | null => {
-    if (!API_URL || !cv.filePath) return null;
-    const normalized = cv.filePath
-      .replace(/\\/g, "/")
-      .replace(/^uploads\//, "");
-    return `${API_URL}/uploads/${normalized}`;
+  getFileUrl: (cv: Cv): string | null => {
+    if (!API_URL) return null;
+
+    if (cv.storedName) {
+      return `${API_URL}/uploads/cvs/${encodeURIComponent(cv.storedName)}`;
+    }
+
+    if (cv.filePath) {
+      const p = String(cv.filePath).replace(/\\/g, "/");
+      if (!/^[a-zA-Z]:\//.test(p)) {
+        const normalized = p.replace(/^.*\/uploads\//, "");
+        return `${API_URL}/uploads/${normalized}`;
+      }
+    }
+
+    return null;
   },
 
   analyze: async (cvId: number): Promise<Cv> => {
@@ -128,6 +161,16 @@ export const cvsApi = {
       `/jobs/${jobId}/cvs/${cvId}/analyze`,
       {},
     );
+    return data;
+  },
+
+  sendEmail: async (
+    cvId: number,
+    payload: { to: string; subject: string; text: string; html?: string },
+  ) => {
+    const { data } = await http.post(`/cvs/${cvId}/send-email`, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
     return data;
   },
 };
