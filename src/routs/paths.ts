@@ -9,5 +9,6 @@ export const PATHS = {
     RESULTS: "results",
     SETTINGS: "settings",
     CV_DETAILS: (id: string = ":id") => `cv/${id}`, // Funcție pentru parametri dinamici
+    CALENDAR: "calendar",
   },
 };
