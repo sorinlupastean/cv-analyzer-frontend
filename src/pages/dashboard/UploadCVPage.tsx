@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./UploadCVPage.module.css";
 import Notification from "../../components/Notification/Notification";
 import toast, { Toaster } from "react-hot-toast";
 import { jobsApi } from "../../api/jobs.service";
 import { cvsApi, type Cv } from "../../api/cvs.service";
+import { PATHS } from "../../routs/paths";
 
 import {
   FaCloudUploadAlt,
@@ -13,6 +15,7 @@ import {
   FaBriefcase,
   FaSearch,
   FaCalendarAlt,
+  FaEye,
 } from "react-icons/fa";
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
@@ -25,6 +28,7 @@ const Robot = FaRobot as unknown as ComponentType<IconBaseProps>;
 const Briefcase = FaBriefcase as unknown as ComponentType<IconBaseProps>;
 const SearchIcon = FaSearch as unknown as ComponentType<IconBaseProps>;
 const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
+const EyeIcon = FaEye as unknown as ComponentType<IconBaseProps>;
 
 type JobLite = {
   id: number;
@@ -36,6 +40,8 @@ type JobLite = {
 };
 
 const UploadCVPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const [jobs, setJobs] = useState<JobLite[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
 
@@ -47,19 +53,18 @@ const UploadCVPage: React.FC = () => {
     title: string;
     message: string;
   } | null>(null);
+
   const [cvCounts, setCvCounts] = useState<Record<number, number>>({});
 
-  // Load jobs once
   useEffect(() => {
     (async () => {
       try {
-        const data = (await jobsApi.list()) as any[];
-        const jobsList = data as JobLite[];
+        const data = (await jobsApi.list()) as JobLite[];
+        const jobsList = data ?? [];
 
         setJobs(jobsList);
-        setSelectedJobId(jobsList.length ? (jobsList[0] as any).id : null);
+        setSelectedJobId(jobsList.length ? jobsList[0].id : null);
 
-        // ia count pentru fiecare job
         const pairs = await Promise.all(
           jobsList.map(async (j) => {
             try {
@@ -78,7 +83,6 @@ const UploadCVPage: React.FC = () => {
     })();
   }, []);
 
-  // Load CVs whenever selectedJobId changes
   useEffect(() => {
     if (!selectedJobId) {
       setCvs([]);
@@ -198,26 +202,52 @@ const UploadCVPage: React.FC = () => {
 
   const runAnalysis = async () => {
     if (!selectedJobId || cvs.length === 0) return;
+
     if (isClosed) {
       toast.error("Post închis, analiza este blocată");
       return;
     }
 
     try {
-      await Promise.all(
-        cvs.map((cv) => cvsApi.analyzeForJob(selectedJobId, cv.id)),
-      );
+      toast.loading("Rulez analiza pentru CV-uri...", { id: "bulkAnalyze" });
+
+      // Procesează unul câte unul, nu în paralel
+      for (let i = 0; i < cvs.length; i++) {
+        const cv = cvs[i];
+        toast.loading(
+          `Analizez CV ${i + 1} din ${cvs.length}: ${cv.fileName}...`,
+          { id: "bulkAnalyze" },
+        );
+        await cvsApi.analyzeForJob(selectedJobId, cv.id);
+
+        if (i < cvs.length - 1) {
+          await new Promise((res) => setTimeout(res, 2000));
+        }
+      }
 
       await refreshCvs(selectedJobId);
+
+      toast.success("Analiza a fost salvată în backend.", {
+        id: "bulkAnalyze",
+      });
 
       setNotification({
         type: "success",
         title: "ANALIZĂ COMPLETĂ",
-        message: "Analiza a fost salvată în backend.",
+        message: `${cvs.length} CV-uri au fost analizate cu succes.`,
       });
     } catch {
-      toast.error("Analiza a eșuat");
+      toast.error("Analiza a eșuat", { id: "bulkAnalyze" });
     }
+  };
+
+  const openDetails = (cv: Cv) => {
+    navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
+      state: {
+        jobId: selectedJobId,
+        jobTitle: selectedJob?.title,
+      },
+    });
   };
 
   return (
@@ -234,7 +264,6 @@ const UploadCVPage: React.FC = () => {
           />
         )}
 
-        {/* LEFT PANEL */}
         <aside className={styles.jobsPanel}>
           <div className={styles.panelHeader}>
             <div className={styles.brandBlock}>
@@ -320,7 +349,6 @@ const UploadCVPage: React.FC = () => {
           </div>
         </aside>
 
-        {/* MAIN */}
         <main className={styles.mainArea}>
           {selectedJob ? (
             <>
@@ -381,7 +409,6 @@ const UploadCVPage: React.FC = () => {
                 </div>
               </header>
 
-              {/* Upload card */}
               <section className={styles.card}>
                 <div className={styles.cardHeader}>
                   <div className={styles.sectionTitle}>
@@ -420,7 +447,6 @@ const UploadCVPage: React.FC = () => {
                 </label>
               </section>
 
-              {/* Table card */}
               <section className={`${styles.card} ${styles.tableCard}`}>
                 <div className={styles.cardHeader}>
                   <div className={styles.sectionTitle}>
@@ -457,9 +483,13 @@ const UploadCVPage: React.FC = () => {
                           <th>Document</th>
                           <th>Mărime</th>
                           <th>Data</th>
+                          <th>Scor</th>
+                          <th>Status</th>
+                          <th>Detalii</th>
                           <th>Acțiune</th>
                         </tr>
                       </thead>
+
                       <tbody>
                         {cvs.map((cv) => (
                           <tr key={cv.id}>
@@ -469,12 +499,27 @@ const UploadCVPage: React.FC = () => {
                                 {cv.fileName}
                               </span>
                             </td>
-                            <td>{formatSize((cv as any).fileSize ?? null)}</td>
+
+                            <td>{formatSize(cv.fileSize ?? null)}</td>
+
+                            <td>{formatDate(cv.uploadDate ?? cv.createdAt)}</td>
+
+                            <td>{cv.matchScore ?? 0}%</td>
+
+                            <td>{cv.status || "—"}</td>
+
                             <td>
-                              {formatDate(
-                                (cv as any).uploadDate ?? (cv as any).createdAt,
-                              )}
+                              <button
+                                type="button"
+                                className={styles.viewBtn}
+                                onClick={() => openDetails(cv)}
+                                aria-label="Vezi detalii"
+                                title="Vezi detalii"
+                              >
+                                <EyeIcon />
+                              </button>
                             </td>
+
                             <td>
                               <button
                                 type="button"

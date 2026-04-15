@@ -92,7 +92,7 @@
   width: 372px;
   min-width: 332px;
 
-  background: rgba(255, 255, 255, 0.8);
+  background: white;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 
@@ -411,7 +411,7 @@
 }
 
 .jobMainInfo h1 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0 0 10px 0;
   color: var(--text-dark);
@@ -963,4 +963,18 @@
   .mainArea {
     padding: 18px;
   }
+}
+
+.viewBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.viewBtn:hover {
+  opacity: 0.8;
 }
