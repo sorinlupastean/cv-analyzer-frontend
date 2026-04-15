@@ -1,5 +1,7 @@
 import { http } from "./http";
 
+export type Recommendation = "INVITA" | "REVIZUIRE" | "RESPINGE";
+
 export type CandidateExperience = {
   title: string;
   company?: string;
@@ -18,8 +20,6 @@ export type CandidateEducation = {
   endDate?: string;
 };
 
-export type Recommendation = "INVITA" | "REVIZUIRE" | "RESPINGE";
-
 export type GeminiJobCvAnalysis = {
   candidateName: string;
   email: string | null;
@@ -32,10 +32,101 @@ export type GeminiJobCvAnalysis = {
   experience: CandidateExperience[];
   education: CandidateEducation[];
 
+  matchedRequirements: string[];
+  missingRequirements: string[];
+  redFlags: string[];
+
   summary: string;
   matchScore: number;
   recommendation: Recommendation;
   reasoningShort: string;
+  evidence: string[];
+};
+
+export type GithubRepositoryAnalysis = {
+  name: string;
+  fullName: string;
+  htmlUrl: string;
+  description: string;
+  private: boolean;
+  fork: boolean;
+  archived: boolean;
+  stargazersCount: number;
+  language: string | null;
+  topics: string[];
+  defaultBranch: string;
+  createdAt: string;
+  updatedAt: string;
+  pushedAt: string;
+  size: number;
+
+  languages: string[];
+  rootFiles: string[];
+  hasReadme: boolean;
+  hasTests: boolean;
+  hasDocker: boolean;
+  hasCiCd: boolean;
+  hasPackageJson: boolean;
+  hasTsConfig: boolean;
+  hasBackendIndicators: boolean;
+  hasFrontendIndicators: boolean;
+  readmeScore: number;
+  qualityScore: number;
+  activityScore: number;
+  relevanceScore: number;
+
+  detectedSkills: string[];
+  matchedJobSkills: string[];
+  missingJobSkills: string[];
+  evidence: string[];
+};
+
+export type GithubProfileAnalysis = {
+  username: string;
+  profileUrl: string;
+  usedInScoring: boolean;
+  totalPublicRepos: number;
+  analyzedReposCount: number;
+  githubScore: number;
+  confidenceBoost: number;
+  validatedSkills: string[];
+  unverifiedSkills: string[];
+  matchedRequirements: string[];
+  missingRequirements: string[];
+  redFlags: string[];
+  evidence: string[];
+  repositories: GithubRepositoryAnalysis[];
+};
+
+export type FinalCandidateAnalysis = {
+  candidateName: string;
+  email: string | null;
+  phone: string | null;
+
+  cvScore: number;
+  githubScore: number | null;
+  finalScore: number;
+  confidenceScore: number;
+
+  recommendation: Recommendation;
+
+  languages: string[];
+  domains: string[];
+  skills: string[];
+
+  validatedSkills: string[];
+  unverifiedSkills: string[];
+
+  matchedRequirements: string[];
+  missingRequirements: string[];
+  redFlags: string[];
+
+  summary: string;
+  reasoningShort: string;
+  evidence: string[];
+
+  cvAnalysis: GeminiJobCvAnalysis;
+  githubAnalysis: GithubProfileAnalysis | null;
 };
 
 export type Cv = {
@@ -49,22 +140,28 @@ export type Cv = {
   skills: string[];
 
   createdAt: string;
+  updatedAt?: string;
 
   storedName?: string | null;
   filePath?: string | null;
   fileSize?: number | null;
   mimeType?: string | null;
 
-  // NOU: le primesti direct din backend
   email?: string | null;
   phone?: string | null;
   languages?: string[];
   domains?: string[];
 
   analysisSummary?: string | null;
-  analysisRaw?: GeminiJobCvAnalysis | any | null;
+  analysisRaw?: FinalCandidateAnalysis | null;
 
-  job?: { id: number; title?: string };
+  job?: {
+    id: number;
+    title?: string;
+    location?: string;
+    type?: string;
+    status?: string;
+  };
 };
 
 export type CreateCvBody = {
@@ -77,10 +174,10 @@ export type CreateCvBody = {
 };
 
 export type SendEmailBody = {
-  to: string; // email candidat
+  to: string;
   subject: string;
-  html?: string; // dacă trimiți HTML
-  text?: string; // dacă trimiți plain text
+  html?: string;
+  text?: string;
 };
 
 export type CandidatePickerItem = {
@@ -134,21 +231,10 @@ export const cvsApi = {
   },
 
   getFileUrl: (cv: Cv): string | null => {
-    if (!API_URL) return null;
-
-    if (cv.storedName) {
-      return `${API_URL}/uploads/cvs/${encodeURIComponent(cv.storedName)}`;
-    }
-
-    if (cv.filePath) {
-      const p = String(cv.filePath).replace(/\\/g, "/");
-      if (!/^[a-zA-Z]:\//.test(p)) {
-        const normalized = p.replace(/^.*\/uploads\//, "");
-        return `${API_URL}/uploads/${normalized}`;
-      }
-    }
-
-    return null;
+    if (!cv?.id) return null;
+    const base = http.defaults.baseURL || API_URL;
+    if (!base) return null;
+    return `${base}/cvs/${cv.id}/download`;
   },
 
   analyze: async (cvId: number): Promise<Cv> => {
@@ -166,11 +252,15 @@ export const cvsApi = {
 
   sendEmail: async (
     cvId: number,
-    payload: { to: string; subject: string; text: string; html?: string },
-  ) => {
-    const { data } = await http.post(`/cvs/${cvId}/send-email`, payload, {
-      headers: { "Content-Type": "application/json" },
-    });
+    payload: SendEmailBody,
+  ): Promise<{ ok: true }> => {
+    const { data } = await http.post<{ ok: true }>(
+      `/cvs/${cvId}/send-email`,
+      payload,
+      {
+        headers: { "Content-Type": "application/json" },
+      },
+    );
     return data;
   },
 };
