@@ -52,6 +52,116 @@ const FilePdf = FaFilePdf as unknown as ComponentType<IconBaseProps>;
 const CalendarIcon = FaCalendar as unknown as ComponentType<IconBaseProps>;
 const GithubIcon = FaGithub as unknown as ComponentType<IconBaseProps>;
 
+const MONTH_ALIASES: Record<string, string> = {
+  january: "ianuarie",
+  jan: "ianuarie",
+  february: "februarie",
+  feb: "februarie",
+  march: "martie",
+  mar: "martie",
+  april: "aprilie",
+  apr: "aprilie",
+  may: "mai",
+  june: "iunie",
+  jun: "iunie",
+  july: "iulie",
+  jul: "iulie",
+  august: "august",
+  sep: "septembrie",
+  september: "septembrie",
+  oct: "octombrie",
+  october: "octombrie",
+  nov: "noiembrie",
+  november: "noiembrie",
+  dec: "decembrie",
+  december: "decembrie",
+  ianuarie: "ianuarie",
+  februarie: "februarie",
+  martie: "martie",
+  aprilie: "aprilie",
+  mai: "mai",
+  iunie: "iunie",
+  iulie: "iulie",
+  septembrie: "septembrie",
+  octombrie: "octombrie",
+  noiembrie: "noiembrie",
+  decembrie: "decembrie",
+};
+
+const capitalizeRo = (value: string) =>
+  value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
+
+const normalizeDateLabel = (input?: string | null): string => {
+  const raw = String(input ?? "").trim();
+  if (!raw) return "?";
+
+  const lower = raw.toLowerCase();
+  if (lower === "present" || lower === "prezent") return "Prezent";
+
+  const monthYear = raw.match(
+    /^(?:(\d{4})[-/. ](?:(\d{1,2}))|([a-zA-ZăâîșțĂÂÎȘȚ]+)\s+(\d{4})|(\d{1,2})\s+([a-zA-ZăâîșțĂÂÎȘȚ]+)\s+(\d{4}))$/,
+  );
+
+  if (monthYear) {
+    const year = monthYear[1] || monthYear[4] || monthYear[7];
+    const monthPart = monthYear[2] || monthYear[3] || monthYear[6];
+
+    if (year && monthPart) {
+      const monthNumber = /^\d{1,2}$/.test(monthPart)
+        ? Number(monthPart)
+        : null;
+
+      let monthName = "";
+      if (monthNumber && monthNumber >= 1 && monthNumber <= 12) {
+        const d = new Date(Date.UTC(Number(year), monthNumber - 1, 1));
+        monthName = new Intl.DateTimeFormat("ro-RO", {
+          month: "long",
+          timeZone: "UTC",
+        }).format(d);
+      } else {
+        monthName = MONTH_ALIASES[monthPart.toLowerCase()] || monthPart;
+      }
+
+      return capitalizeRo(`${monthName} ${year}`);
+    }
+  }
+
+  const parsed = new Date(raw);
+  if (!Number.isNaN(parsed.getTime())) {
+    return capitalizeRo(
+      new Intl.DateTimeFormat("ro-RO", {
+        month: "long",
+        year: "numeric",
+      }).format(parsed),
+    );
+  }
+
+  const mapped = MONTH_ALIASES[lower];
+  if (mapped) return capitalizeRo(mapped);
+
+  return raw;
+};
+
+const formatExperiencePeriod = (entry: CandidateExperience): string => {
+  const start = normalizeDateLabel(entry.startDate);
+  const endRaw = String(entry.endDate ?? "").trim();
+  const end = normalizeDateLabel(entry.endDate);
+
+  if (!entry.endDate || endRaw.length === 0) {
+    return start;
+  }
+
+  if (end === "Prezent") {
+    return `${start} - Prezent`;
+  }
+
+  if (end === start) {
+    return start;
+  }
+
+  return `${start} - ${end}`;
+};
+
 type LocationState = {
   fromResults?: boolean;
   jobId?: number;
@@ -523,7 +633,7 @@ ${signatureSafe}
                         <span>GitHub: {githubScore}%</span>
                       )}
                       {confidenceScore !== null && (
-                        <span>Confidence: {confidenceScore}%</span>
+                        <span>Încredere: {confidenceScore}%</span>
                       )}
                     </div>
                   </div>
@@ -654,8 +764,7 @@ ${signatureSafe}
                             <div className={styles.timelineTopWow}>
                               <h4>{e.title || "Rol Profesional"}</h4>
                               <span className={styles.timelineDate}>
-                                {e.startDate || "?"}{" "}
-                                {e.endDate ? `- ${e.endDate}` : "- Prezent"}
+                                {formatExperiencePeriod(e)}
                               </span>
                             </div>
 
@@ -994,7 +1103,7 @@ ${signatureSafe}
               <div className={styles.pdfHeader}>
                 <h2 className={styles.pdfTitle}>Document</h2>
                 <span className={styles.helperPill}>
-                  {isPdf ? "Preview" : "Download"}
+                  {isPdf ? "Previzualizare" : "Descărcare"}
                 </span>
               </div>
 
@@ -1007,7 +1116,7 @@ ${signatureSafe}
                   <iframe
                     src={blobUrl}
                     className={styles.pdfViewer}
-                    title="PDF Viewer"
+                    title="Vizualizator PDF"
                   />
                 ) : (
                   <div className={styles.pdfFallback}>
