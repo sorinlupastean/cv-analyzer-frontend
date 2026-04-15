@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "../../routs/paths";
 import styles from "./PaginaAuth.module.css";
 
-import ParticlesBackground from "../../components/ParticlesBackground/ParticlesBackground";
 import Notification from "../../components/Notification/Notification";
 import Logo from "../../assets/logo.svg";
 
@@ -29,6 +28,10 @@ const UserIcon = FaUser as unknown as ComponentType<IconBaseProps>;
 const GoogleIcon = FaGoogle as unknown as ComponentType<IconBaseProps>;
 const EyeIcon = FaEye as unknown as ComponentType<IconBaseProps>;
 const EyeSlashIcon = FaEyeSlash as unknown as ComponentType<IconBaseProps>;
+
+const ParticlesBackground = lazy(
+  () => import("../../components/ParticlesBackground/ParticlesBackground"),
+);
 
 /* =========================
    API URL
