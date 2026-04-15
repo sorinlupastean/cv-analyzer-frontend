@@ -90,7 +90,7 @@
 }
 
 .monthLabel {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-main);
   text-transform: capitalize;
@@ -328,7 +328,7 @@
 }
 
 .agendaTitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0;
 }
@@ -791,8 +791,8 @@
 .loadingBar {
   padding: 10px 16px;
   border-top: 1px solid var(--border);
-  font-weight: 800;
-  font-size: 0.8rem;
+  font-weight: 700;
+  font-size: 0.7rem;
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.5);
 }
