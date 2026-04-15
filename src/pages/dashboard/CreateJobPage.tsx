@@ -3,6 +3,7 @@ import styles from "./CreateJobPage.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { jobsApi, type JobStatus } from "../../api/jobs.service";
+import JobModal from "../../components/JobModal/JobModal";
 import { PATHS } from "../../routs/paths";
 
 import {
@@ -27,7 +28,6 @@ const Lightbulb = FaLightbulb as unknown as ComponentType<IconBaseProps>;
 const Plus = FaPlus as unknown as ComponentType<IconBaseProps>;
 const SearchIcon = FaSearch as unknown as ComponentType<IconBaseProps>;
 const TrashIcon = FaTrash as unknown as ComponentType<IconBaseProps>;
-const Times = FaTimes as unknown as ComponentType<IconBaseProps>;
 const EditIcon = FaEdit as unknown as ComponentType<IconBaseProps>;
 const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 const CategoryIcon = FaGraduationCap as unknown as ComponentType<IconBaseProps>;
@@ -90,7 +90,6 @@ const CreateJobPage: React.FC = () => {
   useEffect(() => {
     if (!openJobId) return;
     if (!jobs.length) return;
-
     const found = jobs.find((j) => j.id === openJobId);
     if (found) setSelectedJob(found);
   }, [openJobId, jobs]);
@@ -100,10 +99,8 @@ const CreateJobPage: React.FC = () => {
       try {
         const data = (await jobsApi.list()) as any[];
         setJobs(data as any);
-
         const openId = (location.state as any)?.openJobId as number | undefined;
         const found = openId ? data.find((j) => j.id === openId) : null;
-
         setSelectedJob(found ?? (data.length ? data[0] : null));
       } catch {
         toast.error("Nu pot încărca job-urile din backend");
@@ -160,14 +157,12 @@ const CreateJobPage: React.FC = () => {
 
   const openEdit = (job: Job, e: React.MouseEvent) => {
     e.stopPropagation();
-
     if (job.status === "CLOSED") {
       toast.error(
         "Postul este închis. Poți doar să îl ștergi sau să îl activezi.",
       );
       return;
     }
-
     setForm({
       title: job.title,
       category: job.category,
@@ -183,7 +178,6 @@ const CreateJobPage: React.FC = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       if (editingId) {
         const updated = await jobsApi.update(editingId, form);
@@ -220,9 +214,7 @@ const CreateJobPage: React.FC = () => {
     e.stopPropagation();
     try {
       const next: JobStatus = job.status === "ACTIVE" ? "CLOSED" : "ACTIVE";
-
       const updated = await jobsApi.setStatus(job.id, next);
-
       setJobs((prev) =>
         prev.map((j) =>
           j.id === job.id
@@ -234,7 +226,6 @@ const CreateJobPage: React.FC = () => {
             : j,
         ),
       );
-
       setSelectedJob((prev) =>
         prev?.id === job.id
           ? ({
@@ -244,7 +235,6 @@ const CreateJobPage: React.FC = () => {
             } as any)
           : prev,
       );
-
       toast.success(next === "CLOSED" ? "Post închis" : "Post activat");
     } catch (err) {
       console.error("toggleStatus error:", err);
@@ -252,7 +242,6 @@ const CreateJobPage: React.FC = () => {
     }
   };
 
-  // sus, lângă celelalte state-uri
   const [reqExpanded, setReqExpanded] = useState(false);
 
   useEffect(() => {
@@ -275,7 +264,6 @@ const CreateJobPage: React.FC = () => {
                 Gestionare posturi și candidați
               </p>
             </div>
-
             <button className={styles.primaryBtn} onClick={openCreate}>
               <Plus size={12} /> Nou
             </button>
@@ -293,7 +281,6 @@ const CreateJobPage: React.FC = () => {
           <div className={styles.jobScrollList}>
             {filteredJobs.map((job) => {
               const isSelected = selectedJob?.id === job.id;
-
               return (
                 <div
                   key={job.id}
@@ -313,13 +300,10 @@ const CreateJobPage: React.FC = () => {
                     <div className={styles.miniIconBox}>
                       <Briefcase />
                     </div>
-
                     <div className={styles.miniCardText}>
                       <h4 className={styles.miniTitle}>{job.title}</h4>
-
                       <div className={styles.miniSubtitleRow}>
                         <p className={styles.miniSub}>{job.location || "—"}</p>
-
                         <span
                           className={`${styles.statusPill} ${
                             job.status === "ACTIVE"
@@ -349,7 +333,6 @@ const CreateJobPage: React.FC = () => {
                       >
                         <EditIcon />
                       </button>
-
                       <button
                         type="button"
                         className={`${styles.actionIconBtn} ${styles.dangerIconBtn}`}
@@ -378,12 +361,10 @@ const CreateJobPage: React.FC = () => {
                       <Briefcase className={styles.metaIcon} />
                       {selectedJob.type}
                     </span>
-
                     <span className={styles.dateTag}>
                       <CalendarIcon className={styles.metaIcon} />
                       {formatDate(selectedJob.createdAt)}
                     </span>
-
                     <span className={styles.categoryTag}>
                       <CategoryIcon className={styles.metaIcon} />
                       {selectedJob.category}
@@ -410,7 +391,6 @@ const CreateJobPage: React.FC = () => {
                       ? "Inchide post"
                       : "Activeaza post"}
                   </button>
-
                   <div className={styles.statsCircle}>
                     <strong>{selectedJob.cvs.length}</strong>
                     <span>CV-uri</span>
@@ -422,7 +402,6 @@ const CreateJobPage: React.FC = () => {
               <section className={styles.reqCard}>
                 <div className={styles.reqHeader}>
                   <p className={styles.reqTitle}>Cerințe</p>
-
                   <button
                     type="button"
                     className={styles.reqToggleBtn}
@@ -432,7 +411,6 @@ const CreateJobPage: React.FC = () => {
                     {reqExpanded ? "Micșorează" : "Vezi mai mult"}
                   </button>
                 </div>
-
                 <p
                   className={[
                     styles.reqText,
@@ -454,12 +432,6 @@ const CreateJobPage: React.FC = () => {
                       const topSkills = (cv.skills ?? [])
                         .filter(Boolean)
                         .slice(0, 2);
-
-                      const remainingSkills = Math.max(
-                        (cv.skills?.length ?? 0) - topSkills.length,
-                        0,
-                      );
-
                       return (
                         <div key={cv.id} className={styles.cvCard}>
                           <div className={styles.cvTop}>
@@ -532,14 +504,12 @@ const CreateJobPage: React.FC = () => {
                       <div className={styles.emptyBadge}>
                         <Lightbulb className={styles.emptyIcon} />
                       </div>
-
                       <h3 className={styles.emptyTitle}>
                         Momentan nu există rezultate
                       </h3>
                       <p className={styles.emptyText}>
                         Încarcă CV-uri pentru acest post.
                       </p>
-
                       <div className={styles.emptyActions}>
                         <button
                           type="button"
@@ -553,7 +523,9 @@ const CreateJobPage: React.FC = () => {
                           onClick={() =>
                             navigate(
                               `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
-                              { state: { jobId: selectedJob.id } },
+                              {
+                                state: { jobId: selectedJob.id },
+                              },
                             )
                           }
                         >
@@ -574,107 +546,14 @@ const CreateJobPage: React.FC = () => {
         </main>
 
         {/* MODAL */}
-        {isFormOpen && (
-          <div className={styles.overlay}>
-            <div className={styles.modal}>
-              <div className={styles.modalHeader}>
-                <h2>{editingId ? "Editare Post" : "Creează Post Nou"}</h2>
-                <button className={styles.closeBtn} onClick={resetForm}>
-                  <Times />
-                </button>
-              </div>
-
-              <form onSubmit={handleSave} className={styles.unifiedForm}>
-                <div className={styles.formGrid}>
-                  <div className={styles.fGroup}>
-                    <label>Titlu Poziție</label>
-                    <input
-                      required
-                      value={form.title}
-                      onChange={(e) =>
-                        setForm({ ...form, title: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className={styles.fGroup}>
-                    <label>Categorie</label>
-                    <input
-                      required
-                      value={form.category}
-                      onChange={(e) =>
-                        setForm({ ...form, category: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className={styles.fGroup}>
-                    <label>Tip</label>
-                    <select
-                      value={form.type}
-                      onChange={(e) =>
-                        setForm({ ...form, type: e.target.value })
-                      }
-                    >
-                      <option>Full-time</option>
-                      <option>Part-time</option>
-                      <option>Remote</option>
-                      <option>Internship</option>
-                    </select>
-                  </div>
-
-                  <div className={styles.fGroup}>
-                    <label>Locație</label>
-                    <input
-                      value={form.location}
-                      onChange={(e) =>
-                        setForm({ ...form, location: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className={`${styles.fGroup} ${styles.fullWidth}`}>
-                    <label>Descriere</label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={form.description}
-                      onChange={(e) =>
-                        setForm({ ...form, description: e.target.value })
-                      }
-                    />
-                  </div>
-
-                  <div className={`${styles.fGroup} ${styles.fullWidth}`}>
-                    <label>Cerințe</label>
-                    <textarea
-                      required
-                      rows={4}
-                      value={form.requirements}
-                      onChange={(e) =>
-                        setForm({ ...form, requirements: e.target.value })
-                      }
-                      placeholder="Ex: comunicare, lucru în echipă, experiență relevantă..."
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.modalActions}>
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className={styles.cancelBtn}
-                  >
-                    Anulează
-                  </button>
-                  <button type="submit" className={styles.saveBtn}>
-                    Salvează
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        <JobModal
+          isOpen={isFormOpen}
+          isEditing={Boolean(editingId)}
+          form={form}
+          setForm={setForm}
+          onClose={resetForm}
+          onSubmit={handleSave}
+        />
       </div>
     </div>
   );

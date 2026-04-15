@@ -35,7 +35,6 @@
   --radius-md: 14px;
   --radius-sm: 12px;
 
-  /* status colors from your toast */
   --ok: #3ddc97;
   --ok-bg: rgba(61, 220, 151, 0.12);
   --ok-border: rgba(46, 139, 87, 0.35);
@@ -91,14 +90,11 @@
 .jobsPanel {
   width: 372px;
   min-width: 332px;
-
-  background: rgba(255, 255, 255, 0.8);
+  background: white;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-
   border-right: 1px solid var(--card-border);
   padding: 24px 18px;
-
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -109,7 +105,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-
   padding-bottom: 18px;
   border-bottom: 1px solid var(--card-border);
   margin-bottom: 18px;
@@ -149,18 +144,14 @@
   border: 1px solid var(--accent-soft-border);
   background: var(--accent-soft-bg);
   color: var(--accent);
-
   padding: 10px 14px;
   border-radius: var(--radius-sm);
-
   font-size: 0.8rem;
   font-weight: 700;
-
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
@@ -184,16 +175,12 @@
 .searchWrapper input {
   width: 100%;
   padding: 12px 12px 12px 40px;
-
   border-radius: var(--radius-md);
   border: 1px solid rgba(0, 0, 0, 0.08);
-
   background: rgba(255, 255, 255, 0.76);
   color: var(--text-dark);
-
   font-size: 0.86rem;
   font-weight: 600;
-
   transition: 0.18s ease;
   outline: none;
   font-family: inherit;
@@ -230,94 +217,25 @@
 .jobScrollList::-webkit-scrollbar {
   width: 6px;
 }
-
 .jobScrollList::-webkit-scrollbar-thumb {
   background: rgba(100, 116, 139, 0.18);
   border-radius: 999px;
 }
-
 .jobScrollList::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .miniIconBox {
   width: 42px;
   height: 42px;
   border-radius: 14px;
-
   background: var(--accent-soft-bg);
   border: 1px solid rgba(74, 207, 238, 0.2);
   color: var(--accent);
-
   display: grid;
   place-items: center;
-
   font-size: 1rem;
   flex-shrink: 0;
-}
-
-.jobMetaRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-  font-size: 0.74rem;
-  font-weight: 800;
-  color: var(--text-muted);
-}
-
-.jobMetaDot {
-  opacity: 0.6;
-}
-
-.jobMetaText {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px;
-}
-
-.statusActive {
-  color: var(--ok);
-  background: var(--ok-bg);
-  border-color: var(--ok-border);
-}
-
-.statusClosed {
-  color: var(--warn);
-  background: var(--warn-bg);
-  border-color: var(--warn-border);
-}
-
-/* actions, not cramped */
-.miniCardActions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  opacity: 0;
-  transform: translateX(6px);
-  transition: 0.18s ease;
-  flex-shrink: 0;
-}
-
-.actionTextBtn {
-  border: 1px solid rgba(74, 207, 238, 0.22);
-  background: rgba(74, 207, 238, 0.08);
-  color: var(--accent);
-
-  padding: 9px 12px;
-  border-radius: 12px;
-
-  font-size: 0.78rem;
-  font-weight: 900;
-  cursor: pointer;
-  transition: 0.18s ease;
-  white-space: nowrap;
-}
-
-.actionTextBtn:hover {
-  background: rgba(74, 207, 238, 0.12);
-  border-color: rgba(74, 207, 238, 0.32);
-  transform: translateY(-1px);
 }
 
 /* ================= MAIN AREA ================= */
@@ -325,6 +243,7 @@
   flex: 1;
   padding: 24px;
   overflow-y: auto;
+  min-width: 0;
 }
 
 /* Header card */
@@ -333,22 +252,18 @@
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-
   margin-bottom: 18px;
   padding: 18px 20px;
   border-radius: var(--radius-xl);
-
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
   box-shadow: var(--card-shadow);
 }
 
 .jobMainInfo h1 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 700;
   margin: 0 0 10px 0;
   color: var(--text-dark);
@@ -391,7 +306,6 @@
   color: var(--text-muted);
   font-weight: 600;
 }
-
 .categoryTag {
   color: var(--text-body);
   opacity: 0.95;
@@ -402,15 +316,12 @@
   width: 50px;
   height: 50px;
   border-radius: 99px;
-
   background: linear-gradient(135deg, #ffffff, rgba(153, 222, 235, 0.35));
   border: 1.5px solid rgba(74, 207, 238, 0.22);
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   box-shadow: 0 14px 30px rgba(74, 207, 238, 0.12);
   flex-shrink: 0;
 }
@@ -421,7 +332,6 @@
   color: var(--accent);
   line-height: 1;
 }
-
 .statsCircle span {
   font-size: 0.6rem;
   color: var(--text-muted);
@@ -437,7 +347,6 @@
   box-shadow: var(--card-shadow);
   padding: 18px 20px;
   margin-bottom: 18px;
-
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -446,10 +355,8 @@
   border: 1px solid rgba(74, 207, 238, 0.22);
   background: rgba(74, 207, 238, 0.08);
   color: var(--accent);
-
   padding: 8px 10px;
   border-radius: 12px;
-
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
@@ -463,16 +370,14 @@
   transform: translateY(-1px);
 }
 
-/* text micșorat (doar câteva linii) */
 .reqTextClamped {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 6; /* schimbă 4-8 după gust */
+  -webkit-line-clamp: 6;
   line-clamp: 6;
   overflow: hidden;
 }
 
-/* text extins */
 .reqTextExpanded {
   display: block;
 }
@@ -490,14 +395,13 @@
   font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.6px;
-
   color: var(--text-dark);
 }
 
 .reqText {
   margin: 0;
   white-space: pre-wrap;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-body);
   line-height: 1.55;
@@ -518,15 +422,12 @@
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-xl);
-
   padding: 18px 20px;
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
     border-color 0.18s ease;
-
   box-shadow: var(--card-shadow);
-
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -627,29 +528,44 @@
   font-weight: 650;
 }
 
+.skillsEmpty {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(100, 116, 139, 0.8);
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.03);
+  border: 1px dashed rgba(15, 23, 42, 0.12);
+}
+
+.skillsHint {
+  margin: 0 0 14px 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(100, 116, 139, 0.78);
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
 .viewBtn {
   width: 100%;
   padding: 6px 12px;
   border-radius: var(--radius-md);
-
   border: 1px solid rgba(74, 207, 238, 0.24);
   background: var(--accent-soft-bg);
   color: var(--accent);
-
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
-
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
     border-color 0.18s ease;
-
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-
+  gap: 8px;
   font-family: inherit;
 }
 
@@ -676,19 +592,14 @@
 .emptyCard {
   width: 100%;
   min-height: 260px;
-  padding: 18px 20px;
-
   background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 26px;
-
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-
   box-shadow:
     0 22px 46px rgba(74, 207, 238, 0.1),
     0 1px 3px rgba(0, 0, 0, 0.04);
-
   padding: 34px 28px;
   text-align: center;
   position: relative;
@@ -719,10 +630,8 @@
   height: 45px;
   border-radius: 14px;
   margin: 0 auto 16px auto;
-
   display: grid;
   place-items: center;
-
   background: linear-gradient(
     135deg,
     rgba(74, 207, 238, 0.16),
@@ -780,17 +689,14 @@
     var(--electric-glow)
   );
   color: #ffffff;
-
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
     filter 0.18s ease;
   box-shadow: 0 14px 30px rgba(74, 207, 238, 0.22);
-
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -808,31 +714,6 @@
   transform: none;
   box-shadow: none;
   filter: none;
-}
-
-.btnIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 13px;
-  display: grid;
-  place-items: center;
-
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-}
-
-.btnArrow {
-  font-weight: 950;
-  opacity: 0.95;
-  transform: translateX(0);
-  transition:
-    transform 0.18s ease,
-    opacity 0.18s ease;
-}
-
-.emptyPrimary:hover .btnArrow {
-  transform: translateX(3px);
-  opacity: 1;
 }
 
 /* ================= NO JOB SELECTED ================= */
@@ -857,345 +738,18 @@
   color: rgba(100, 116, 139, 0.75);
 }
 
-/* ================= MODAL (WOW, MINIMAL, CONSISTENT) ================= */
-.overlay {
-  position: fixed;
-  inset: 0;
-
-  background: rgba(3, 17, 28, 0.46);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 18px;
-  z-index: 1000;
-  animation: fadeIn 0.18s ease;
-}
-
-/* container modal, cu layout intern pentru sticky header + footer */
-.modal {
-  width: min(720px, 100%);
-  max-height: calc(100vh - 36px);
-
-  border-radius: 22px;
-  overflow: hidden;
-
-  background: rgba(255, 255, 255, 0.92);
-
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow:
-    0 28px 72px rgba(2, 6, 23, 0.22),
-    0 1px 0 rgba(255, 255, 255, 0.75) inset;
-
-  display: flex;
-  flex-direction: column;
-
-  animation: slideUp 0.18s ease;
-}
-
-/* accent foarte subtil, consistent cu app */
-.modal::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      800px 260px at 18% 0%,
-      rgba(74, 207, 238, 0.14),
-      transparent 55%
-    ),
-    radial-gradient(
-      700px 260px at 92% 100%,
-      rgba(57, 163, 196, 0.1),
-      transparent 60%
-    );
-  opacity: 0.8;
-}
-
-/* ca ::before să funcționeze */
-.modal {
-  position: relative;
-}
-
-/* HEADER: premium, aerisit, text clar */
-.modalHeader {
-  position: sticky;
-  top: 0;
-  z-index: 3;
-
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
-}
-
-.modalHeader h2 {
-  margin: 0;
-  font-size: 1.06rem;
-  font-weight: 950;
-  letter-spacing: -0.2px;
-  color: var(--text-dark);
-}
-
-/* buton close minimalist, dar premium */
-.closeBtn {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.6);
-  color: rgba(71, 85, 105, 0.95);
-
-  display: grid;
-  place-items: center;
-
-  cursor: pointer;
-  transition: 0.16s ease;
-
-  font-size: 0.92rem;
-}
-
-.closeBtn:hover {
-  background: rgba(74, 207, 238, 0.1);
-  border-color: rgba(74, 207, 238, 0.22);
-  color: var(--accent);
-  transform: translateY(-1px);
-}
-
-/* BODY: scroll intern, spacing wow */
-.unifiedForm {
-  position: relative;
-  z-index: 2;
-
-  padding: 18px 25px 14px 25px;
-
-  overflow: auto;
-  min-height: 0;
-}
-
-/* scrollbar: fin, discret */
-.unifiedForm::-webkit-scrollbar {
-  width: 10px;
-}
-.unifiedForm::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.2);
-  border-radius: 999px;
-  border: 3px solid rgba(255, 255, 255, 0.9);
-}
-.unifiedForm::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* grid mai tight și elegant */
-.formGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px 14px;
-}
-
-.fullWidth {
-  grid-column: 1 / -1;
-}
-
-.fGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-/* labels mai “designer”, fără să țipe */
-.fGroup label {
-  font-size: 0.7rem;
-  font-weight: 900;
-  color: rgba(100, 116, 139, 0.95);
-  text-transform: uppercase;
-  letter-spacing: 0.55px;
-}
-
-/* inputs: super curate, cu focus premium */
-.fGroup input,
-.fGroup select,
-.fGroup textarea {
-  width: 100%;
-  padding: 10px 10px;
-
-  border-radius: 10px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
-
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--text-dark);
-
-  font-size: 0.92rem;
-  font-weight: 600;
-
-  outline: none;
-  transition: 0.16s ease;
-  font-family: inherit;
-}
-
-.fGroup input::placeholder,
-.fGroup textarea::placeholder {
-  color: rgba(100, 116, 139, 0.72);
-  font-weight: 600;
-}
-
-.fGroup input:hover,
-.fGroup select:hover,
-.fGroup textarea:hover {
-  border-color: rgba(15, 23, 42, 0.14);
-  background: rgba(255, 255, 255, 0.82);
-}
-
-.fGroup input:focus,
-.fGroup select:focus,
-.fGroup textarea:focus {
-  border-color: rgba(74, 207, 238, 0.55);
-  box-shadow: var(--ring);
-  background: #fff;
-}
-
-.fGroup textarea {
-  resize: none;
-  min-height: 132px;
-}
-
-/* FOOTER: sticky, curat, cu separator fin */
-.modalActions {
-  position: sticky;
-  bottom: 0;
-  z-index: 3;
-  padding-top: 25px;
-
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.cancelBtn {
-  padding: 10px 14px;
-  border-radius: 10px;
-
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: rgba(2, 6, 23, 0.02);
-  color: rgba(30, 41, 59, 0.9);
-
-  font-size: 0.86rem;
-  font-weight: 900;
-
-  cursor: pointer;
-  transition: 0.16s ease;
-  font-family: inherit;
-}
-
-.cancelBtn:hover {
-  background: rgba(2, 6, 23, 0.04);
-  border-color: rgba(15, 23, 42, 0.14);
-  transform: translateY(-1px);
-}
-
-/* SAVE: accent, dar minimalist, fără gradient agresiv */
-.saveBtn {
-  padding: 10px 16px;
-  border-radius: 10px;
-
-  border: 1px solid rgba(74, 207, 238, 0.28);
-  background: rgba(74, 207, 238, 0.16);
-  color: rgba(2, 132, 199, 0.95);
-
-  font-size: 0.86rem;
-  font-weight: 950;
-
-  cursor: pointer;
-  transition: 0.16s ease;
-  font-family: inherit;
-}
-
-.saveBtn:hover {
-  background: rgba(74, 207, 238, 0.22);
-  border-color: rgba(74, 207, 238, 0.38);
-  transform: translateY(-1px);
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 640px) {
-  .overlay {
-    align-items: stretch;
-    padding: 10px;
-  }
-
-  .modal {
-    width: 100%;
-    max-height: 100%;
-    border-radius: 16px;
-  }
-
-  .modalHeader {
-    padding: 14px 14px;
-  }
-
-  .unifiedForm {
-    padding: 14px 14px 10px 14px;
-  }
-
-  .formGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .modalActions {
-    padding: 12px 14px 14px 14px;
-  }
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 980px) {
-  .jobsPanel {
-    width: 330px;
-    min-width: 300px;
-  }
-}
-
-@media (max-width: 860px) {
-  .jobsPanel {
-    display: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .mainArea {
-    padding: 18px;
-  }
-  .formGrid {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ================= JOB MINI CARDS ================= */
 .jobMiniCard {
   padding: 16px;
   border-radius: 20px;
-
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(15, 23, 42, 0.06);
-
   margin-bottom: 12px;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
@@ -1275,14 +829,13 @@
   border-color: var(--ok-border);
   background: var(--ok-bg);
 }
-
 .statusPillClosed {
   color: var(--warn);
   border-color: var(--warn-border);
   background: var(--warn-bg);
 }
 
-/* ===== ACTIONS, PREMIUM STACK (ONLY WHEN SELECTED) ===== */
+/* ===== ACTIONS STACK ===== */
 .miniActionsStack {
   display: flex;
   gap: 10px;
@@ -1293,32 +846,27 @@
   width: 25px;
   height: 25px;
   border-radius: 14px;
-
   display: grid;
   place-items: center;
-
   background: transparent;
   border: none;
   color: rgba(100, 116, 139, 0.85);
-
   cursor: pointer;
   transition: 0.18s ease;
 }
 
 .actionIconBtn:hover {
   background: rgba(74, 207, 238, 0.12);
-  border-color: rgba(74, 207, 238, 0.26);
   color: var(--accent);
   transform: translateY(-1px);
 }
 
 .dangerIconBtn:hover {
   background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.22);
   color: var(--danger);
 }
 
-/* ===== HEADER BUTTON, PREMIUM PILL ===== */
+/* ===== HEADER RIGHT ACTIONS ===== */
 .headerRightActions {
   display: flex;
   align-items: center;
@@ -1333,16 +881,15 @@
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: rgba(255, 255, 255, 0.65);
   color: var(--text-dark);
-
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
     border-color 0.18s ease,
     background 0.18s ease;
+  font-family: inherit;
 }
 
 .headerPrimaryBtn:hover {
@@ -1355,7 +902,6 @@
   background: rgba(61, 220, 151, 0.12);
   color: var(--ok);
 }
-
 .btnWarn {
   border-color: rgba(217, 79, 4, 0.24);
   background: rgba(255, 120, 79, 0.14);
@@ -1378,40 +924,452 @@
     0 0 16px rgba(217, 79, 4, 0.12) !important;
 }
 
-.moreTag {
-  font-size: 0.7rem;
-  padding: 6px 12px;
-  border-radius: 999px;
+/* ===========================================================================
+   RESPONSIVE — ALL DEVICE TYPES
+   =========================================================================== */
 
-  background: rgba(2, 132, 199, 0.06);
-  border: 1px dashed rgba(74, 207, 238, 0.28);
-  color: rgba(30, 41, 59, 0.82);
-
-  font-weight: 900;
+/* Ultra-wide monitors (2560px+) */
+@media (min-width: 2560px) {
+  .jobsPanel {
+    width: 420px;
+    min-width: 380px;
+    padding: 28px 22px;
+  }
+  .mainArea {
+    padding: 32px;
+  }
+  .heroTitle {
+    font-size: 1.35rem;
+  }
+  .jobMainInfo h1 {
+    font-size: 1.15rem;
+  }
+  .contentHeader {
+    padding: 22px 24px;
+  }
+  .cvGrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+  }
 }
 
-.skillsHint {
-  margin: 0 0 14px 0;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: rgba(100, 116, 139, 0.78);
-  justify-content: center;
-  align-items: center;
-  display: flex;
+/* Large monitors (1920px - 2559px) */
+@media (min-width: 1920px) and (max-width: 2559px) {
+  .jobsPanel {
+    width: 400px;
+    min-width: 360px;
+  }
+  .mainArea {
+    padding: 28px;
+  }
 }
 
-.viewBtn {
-  gap: 8px;
+/* Small desktop / large laptop (1200px - 1439px) */
+@media (max-width: 1439px) {
+  .mainArea {
+    padding: 20px;
+  }
+  .contentHeader {
+    padding: 16px 18px;
+  }
 }
 
-.skillsEmpty {
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: rgba(100, 116, 139, 0.8);
+/* Laptop (1024px - 1199px) */
+@media (max-width: 1199px) {
+  .jobsPanel {
+    width: 340px;
+    min-width: 300px;
+    padding: 20px 16px;
+  }
+  .mainArea {
+    padding: 18px;
+  }
+  .cvGrid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+  }
+}
 
-  padding: 6px 10px;
-  border-radius: 999px;
+/* Below 980px: narrower panel */
+@media (max-width: 980px) {
+  .jobsPanel {
+    width: 310px;
+    min-width: 280px;
+    padding: 18px 14px;
+  }
+  .heroTitle {
+    font-size: 1.05rem;
+  }
+  .heroSubtitle {
+    font-size: 0.7rem;
+  }
+  .miniIconBox {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+  }
+  .miniTitle {
+    max-width: 160px;
+  }
+  .miniSub {
+    max-width: 160px;
+  }
+}
 
-  background: rgba(2, 6, 23, 0.03);
-  border: 1px dashed rgba(15, 23, 42, 0.12);
+/* Tablet / small laptop — hide sidebar, full-width main */
+@media (max-width: 860px) {
+  .jobsPanel {
+    display: none;
+  }
+  .mainArea {
+    padding: 18px;
+  }
+  .contentHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+  .headerRightActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .cvGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+}
+
+/* Small tablet (640px - 767px) */
+@media (max-width: 767px) {
+  .mainArea {
+    padding: 14px;
+  }
+  .contentHeader {
+    padding: 14px;
+    border-radius: 16px;
+  }
+  .reqCard {
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+  .cvCard {
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+  .emptyCard {
+    padding: 28px 20px;
+    border-radius: 22px;
+  }
+  .jobMainInfo h1 {
+    font-size: 0.92rem;
+  }
+  .metaRow {
+    gap: 10px;
+    font-size: 0.75rem;
+  }
+  .typeTag {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+}
+
+/* Large phone (480px - 639px) */
+@media (max-width: 639px) {
+  .pageShell {
+    height: 100vh;
+  }
+  .mainArea {
+    padding: 12px;
+  }
+  .contentHeader {
+    padding: 12px;
+    border-radius: 14px;
+    gap: 12px;
+  }
+  .jobMainInfo h1 {
+    font-size: 0.88rem;
+  }
+  .metaRow {
+    gap: 8px;
+    font-size: 0.72rem;
+  }
+  .typeTag {
+    padding: 5px 9px;
+    font-size: 0.68rem;
+  }
+  .headerPrimaryBtn {
+    padding: 8px 12px;
+    font-size: 0.7rem;
+    border-radius: 12px;
+  }
+  .statsCircle {
+    width: 44px;
+    height: 44px;
+  }
+  .statsCircle strong {
+    font-size: 0.9rem;
+  }
+  .statsCircle span {
+    font-size: 0.55rem;
+  }
+  .reqCard {
+    padding: 12px 14px;
+    border-radius: 16px;
+  }
+  .reqTitle {
+    font-size: 0.82rem;
+  }
+  .reqText {
+    font-size: 0.75rem;
+  }
+  .reqToggleBtn {
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+  .cvGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .cvCard {
+    padding: 14px;
+    border-radius: 16px;
+  }
+  .emptyCard {
+    padding: 24px 16px;
+    border-radius: 18px;
+    min-height: 220px;
+  }
+  .emptyTitle {
+    font-size: 0.9rem;
+  }
+  .emptyText {
+    font-size: 0.75rem;
+  }
+  .emptyPrimary {
+    padding: 10px 16px;
+    font-size: 0.75rem;
+    border-radius: 12px;
+  }
+  .noJobSelected {
+    padding: 36px 20px;
+    border-radius: 18px;
+  }
+  .noJobSelected h4 {
+    font-size: 0.82rem;
+  }
+}
+
+/* Medium phone (400px - 479px) */
+@media (max-width: 479px) {
+  .mainArea {
+    padding: 10px;
+  }
+  .contentHeader {
+    padding: 10px;
+    border-radius: 12px;
+  }
+  .jobMainInfo h1 {
+    font-size: 0.84rem;
+  }
+  .metaRow {
+    gap: 6px;
+    font-size: 0.68rem;
+  }
+  .headerRightActions {
+    gap: 10px;
+  }
+  .headerPrimaryBtn {
+    padding: 7px 10px;
+    font-size: 0.68rem;
+  }
+  .statsCircle {
+    width: 40px;
+    height: 40px;
+  }
+  .statsCircle strong {
+    font-size: 0.85rem;
+  }
+  .reqCard {
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+  .cvCard {
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .candidate h4 {
+    max-width: 140px;
+    font-size: 0.75rem;
+  }
+  .candidate p {
+    max-width: 110px;
+    font-size: 0.7rem;
+  }
+  .scoreBadge {
+    font-size: 0.65rem;
+    padding: 3px 10px;
+  }
+  .skills {
+    gap: 6px;
+  }
+  .sTag {
+    font-size: 0.65rem;
+    padding: 5px 10px;
+  }
+  .viewBtn {
+    font-size: 0.7rem;
+    padding: 5px 10px;
+  }
+  .emptyCard {
+    padding: 20px 14px;
+    border-radius: 16px;
+  }
+  .noJobSelected {
+    padding: 28px 16px;
+    border-radius: 16px;
+  }
+}
+
+/* Small phone (320px - 399px) */
+@media (max-width: 399px) {
+  .mainArea {
+    padding: 8px;
+  }
+  .contentHeader {
+    padding: 8px;
+    border-radius: 10px;
+  }
+  .jobMainInfo h1 {
+    font-size: 0.8rem;
+  }
+  .metaRow {
+    gap: 5px;
+    font-size: 0.65rem;
+  }
+  .typeTag {
+    padding: 4px 8px;
+    font-size: 0.62rem;
+    gap: 5px;
+  }
+  .dateTag,
+  .categoryTag {
+    font-size: 0.62rem;
+    gap: 4px;
+  }
+  .headerPrimaryBtn {
+    padding: 6px 8px;
+    font-size: 0.62rem;
+    border-radius: 10px;
+  }
+  .statsCircle {
+    width: 36px;
+    height: 36px;
+  }
+  .statsCircle strong {
+    font-size: 0.78rem;
+  }
+  .statsCircle span {
+    font-size: 0.5rem;
+  }
+  .reqCard {
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+  .reqTitle {
+    font-size: 0.78rem;
+  }
+  .reqText {
+    font-size: 0.7rem;
+  }
+  .reqToggleBtn {
+    padding: 5px 7px;
+    font-size: 0.65rem;
+    border-radius: 10px;
+  }
+  .cvCard {
+    padding: 10px;
+    border-radius: 12px;
+  }
+  .candidate h4 {
+    max-width: 120px;
+    font-size: 0.72rem;
+  }
+  .candidate p {
+    max-width: 90px;
+    font-size: 0.65rem;
+  }
+  .userIcon {
+    font-size: 20px;
+  }
+  .scoreBadge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
+  }
+  .barContainer {
+    height: 4px;
+  }
+  .sTag {
+    font-size: 0.6rem;
+    padding: 4px 8px;
+  }
+  .skillsHint {
+    font-size: 0.62rem;
+  }
+  .viewBtn {
+    font-size: 0.65rem;
+    padding: 5px 8px;
+    border-radius: 10px;
+  }
+  .emptyCard {
+    padding: 18px 12px;
+    border-radius: 14px;
+    min-height: 180px;
+  }
+  .emptyBadge {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+  }
+  .emptyIcon {
+    font-size: 18px;
+  }
+  .emptyTitle {
+    font-size: 0.82rem;
+  }
+  .emptyText {
+    font-size: 0.7rem;
+  }
+  .emptyPrimary {
+    padding: 8px 14px;
+    font-size: 0.7rem;
+    border-radius: 10px;
+  }
+  .noJobSelected {
+    padding: 24px 12px;
+    border-radius: 14px;
+  }
+  .noJobSelected h4 {
+    font-size: 0.78rem;
+  }
+}
+
+/* Landscape phones */
+@media (max-height: 500px) and (orientation: landscape) {
+  .pageShell {
+    height: 100vh;
+  }
+  .contentHeader {
+    padding: 10px 14px;
+    margin-bottom: 12px;
+  }
+  .reqCard {
+    padding: 10px 14px;
+    margin-bottom: 12px;
+  }
+  .emptyCard {
+    min-height: 180px;
+    padding: 20px 16px;
+  }
 }
