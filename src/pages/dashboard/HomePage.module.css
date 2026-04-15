@@ -8,20 +8,19 @@
   --sky-highlight: #39a3c4;
   --electric-glow: #4acfee;
   --mist-cyan: #99deeb;
-
   --text-dark: #0f172a;
   --text-muted: #64748b;
 }
 
 .wrapper {
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 18px;
   font-family: "Montserrat", sans-serif;
   padding: 20px;
-
-  overflow: hidden; /* important: scoate scroll-ul */
+  overflow-y: auto;
+  overflow-x: hidden;
 
   background:
     radial-gradient(
@@ -44,13 +43,13 @@
   color: var(--text-dark);
 }
 
-/* ================= HEADER CARD (CONSISTENT) ================= */
+/* ================= HEADER CARD ================= */
 .headerCard {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 24px;
+  padding: 18px 20px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(255, 255, 255, 1);
@@ -66,14 +65,14 @@
 
 .title {
   margin: 0;
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: var(--text-dark);
 }
 
 .subtitle {
   margin: 0;
-  font-size: 0.86rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   font-weight: 500;
   max-width: 720px;
@@ -90,10 +89,8 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-
   padding: 9px 12px;
   border-radius: 999px;
-
   background: linear-gradient(
     135deg,
     rgba(74, 207, 238, 0.16),
@@ -101,9 +98,8 @@
   );
   border: 1px solid rgba(74, 207, 238, 0.26);
   color: var(--ocean-mid);
-
-  font-size: 0.78rem;
-  font-weight: 800;
+  font-size: 0.7rem;
+  font-weight: 700;
 }
 
 .pillDot {
@@ -140,7 +136,7 @@
   gap: 18px;
 }
 
-/* ================= BASE CARD (SAME AS APP) ================= */
+/* ================= BASE CARD ================= */
 .card {
   background: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -160,9 +156,8 @@
 /* ================= METRIC CARDS ================= */
 .metric {
   grid-column: span 3;
-  height: 140px; /* fix, ca să se potrivească pe rândul 1 */
+  height: 140px;
   min-height: 0;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -184,17 +179,15 @@
 }
 
 .iconBox {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   background: linear-gradient(
     135deg,
     rgba(74, 207, 238, 0.16),
     rgba(57, 163, 196, 0.12)
   );
   border: 1px solid rgba(74, 207, 238, 0.24);
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,8 +198,8 @@
 
 .metricLabel {
   margin: 0;
-  font-size: 0.78rem;
-  font-weight: 800;
+  font-size: 0.7rem;
+  font-weight: 700;
   color: var(--text-muted);
   letter-spacing: 0.4px;
   text-transform: uppercase;
@@ -216,13 +209,13 @@
 }
 
 .badge {
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 0.7rem;
+  font-weight: 700;
   color: #16a34a;
   background: rgba(22, 163, 74, 0.08);
   border: 1px solid rgba(22, 163, 74, 0.15);
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 10px;
   height: fit-content;
   flex-shrink: 0;
 }
@@ -235,15 +228,15 @@
 
 .metricValue {
   margin: 0;
-  font-size: 2rem;
-  font-weight: 900;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.6px;
 }
 
 .miniHint {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -266,13 +259,20 @@
 /* ================= CHART CARDS ================= */
 .chartCard {
   grid-column: span 6;
-  min-height: 0;
+  min-height: 320px;
   height: 100%;
-
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 16px; /* puțin mai mic ca să încapi fără scroll */
+  padding: 16px;
+}
+
+.chartBody {
+  flex: 1;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chartHeader {
@@ -296,34 +296,300 @@
   font-weight: 500;
 }
 
-.chartBody {
-  flex: 1;
-  min-height: 0;
-  height: 100%;
-}
+/* =============================================
+   RESPONSIVE - ALL DEVICE TYPES
+   ============================================= */
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1200px) {
+/* Ultra-wide monitors (2560px+) */
+@media (min-width: 2560px) {
+  .wrapper {
+    padding: 32px 48px;
+    gap: 24px;
+  }
+  .grid {
+    gap: 24px;
+    grid-template-rows: 160px 1fr;
+  }
   .metric {
-    grid-column: span 6;
+    height: 160px;
   }
-
-  .chartCard {
-    grid-column: span 12;
+  .title {
+    font-size: 1.5rem;
+  }
+  .metricValue {
+    font-size: 1.8rem;
   }
 }
 
-@media (max-width: 720px) {
+/* Large monitors (1920px - 2559px) */
+@media (min-width: 1920px) and (max-width: 2559px) {
+  .wrapper {
+    padding: 24px 36px;
+    gap: 20px;
+  }
+  .grid {
+    gap: 20px;
+  }
+}
+
+/* Small desktop / large laptop (1200px - 1439px) */
+@media (max-width: 1439px) {
   .wrapper {
     padding: 18px;
+    gap: 16px;
   }
+  .grid {
+    gap: 16px;
+  }
+  .metricValue {
+    font-size: 1.35rem;
+  }
+}
 
+/* Laptop (1024px - 1199px) */
+@media (max-width: 1199px) {
+  .grid {
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+  .metric {
+    grid-column: span 6;
+    height: 130px;
+  }
+  .chartCard {
+    grid-column: span 12;
+    min-height: 280px;
+  }
+}
+
+/* Small laptop / large tablet landscape (900px - 1023px) */
+@media (max-width: 1023px) {
+  .wrapper {
+    padding: 16px;
+    padding-top: 68px;
+    gap: 14px;
+  }
+  .metric {
+    grid-column: span 6;
+    height: 125px;
+  }
+  .chartCard {
+    grid-column: span 12;
+    min-height: 260px;
+  }
+  .title {
+    font-size: 1.1rem;
+  }
+  .headerCard {
+    padding: 16px 18px;
+    border-radius: 20px;
+  }
+}
+
+/* Tablet portrait (768px - 899px) */
+@media (max-width: 899px) {
+  .wrapper {
+    padding: 14px;
+    padding-top: 68px;
+    gap: 12px;
+  }
   .headerCard {
     flex-direction: column;
     align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
   }
-
+  .headerRight {
+    align-self: flex-start;
+  }
+  .grid {
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 12px;
+  }
   .metric {
+    grid-column: span 6;
+    height: 120px;
+    padding: 14px;
+  }
+  .chartCard {
     grid-column: span 12;
+    min-height: 280px;
+    padding: 14px;
+  }
+  .chartBody {
+    min-height: 220px;
+  }
+  .metricValue {
+    font-size: 1.25rem;
+  }
+  .metricLabel {
+    font-size: 0.65rem;
+  }
+}
+
+/* Small tablet (640px - 767px) */
+@media (max-width: 767px) {
+  .wrapper {
+    padding: 12px;
+    padding-top: 68px;
+    gap: 10px;
+  }
+  .metric {
+    grid-column: span 6;
+    height: 115px;
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .chartCard {
+    grid-column: span 12;
+    min-height: 220px;
+    border-radius: 14px;
+  }
+  .card {
+    border-radius: 14px;
+  }
+  .headerCard {
+    border-radius: 16px;
+    padding: 14px;
+  }
+  .title {
+    font-size: 1rem;
+  }
+  .subtitle {
+    font-size: 0.75rem;
+  }
+  .iconBox {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+}
+
+/* Large phone (480px - 639px) */
+@media (max-width: 639px) {
+  .wrapper {
+    padding: 10px;
+    padding-top: 68px;
+    gap: 10px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 10px;
+  }
+  .metric {
+    grid-column: span 1;
+    height: auto;
+    min-height: 110px;
+    padding: 14px;
+  }
+  .chartCard {
+    grid-column: span 1;
+    min-height: 220px;
+    padding: 14px;
+  }
+  .metricValue {
+    font-size: 1.4rem;
+  }
+  .metricLabel {
+    font-size: 0.68rem;
+  }
+  .headerCard {
+    padding: 14px;
+    border-radius: 16px;
+  }
+}
+
+/* Medium phone (400px - 479px) */
+@media (max-width: 479px) {
+  .wrapper {
+    padding: 8px;
+    padding-top: 68px;
+    gap: 8px;
+  }
+  .headerCard {
+    padding: 12px;
+    border-radius: 14px;
+  }
+  .title {
+    font-size: 0.95rem;
+  }
+  .subtitle {
+    font-size: 0.7rem;
+  }
+  .pill {
+    font-size: 0.65rem;
+    padding: 7px 10px;
+  }
+  .metric {
+    padding: 12px;
+    min-height: 105px;
+    border-radius: 12px;
+  }
+  .chartCard {
+    padding: 12px;
+    min-height: 200px;
+    border-radius: 12px;
+  }
+  .card {
+    border-radius: 12px;
+  }
+  .metricValue {
+    font-size: 1.3rem;
+  }
+  .miniHint {
+    font-size: 0.72rem;
+  }
+}
+
+/* Small phone (320px - 399px) */
+@media (max-width: 399px) {
+  .wrapper {
+    padding: 6px;
+    padding-top: 68px;
+    gap: 6px;
+  }
+  .headerCard {
+    padding: 10px;
+    border-radius: 12px;
+    gap: 8px;
+  }
+  .title {
+    font-size: 0.9rem;
+  }
+  .subtitle {
+    font-size: 0.65rem;
+  }
+  .metric {
+    padding: 10px;
+    min-height: 100px;
+    border-radius: 10px;
+  }
+  .chartCard {
+    padding: 10px;
+    min-height: 180px;
+    border-radius: 10px;
+  }
+  .card {
+    border-radius: 10px;
+  }
+  .iconBox {
+    width: 28px;
+    height: 28px;
+  }
+  .metricValue {
+    font-size: 1.2rem;
+  }
+  .metricLabel {
+    font-size: 0.6rem;
+  }
+  .miniHint {
+    font-size: 0.65rem;
+  }
+  .badge {
+    font-size: 0.6rem;
+    padding: 3px 8px;
   }
 }
