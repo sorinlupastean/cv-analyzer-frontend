@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PATHS } from "./routs/paths";
 
@@ -13,6 +13,11 @@ import HomePage from "./pages/dashboard/HomePage";
 import CreateJobPage from "./pages/dashboard/CreateJobPage";
 import UploadCVPage from "./pages/dashboard/UploadCVPage";
 import CVDetailsPage from "./pages/dashboard/CVDetailsPage";
+import CalendarPage from "./pages/dashboard/CalendarPage";
+import SettingsPage from "./pages/dashboard/SettingsPage";
+
+import InterviewConfirmPage from "./pages/interview/InterviewConfirmPage";
+import InterviewCancelPage from "./pages/interview/InterviewCancelPage";
 
 import "./App.css";
 
@@ -37,6 +42,10 @@ const App: React.FC = () => {
           }
         />
 
+        {/* TOKEN ROUTES (TOP LEVEL, NOT NESTED UNDER /dashboard) */}
+        <Route path="/interview/confirm" element={<InterviewConfirmPage />} />
+        <Route path="/interview/cancel" element={<InterviewCancelPage />} />
+
         {/* PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>
           <Route path={PATHS.DASHBOARD.ROOT} element={<DashboardLayout />}>
@@ -57,6 +66,8 @@ const App: React.FC = () => {
               path={PATHS.DASHBOARD.CV_DETAILS()}
               element={<CVDetailsPage />}
             />
+            <Route path={PATHS.DASHBOARD.CALENDAR} element={<CalendarPage />} />
+            <Route path={PATHS.DASHBOARD.SETTINGS} element={<SettingsPage />} />
           </Route>
         </Route>
 
