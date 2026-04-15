@@ -52,9 +52,8 @@
 /* ================= PAGE ================= */
 .pageShell {
   min-height: 100vh;
-  height: auto;
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: visible;
   font-family: "Montserrat", sans-serif;
 
   background:
@@ -85,7 +84,6 @@
 
   height: auto;
   min-height: 0;
-  overflow: visible;
 }
 
 /* ================= TOP BAR ================= */
@@ -164,30 +162,6 @@
   background: rgba(74, 207, 238, 0.06);
   border: 1px solid rgba(74, 207, 238, 0.15);
   border-radius: 16px;
-}
-
-.badgeIcon {
-  color: var(--sky-highlight);
-  font-size: 1.1rem;
-  display: flex;
-}
-
-.badgeText {
-  display: flex;
-  flex-direction: column;
-}
-
-.badgeLabel {
-  font-size: 0.6rem;
-  font-weight: 900;
-  color: var(--text-muted);
-  letter-spacing: 1px;
-}
-
-.badgeValue {
-  font-size: 0.8rem;
-  font-weight: 800;
-  color: var(--text-dark);
 }
 
 /* --- Center Side --- */
@@ -361,9 +335,30 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  align-self: start;
+
+  position: sticky;
   top: 110px;
+
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
+.leftColumn::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ajustare pentru ecrane mici - scoatem sticky când coloanele devin una sub alta */
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .leftColumn {
+    position: static;
+    max-height: none;
+  }
+}
 .rightColumn {
   display: flex;
   flex-direction: column;
@@ -843,152 +838,145 @@
   line-height: 1.4;
 }
 
-/* ================= DECISION ARTEFACT - LUXURY STUDIO STYLE ================= */
-.decisionArtefact {
+/* ================= EMAIL CTA: CLEAN & BREEZY ================= */
+
+.emailArtefact {
   position: relative;
+  width: 100%;
+  padding: 16px 20px; /* Mai îngust pentru un look modern */
+  border-radius: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(15px);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 18px;
-  padding: 25px 20px;
-  border-radius: var(--radius-xl);
+  cursor: pointer;
   overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
-  backdrop-filter: blur(80px) saturate(120%);
-  -webkit-backdrop-filter: blur(80px) saturate(120%);
-  border: 1px solid rgba(255, 255, 255, 0.85);
+.contentWrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  z-index: 2;
+  gap: 16px;
+}
 
-  font-size: 1rem;
+.iconCircle {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: white;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s ease;
+  flex-shrink: 0;
+}
+
+.textSection {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  flex: 1;
+  min-width: 0; /* Previne overflow */
+}
+
+.mainTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+  margin: 0;
+  color: #111;
+  letter-spacing: -0.01em;
+}
+
+.emailAddress {
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0px;
-  color: var(--text-dark);
-
-  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-
-  /* culori default pentru bordura animată */
-  --decision-border-1: rgba(74, 207, 238, 0.55);
-  --decision-border-2: rgba(255, 255, 255, 0.85);
-  --decision-border-3: rgba(153, 222, 235, 0.45);
+  color: #666;
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Bordura “ca la scor”, dar controlată din variabile */
-.decisionArtefact::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-xl);
-  padding: 2px;
-
-  background: linear-gradient(
-    135deg,
-    transparent 10%,
-    var(--decision-border-2) 30%,
-    var(--decision-border-1) 50%,
-    var(--decision-border-3) 70%,
-    transparent 90%
-  );
-  background-size: 300% 300%;
-
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-
-  animation: prismaticBeam 8s linear infinite;
-  opacity: 0.65;
-  pointer-events: none;
+.statusBadge {
+  padding: 5px 12px;
+  border-radius: 10px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  background: white;
+  color: var(--accent-color);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-/* Hover rămâne ok, doar că poți accentua bordura prin opacitate */
-.decisionArtefact:hover {
-  transform: translateY(-5px);
-}
-
-.decisionArtefact:hover::after {
-  opacity: 0.9;
-}
-
-.artefactIcon {
-  font-size: 1.4rem;
-
-  transition: transform 0.8s ease;
-}
-
-/* --- VARIANTA VERDE (OK) - LUMINĂ VITALĂ --- */
-.artefactOk {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    var(--ok-bg) 100%
-  );
-  color: var(--ok);
-  box-shadow:
-    0 20px 40px -15px var(--ok-bg),
-    inset 0 0 20px rgba(255, 255, 255, 0.5);
-
-  /* bordură animată verde */
-  --decision-border-1: rgba(35, 255, 191, 0.55);
-  --decision-border-2: rgba(255, 255, 255, 0.9);
-  --decision-border-3: rgba(35, 255, 191, 0.25);
-}
-
-.artefactOk .divineGlow {
-  background: radial-gradient(circle at center, var(--ok) 0%, transparent 70%);
-  opacity: 0.15;
-  animation: divinePulse 10s ease-in-out infinite;
-}
-
-/* --- VARIANTA ROȘIE (WARN) - CALMITATEA APUSULUI --- */
-.artefactWarn {
-  background: linear-gradient(
-    145deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    var(--warn-bg) 100%
-  );
-  color: var(--warn);
-  box-shadow:
-    0 20px 40px -15px var(--warn-bg),
-    inset 0 0 20px rgba(255, 255, 255, 0.5);
-
-  /* bordură animată roșie */
-  --decision-border-1: rgba(255, 71, 87, 0.55);
-  --decision-border-2: rgba(255, 255, 255, 0.9);
-  --decision-border-3: rgba(255, 71, 87, 0.25);
-}
-
-.artefactWarn .divineGlow {
-  background: radial-gradient(
-    circle at center,
-    var(--warn) 0%,
-    transparent 70%
-  );
-  opacity: 0.15;
-  animation: divinePulse 10s ease-in-out infinite alternate;
-}
-
-/* --- ELEMENTUL DE GLOW (LUMINĂ VOLUMETRICĂ) --- */
+/* Glow & Shimmer discrete */
 .divineGlow {
   position: absolute;
-  inset: -20%;
-  z-index: -1;
+  top: 50%;
+  left: -10%;
+  width: 80px;
+  height: 80px;
+  background: var(--accent-color);
+  filter: blur(45px);
+  opacity: 0.1;
   pointer-events: none;
-  filter: blur(60px);
+  transition: all 0.6s ease;
 }
 
-/* Animație de respirație lentă (calmitate biblică) */
-@keyframes divinePulse {
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.1;
+.emailArtefact:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.9);
+  border-color: var(--accent-color);
+}
+
+.emailArtefact:hover .iconCircle {
+  background: var(--accent-color);
+  color: white;
+  transform: scale(1.05);
+}
+
+.emailArtefact:hover .divineGlow {
+  opacity: 0.2;
+  left: 10%;
+}
+
+.toneOk {
+  --accent-color: #00d285;
+}
+.toneWarn {
+  --accent-color: #ff4757;
+}
+
+/* Shimmer subtil - doar o trecere rapidă la 6 secunde */
+.shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  animation: shimmerMove 6s infinite;
+}
+
+@keyframes shimmerMove {
+  0% {
+    left: -100%;
   }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.2;
+  15% {
+    left: 150%;
+  }
+  100% {
+    left: 150%;
   }
 }
 
@@ -1219,7 +1207,7 @@
 
 .sectionHeaderWow h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-dark);
 }
@@ -1295,19 +1283,19 @@
 
 .timelineTopWow h4 {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-dark);
 }
 
 .timelineDate {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--sky-highlight);
 }
 
 .companyWow {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-body);
   margin-bottom: 12px;
@@ -1315,7 +1303,7 @@
 
 .responsibilitiesWow {
   margin: 12px 0;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   line-height: 1.5;
   color: var(--text-body);
   font-weight: 600;
@@ -1349,23 +1337,28 @@
   color: var(--electric-glow);
 }
 
+.aiReportHeader {
+  display: flex;
+  gap: 15px;
+}
+
 .aiReportHeader h3 {
   color: white;
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 900;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .aiReportHeader p {
   margin: 0;
   color: var(--mist-cyan);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
 }
 
 .aiTextMain {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.8rem;
+  line-height: 1.4;
   font-weight: 500;
   opacity: 0.9;
   margin: 20px 0;
@@ -1379,8 +1372,8 @@
 }
 
 .reasoningLabel {
-  font-size: 0.65rem;
-  font-weight: 900;
+  font-size: 0.7rem;
+  font-weight: 700;
   letter-spacing: 1px;
   margin-bottom: 10px;
   color: var(--electric-glow);
@@ -1603,14 +1596,14 @@
 
 .pdfTitle {
   margin: 0;
-  font-size: 0.95rem;
-  font-weight: 900;
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--text-dark);
 }
 
 .helperPill {
-  font-size: 0.72rem;
-  font-weight: 850;
+  font-size: 0.7rem;
+  font-weight: 700;
   color: var(--text-muted);
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: rgba(255, 255, 255, 0.2);
@@ -1667,5 +1660,366 @@
 
   .pdfViewer {
     height: 540px;
+  }
+}
+
+.emailModal {
+  width: min(760px, 92vw);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 26px;
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.18);
+  overflow: hidden;
+  backdrop-filter: blur(18px) saturate(160%);
+}
+
+.emailModalHeader {
+  padding: 18px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.9),
+    rgba(255, 255, 255, 0.7)
+  );
+}
+
+.emailModalTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.emailModalTitle strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: rgba(15, 23, 42, 0.92);
+}
+
+.emailModalTitle span {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: rgba(100, 116, 139, 0.92);
+}
+
+.emailModalIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, #39a3c4, #4acfee);
+  box-shadow: 0 12px 26px rgba(59, 127, 155, 0.18);
+}
+
+.emailForm {
+  padding: 18px;
+}
+
+.emailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.full {
+  grid-column: span 2;
+}
+
+.emailForm input,
+.emailForm textarea {
+  width: 100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.85);
+  font-family: inherit;
+  font-weight: 650;
+  outline: none;
+  transition:
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.emailForm input:focus,
+.emailForm textarea:focus {
+  border-color: rgba(74, 207, 238, 0.45);
+  box-shadow: 0 0 0 5px rgba(74, 207, 238, 0.14);
+}
+
+.emailActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.sendBtn {
+  border: none;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(135deg, #3b7f9b, #2a637a);
+  box-shadow: 0 16px 36px rgba(59, 127, 155, 0.22);
+  cursor: pointer;
+}
+
+.sendBtn:hover {
+  filter: brightness(1.03);
+}
+
+@media (max-width: 720px) {
+  .emailGrid {
+    grid-template-columns: 1fr;
+  }
+  .full {
+    grid-column: span 1;
+  }
+}
+
+.pdfFallback {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.downloadBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-decoration: none;
+  background: rgba(74, 207, 238, 0.16);
+  border: 1px solid rgba(74, 207, 238, 0.26);
+  color: #3b7f9b;
+}
+.downloadBtn:hover {
+  filter: brightness(0.98);
+}
+
+.scoreMetaList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* ================= EVALUARE DETALIATĂ ================= */
+
+.evaluationCard {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.94),
+    rgba(255, 255, 255, 0.9)
+  );
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow:
+    0 14px 34px rgba(2, 6, 23, 0.05),
+    0 1px 0 rgba(255, 255, 255, 0.8) inset;
+}
+
+.sectionSubtitleClean {
+  margin: 4px 0 0 0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.evaluationGrid,
+.evaluationGridSecondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.evaluationGridSecondary {
+  margin-top: 16px;
+}
+
+.evaluationPanel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.86);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.evaluationPanel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(2, 6, 23, 0.06);
+}
+
+.evaluationPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.evaluationPanelHeader h4 {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -0.01em;
+}
+
+.panelCount {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--text-dark);
+  font-size: 0.72rem;
+  font-weight: 800;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.panelPositive {
+  background: linear-gradient(
+    180deg,
+    rgba(61, 220, 151, 0.08),
+    rgba(255, 255, 255, 0.92)
+  );
+  border-color: rgba(61, 220, 151, 0.22);
+}
+
+.panelNeutral {
+  background: linear-gradient(
+    180deg,
+    rgba(74, 207, 238, 0.08),
+    rgba(255, 255, 255, 0.92)
+  );
+  border-color: rgba(74, 207, 238, 0.2);
+}
+
+.panelWarning {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 120, 79, 0.09),
+    rgba(255, 255, 255, 0.92)
+  );
+  border-color: rgba(255, 120, 79, 0.2);
+}
+
+.panelInfo {
+  background: linear-gradient(
+    180deg,
+    rgba(148, 163, 184, 0.08),
+    rgba(255, 255, 255, 0.92)
+  );
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+.evaluationTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tagPositive,
+.tagNeutral {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.tagPositive {
+  background: rgba(61, 220, 151, 0.14);
+  border: 1px solid rgba(61, 220, 151, 0.22);
+  color: #127a52;
+}
+
+.tagNeutral {
+  background: rgba(74, 207, 238, 0.14);
+  border: 1px solid rgba(74, 207, 238, 0.24);
+  color: #156c84;
+}
+
+.evaluationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.evaluationListItemWarning,
+.evaluationListItemInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.75);
+  font-size: 0.78rem;
+  font-weight: 650;
+  color: var(--text-body);
+  line-height: 1.5;
+}
+
+.listBulletWarning,
+.listBulletInfo {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.listBulletWarning {
+  background: var(--warn);
+  box-shadow: 0 0 0 4px rgba(255, 120, 79, 0.12);
+}
+
+.listBulletInfo {
+  background: var(--sky-highlight);
+  box-shadow: 0 0 0 4px rgba(57, 163, 196, 0.12);
+}
+
+.emptyStateBox {
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px dashed rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+@media (max-width: 980px) {
+  .evaluationGrid,
+  .evaluationGridSecondary {
+    grid-template-columns: 1fr;
   }
 }

@@ -3,14 +3,20 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import styles from "./CVDetailsPage.module.css";
 import { PATHS } from "../../routs/paths";
+import EmailCandidateModal from "../../components/EmailCandidateModal/EmailCandidateModal";
 
-import { cvsApi, type Cv } from "../../api/cvs.service";
+import {
+  cvsApi,
+  type Cv,
+  type FinalCandidateAnalysis,
+  type CandidateExperience,
+  type CandidateEducation,
+} from "../../api/cvs.service";
 
 import {
   FaChevronLeft,
   FaMagic,
   FaFileSignature,
-  FaFingerprint,
   FaChartLine,
   FaEnvelope,
   FaPhoneAlt,
@@ -22,6 +28,7 @@ import {
   FaRobot,
   FaFilePdf,
   FaCalendar,
+  FaGithub,
 } from "react-icons/fa";
 
 import type { ComponentType } from "react";
@@ -31,7 +38,6 @@ const ChevronLeft = FaChevronLeft as unknown as ComponentType<IconBaseProps>;
 const MagicIcon = FaMagic as unknown as ComponentType<IconBaseProps>;
 const FileSignature =
   FaFileSignature as unknown as ComponentType<IconBaseProps>;
-const Fingerprint = FaFingerprint as unknown as ComponentType<IconBaseProps>;
 const ChartLine = FaChartLine as unknown as ComponentType<IconBaseProps>;
 const Envelope = FaEnvelope as unknown as ComponentType<IconBaseProps>;
 const PhoneAlt = FaPhoneAlt as unknown as ComponentType<IconBaseProps>;
@@ -44,26 +50,18 @@ const Award = FaAward as unknown as ComponentType<IconBaseProps>;
 const RobotIcon = FaRobot as unknown as ComponentType<IconBaseProps>;
 const FilePdf = FaFilePdf as unknown as ComponentType<IconBaseProps>;
 const CalendarIcon = FaCalendar as unknown as ComponentType<IconBaseProps>;
+const GithubIcon = FaGithub as unknown as ComponentType<IconBaseProps>;
 
 type LocationState = {
   fromResults?: boolean;
   jobId?: number;
+  jobTitle?: string;
 };
 
-type ExperienceItem = {
-  title?: string;
-  company?: string;
-  location?: string;
-  startDate?: string;
-  endDate?: string;
-  responsibilities?: string[];
-  technologies?: string[];
-};
-
-type EducationItem = {
-  school?: string;
-  degree?: string;
-  field?: string;
+type EmailDraft = {
+  to: string;
+  subject: string;
+  body: string;
 };
 
 const CVDetailsPage: React.FC = () => {
@@ -76,6 +74,17 @@ const CVDetailsPage: React.FC = () => {
   const [cv, setCv] = useState<Cv | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailDraft, setEmailDraft] = useState<EmailDraft>({
+    to: "",
+    subject: "",
+    body: "",
+  });
+
+  const [skillsExpanded, setSkillsExpanded] = useState(false);
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+
+  // Fetch CV data
   useEffect(() => {
     if (!cvId || Number.isNaN(cvId)) {
       toast.error("ID CV invalid");
@@ -106,7 +115,17 @@ const CVDetailsPage: React.FC = () => {
     };
   }, [cvId]);
 
-  const match = cv?.matchScore ?? 0;
+  const analysis = useMemo<FinalCandidateAnalysis | null>(() => {
+    const raw = cv?.analysisRaw;
+    if (raw && typeof raw === "object") return raw;
+    return null;
+  }, [cv]);
+
+  const match = analysis?.finalScore ?? cv?.matchScore ?? 0;
+  const cvScore = analysis?.cvScore ?? null;
+  const githubScore = analysis?.githubScore ?? null;
+  const confidenceScore = analysis?.confidenceScore ?? null;
+  const githubAnalysis = analysis?.githubAnalysis ?? null;
 
   const scoreLabel = useMemo(() => {
     if (match >= 85) return "Potrivire foarte bună";
@@ -116,7 +135,7 @@ const CVDetailsPage: React.FC = () => {
   }, [match]);
 
   const uploadDateText = useMemo(() => {
-    const raw = (cv as any)?.uploadDate ?? (cv as any)?.createdAt ?? null;
+    const raw = cv?.uploadDate ?? cv?.createdAt ?? null;
     if (!raw) return "—";
     const d = new Date(raw);
     return Number.isNaN(d.getTime())
@@ -124,33 +143,63 @@ const CVDetailsPage: React.FC = () => {
       : d.toLocaleDateString("ro-RO");
   }, [cv]);
 
-  const pdfUrl = useMemo(() => (cv ? cvsApi.getPdfUrl(cv) : null), [cv]);
+  const fileUrl = useMemo(() => (cv ? cvsApi.getFileUrl(cv) : null), [cv]);
 
-  const analysis = useMemo(() => {
-    const raw = (cv as any)?.analysisRaw;
-    if (raw && typeof raw === "object") return raw as any;
-    return null;
+  const isPdf = useMemo(() => {
+    const mt = String(cv?.mimeType || "").toLowerCase();
+    if (mt === "application/pdf") return true;
+    const name = String(cv?.fileName || "").toLowerCase();
+    return name.endsWith(".pdf");
   }, [cv]);
 
-  const email: string | null = (cv as any)?.email ?? analysis?.email ?? null;
-  const phone: string | null = (cv as any)?.phone ?? analysis?.phone ?? null;
+  // Fetch PDF as blob to bypass Content-Disposition: attachment
+  useEffect(() => {
+    if (!fileUrl || !isPdf) return;
 
-  const languages: string[] = (cv as any)?.languages?.length
-    ? (cv as any).languages
+    let objectUrl: string | null = null;
+
+    (async () => {
+      try {
+        const token = localStorage.getItem("access_token");
+        const res = await fetch(fileUrl, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const blob = await res.blob();
+        objectUrl = URL.createObjectURL(blob);
+        setBlobUrl(objectUrl);
+      } catch {
+        setBlobUrl(null);
+      }
+    })();
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [fileUrl, isPdf]);
+
+  const email: string | null = cv?.email ?? analysis?.email ?? null;
+  const phone: string | null = cv?.phone ?? analysis?.phone ?? null;
+
+  const languages: string[] = cv?.languages?.length
+    ? cv.languages
     : analysis?.languages || [];
 
-  const domains: string[] = (cv as any)?.domains?.length
-    ? (cv as any).domains
+  const domains: string[] = cv?.domains?.length
+    ? cv.domains
     : analysis?.domains || [];
 
-  const experience = (analysis?.experience ?? []) as ExperienceItem[];
-  const education = (analysis?.education ?? []) as EducationItem[];
+  const experience: CandidateExperience[] =
+    analysis?.cvAnalysis?.experience ?? [];
+  const education: CandidateEducation[] = analysis?.cvAnalysis?.education ?? [];
 
   const recommendationUi = useMemo(() => {
     const rec = String(analysis?.recommendation || "").toUpperCase();
-    if (rec === "INVITA")
+    if (rec === "INVITA") {
       return { label: "Invită la interviu", tone: "ok" as const };
-    if (rec === "RESPINGE") return { label: "Respinge", tone: "warn" as const };
+    }
+    if (rec === "RESPINGE") {
+      return { label: "Respinge", tone: "warn" as const };
+    }
     return { label: "Revizuire manuală", tone: "neutral" as const };
   }, [analysis]);
 
@@ -160,12 +209,15 @@ const CVDetailsPage: React.FC = () => {
   }, [analysis]);
 
   const analysisSummary = useMemo(() => {
-    if ((cv as any)?.analysisSummary?.trim())
-      return (cv as any).analysisSummary.trim();
-    if (analysis && typeof (analysis as any).summary === "string")
-      return String((analysis as any).summary).trim();
+    if (cv?.analysisSummary?.trim()) return cv.analysisSummary.trim();
+    if (analysis?.summary?.trim()) return analysis.summary.trim();
     return null;
   }, [cv, analysis]);
+
+  const matchedRequirements = analysis?.matchedRequirements ?? [];
+  const missingRequirements = analysis?.missingRequirements ?? [];
+  const redFlags = analysis?.redFlags ?? [];
+  const evidence = analysis?.evidence ?? [];
 
   const onBack = () => {
     const state = (location.state ?? {}) as LocationState;
@@ -186,7 +238,7 @@ const CVDetailsPage: React.FC = () => {
 
     try {
       toast.loading("Rulez analiza...", { id: "analyze" });
-      const updated = await cvsApi.analyze((cv as any).id);
+      const updated = await cvsApi.analyze(cv.id);
       setCv(updated);
       toast.success("Analiza a fost salvată!", { id: "analyze" });
     } catch {
@@ -194,15 +246,15 @@ const CVDetailsPage: React.FC = () => {
     }
   };
 
-  const safeFileName: string = (cv as any)?.fileName ?? "—";
-  const safeCandidateName: string = (cv as any)?.candidateName?.trim?.()
-    ? (cv as any).candidateName
+  const safeFileName: string = cv?.fileName ?? "—";
+  const safeCandidateName: string = cv?.candidateName?.trim?.()
+    ? cv.candidateName
     : "Nume indisponibil";
 
-  const allSkills: string[] = ((cv as any)?.skills ?? []).filter(Boolean);
+  const allSkills: string[] = (cv?.skills ?? analysis?.skills ?? []).filter(
+    Boolean,
+  );
   const MAX_SKILLS = 10;
-
-  const [skillsExpanded, setSkillsExpanded] = useState(false);
 
   const visibleSkills = useMemo(() => {
     if (skillsExpanded) return allSkills;
@@ -211,16 +263,67 @@ const CVDetailsPage: React.FC = () => {
 
   const hiddenCount = Math.max(0, allSkills.length - MAX_SKILLS);
 
-  const buildGmailComposeUrl = (to: string, subject: string, body: string) => {
-    const params = new URLSearchParams();
-    params.set("view", "cm");
-    params.set("fs", "1");
-    params.set("tf", "1");
-    params.set("to", to);
-    params.set("su", subject);
-    params.set("body", body);
+  const buildEmailDraft = () => {
+    const to = String(email || "").trim();
+    const candidateSafe = String(safeCandidateName || "").trim() || "Candidat";
+    const jobTitleSafe = String(
+      ((location.state as LocationState) || {}).jobTitle || "",
+    ).trim();
+    const jobPart = jobTitleSafe ? ` - ${jobTitleSafe}` : "";
+    const signatureSafe = "Compania mea";
+    const rec = String(analysis?.recommendation || "").toUpperCase();
 
-    return `https://mail.google.com/mail/?${params.toString()}`;
+    let subject = "";
+    let body = "";
+
+    if (rec === "INVITA") {
+      subject = `Invitație la interviu${jobPart}`;
+      body = `Bună, ${candidateSafe},
+
+Îți mulțumim pentru aplicația transmisă${jobTitleSafe ? ` pentru poziția de ${jobTitleSafe}` : ""}.
+Dorim să continuăm procesul și să te invităm la un interviu.
+
+Te rugăm să confirmi disponibilitatea ta:
+• [Ziua / intervalul 1]
+• [Ziua / intervalul 2]
+• [Ziua / intervalul 3]
+
+Detalii:
+• Format: [online / la sediu]
+• Durată: [30–45 min]
+• Persoană de contact: [Nume / rol]
+
+Cu stimă,
+${signatureSafe}
+`;
+    } else if (rec === "RESPINGE") {
+      subject = `Actualizare privind aplicația${jobPart}`;
+      body = `Bună, ${candidateSafe},
+
+Îți mulțumim pentru interes și pentru timpul investit.
+În urma evaluării, vom continua cu alți candidați ale căror profiluri se potrivesc mai bine cerințelor curente.
+
+Îți dorim mult succes în continuare.
+Cu stimă,
+${signatureSafe}
+`;
+    } else {
+      subject = `Clarificări privind aplicația${jobPart}`;
+      body = `Bună, ${candidateSafe},
+
+Îți mulțumim pentru aplicație${jobTitleSafe ? ` pentru poziția de ${jobTitleSafe}` : ""}.
+Pentru a finaliza evaluarea, avem nevoie de câteva clarificări:
+
+1) [Întrebare]
+2) [Întrebare]
+3) [Întrebare]
+
+Mulțumim,
+${signatureSafe}
+`;
+    }
+
+    return { to, subject, body };
   };
 
   const onEmailCandidate = () => {
@@ -230,81 +333,49 @@ const CVDetailsPage: React.FC = () => {
       return;
     }
 
-    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to);
-    if (!isValidEmail) {
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to);
+    if (!valid) {
       toast.error("Email-ul detectat pare invalid.");
       return;
     }
 
-    const candidateSafe = String(safeCandidateName || "").trim() || "Candidat";
+    setEmailDraft(buildEmailDraft());
+    setIsEmailModalOpen(true);
+  };
 
-    const jobTitleSafe = String((location.state as any)?.jobTitle || "").trim();
-    const jobPart = jobTitleSafe ? ` – ${jobTitleSafe}` : "";
-    const signatureSafe = "Compania mea";
+  const sendEmailNow = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const rec = String(analysis?.recommendation || "").toUpperCase(); // "INVITA" | "RESPINGE" | altceva
+    const to = emailDraft.to.trim();
+    const subject = emailDraft.subject.trim();
+    const body = emailDraft.body.trim();
 
-    let subject = "";
-    let body = "";
-
-    if (rec === "INVITA") {
-      subject = `Invitație la interviu${jobPart}`;
-
-      body = `Bună, ${candidateSafe},
-
-Îți mulțumim pentru aplicația transmisă${jobTitleSafe ? ` pentru poziția de ${jobTitleSafe}` : ""}.
-În urma evaluării, dorim să continuăm procesul de recrutare și să te invităm la un interviu.
-
-Te rugăm să ne confirmi disponibilitatea ta în următoarele zile și intervale, sau să propui alternative:
-• [Ziua / intervalul 1]
-• [Ziua / intervalul 2]
-• [Ziua / intervalul 3]
-
-Detalii:
-• Format: [online / la sediu]
-• Durată estimată: [30–45 min]
-• Persoană de contact: [Nume / rol]
-
-Cu stimă,
-${signatureSafe}
-`;
-    } else if (rec === "RESPINGE") {
-      subject = `Actualizare privind aplicația${jobPart}`;
-
-      body = `Bună, ${candidateSafe},
-
-Îți mulțumim pentru interesul acordat${jobTitleSafe ? ` poziției de ${jobTitleSafe}` : ""} și pentru timpul investit.
-În urma evaluării aplicației, am decis să continuăm procesul de selecție cu alți candidați, ale căror profiluri se potrivesc mai bine cerințelor curente.
-
-Apreciem implicarea ta și îți dorim mult succes în demersurile profesionale viitoare.
-Dacă dorești, putem păstra datele tale în baza noastră pentru oportunități viitoare.
-
-Cu stimă,
-${signatureSafe}
-`;
-    } else {
-      subject = `Clarificări privind aplicația${jobPart}`;
-
-      body = `Bună, ${candidateSafe},
-
-Îți mulțumim pentru aplicația transmisă${jobTitleSafe ? ` pentru poziția de ${jobTitleSafe}` : ""}.
-Pentru a finaliza evaluarea, am avea nevoie de câteva clarificări:
-
-1) [Întrebare / detaliu necesar]
-2) [Întrebare / detaliu necesar]
-3) [Întrebare / detaliu necesar]
-
-Te rugăm să ne răspunzi la acest email cu informațiile de mai sus, iar apoi revenim cu pașii următori.
-
-Cu stimă,
-${signatureSafe}
-`;
+    if (!to || !subject || !body) {
+      toast.error("Completează To, Subiect și Mesaj.");
+      return;
     }
 
-    const url = buildGmailComposeUrl(to, subject, body);
-
-    window.location.href = url;
+    try {
+      toast.loading("Trimit email...", { id: "sendMail" });
+      await cvsApi.sendEmail(cvId, { to, subject, text: body });
+      toast.success("Email trimis!", { id: "sendMail" });
+      setIsEmailModalOpen(false);
+    } catch {
+      toast.error("Nu am putut trimite email.", { id: "sendMail" });
+    }
   };
+
+  // Tone class — acoperă toate cele 3 cazuri posibile
+  const emailArtefactClass = [
+    styles.emailArtefact,
+    recommendationUi.tone === "ok"
+      ? styles.toneOk
+      : recommendationUi.tone === "warn"
+        ? styles.toneWarn
+        : styles.toneNeutral,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={styles.pageShell}>
@@ -317,16 +388,6 @@ ${signatureSafe}
             </button>
 
             <div className={styles.verticalSeparator} />
-
-            <div className={styles.profileBadge}>
-              <div className={styles.badgeIcon}>
-                <Fingerprint />
-              </div>
-              <div className={styles.badgeText}>
-                <span className={styles.badgeLabel}>ID CANDIDAT</span>
-                <span className={styles.badgeValue}>#{cvId || "000"}</span>
-              </div>
-            </div>
           </div>
 
           <div className={styles.topBarCenter}>
@@ -335,10 +396,11 @@ ${signatureSafe}
                 <FileSignature className={styles.titleIcon} />
                 <h1 className={styles.pageTitle}>Dosar Candidat</h1>
               </div>
+
               <div className={styles.headerStatusRow}>
                 <div className={styles.statusIndicator}>
                   <span className={styles.pulseDot} />
-                  {(cv as any)?.status || "Inactiv"}
+                  {cv?.status || "Inactiv"}
                 </div>
                 <div className={styles.dotSeparator} />
                 <span className={styles.dateInfo}>
@@ -378,6 +440,7 @@ ${signatureSafe}
           <>
             <div className={styles.grid}>
               <aside className={styles.leftColumn}>
+                {/* Specificații fișier */}
                 <section className={styles.fileMetadataArtefact}>
                   <div className={styles.artefactHeader}>
                     <FileSignature className={styles.headerIcon} />
@@ -418,6 +481,8 @@ ${signatureSafe}
 
                   <div className={styles.divineGlowInternal} />
                 </section>
+
+                {/* Scor analitic */}
                 <section className={styles.glassScoreCard}>
                   <div className={styles.scoreHeader}>
                     <ChartLine className={styles.scoreIconHeader} />
@@ -446,47 +511,60 @@ ${signatureSafe}
                       <span className={styles.dotPulse} />
                       {scoreLabel}
                     </div>
+
                     <p className={styles.scoreDesc}>
                       Potrivire calculată pe baza algoritmului Studio AI.
                     </p>
+
+                    <div className={styles.scoreMetaList}>
+                      <span>Scor final: {match}%</span>
+                      {cvScore !== null && <span>CV: {cvScore}%</span>}
+                      {githubScore !== null && (
+                        <span>GitHub: {githubScore}%</span>
+                      )}
+                      {confidenceScore !== null && (
+                        <span>Confidence: {confidenceScore}%</span>
+                      )}
+                    </div>
                   </div>
                 </section>
 
+                {/* Email candidat */}
                 <button
                   type="button"
-                  className={[
-                    styles.decisionArtefact,
-                    recommendationUi.tone === "ok"
-                      ? styles.artefactOk
-                      : recommendationUi.tone === "warn"
-                        ? styles.artefactWarn
-                        : styles.artefactNeutral,
-                  ].join(" ")}
+                  className={emailArtefactClass}
                   onClick={onEmailCandidate}
                   disabled={!email}
-                  title={
-                    !email
-                      ? "Nu există email detectat"
-                      : "Deschide email precompletat"
-                  }
                 >
-                  {recommendationUi.tone === "ok" ? (
-                    <MagicIcon className={styles.artefactIcon} />
-                  ) : (
-                    <Fingerprint className={styles.artefactIcon} />
-                  )}
-                  <span className={styles.artefactLabel}>
-                    {recommendationUi.label}
-                  </span>
+                  <div className={styles.divineGlow} />
+
+                  <div className={styles.contentWrapper}>
+                    <div className={styles.iconCircle}>
+                      <Envelope className={styles.mainIcon} size={16} />
+                    </div>
+
+                    <div className={styles.textSection}>
+                      <h3 className={styles.mainTitle}>Email Candidat</h3>
+                      <span className={styles.emailAddress}>
+                        {email || "Indisponibil"}
+                      </span>
+                    </div>
+
+                    <div className={styles.statusBadge}>
+                      {recommendationUi.label}
+                    </div>
+                  </div>
+
+                  <div className={styles.shimmer} />
                 </button>
               </aside>
 
               <div className={styles.rightColumn}>
+                {/* Identitate candidat */}
                 <section
                   className={`${styles.card} ${styles.identityEliteCard}`}
                 >
                   <div className={styles.identityPrimaryLayout}>
-                    {/* Avatar Section with Ethereal Aura */}
                     <div className={styles.avatarAuraContainer}>
                       <div className={styles.avatarAuraBreathing} />
                       <div className={styles.avatarGlassElement}>
@@ -494,7 +572,6 @@ ${signatureSafe}
                       </div>
                     </div>
 
-                    {/* Identity Text Content */}
                     <div className={styles.identityInfoContent}>
                       <div className={styles.nameHeaderGroup}>
                         <h2 className={styles.candidateNameDisplay}>
@@ -511,6 +588,7 @@ ${signatureSafe}
                             {email || "email indisponibil"}
                           </span>
                         </div>
+
                         <div className={styles.contactGlassChip}>
                           <div className={styles.chipIconContainer}>
                             <PhoneAlt />
@@ -519,13 +597,28 @@ ${signatureSafe}
                             {phone || "telefon indisponibil"}
                           </span>
                         </div>
+
+                        {githubAnalysis?.profileUrl && (
+                          <div className={styles.contactGlassChip}>
+                            <div className={styles.chipIconContainer}>
+                              <GithubIcon />
+                            </div>
+                            <a
+                              href={githubAnalysis.profileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className={styles.chipDataText}
+                            >
+                              {githubAnalysis.username}
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <div className={styles.horizontalStructuralDivider} />
 
-                  {/* Tags Section with Subtle Lighting */}
                   <div className={styles.expertiseTagsContainer}>
                     {domains.map((d: string) => (
                       <span key={d} className={styles.domainEliteTag}>
@@ -542,6 +635,7 @@ ${signatureSafe}
                   <div className={styles.divineAtmosphericRay} />
                 </section>
 
+                {/* Parcurs profesional */}
                 <section className={styles.card}>
                   <div className={styles.sectionHeaderWow}>
                     <Briefcase className={styles.headerIconWow} />
@@ -552,7 +646,7 @@ ${signatureSafe}
 
                   {experience.length ? (
                     <div className={styles.timelineWow}>
-                      {experience.map((e: ExperienceItem, idx: number) => (
+                      {experience.map((e: CandidateExperience, idx: number) => (
                         <div key={idx} className={styles.timelineItemWow}>
                           <div className={styles.timelineLine} />
                           <div className={styles.timelineDotWow} />
@@ -560,12 +654,14 @@ ${signatureSafe}
                             <div className={styles.timelineTopWow}>
                               <h4>{e.title || "Rol Profesional"}</h4>
                               <span className={styles.timelineDate}>
-                                {e.startDate}{" "}
+                                {e.startDate || "?"}{" "}
                                 {e.endDate ? `- ${e.endDate}` : "- Prezent"}
                               </span>
                             </div>
+
                             <p className={styles.companyWow}>
-                              {e.company} • {e.location}
+                              {e.company || "Companie"}{" "}
+                              {e.location ? `• ${e.location}` : ""}
                             </p>
 
                             {e.responsibilities?.length ? (
@@ -596,6 +692,7 @@ ${signatureSafe}
                   )}
                 </section>
 
+                {/* Educatie + Skill-uri */}
                 <div className={styles.twoColGrid}>
                   <section
                     className={`${styles.card} ${styles.simplePanelCard}`}
@@ -608,16 +705,22 @@ ${signatureSafe}
                     </div>
 
                     <div className={styles.educationList}>
-                      {education.map((ed: EducationItem, i: number) => (
-                        <div key={i} className={styles.educationItem}>
-                          <strong className={styles.educationSchool}>
-                            {ed.school || "Instituție"}
-                          </strong>
-                          <p className={styles.educationMeta}>
-                            {ed.degree || ""} {ed.field || ""}
-                          </p>
+                      {education.length ? (
+                        education.map((ed: CandidateEducation, i: number) => (
+                          <div key={i} className={styles.educationItem}>
+                            <strong className={styles.educationSchool}>
+                              {ed.school || "Instituție"}
+                            </strong>
+                            <p className={styles.educationMeta}>
+                              {ed.degree || ""} {ed.field || ""}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <div className={styles.emptyInline}>
+                          Nu există informații despre educație.
                         </div>
-                      ))}
+                      )}
                     </div>
                   </section>
 
@@ -634,7 +737,7 @@ ${signatureSafe}
                           Skill-uri Cheie
                         </h3>
 
-                        {hiddenCount > 0 ? (
+                        {hiddenCount > 0 && (
                           <button
                             type="button"
                             className={styles.inlineToggleBtn}
@@ -644,7 +747,7 @@ ${signatureSafe}
                               ? "Restrânge"
                               : `Afișează toate (+${hiddenCount})`}
                           </button>
-                        ) : null}
+                        )}
                       </div>
                     </div>
 
@@ -664,6 +767,69 @@ ${signatureSafe}
                   </section>
                 </div>
 
+                {/* GitHub Analysis — afișat doar dacă există și a fost folosit */}
+                {githubAnalysis && githubAnalysis.usedInScoring && (
+                  <section
+                    className={`${styles.card} ${styles.simplePanelCard}`}
+                  >
+                    <div className={styles.sectionHeaderClean}>
+                      <div className={styles.headerIconChip}>
+                        <GithubIcon className={styles.headerIconClean} />
+                      </div>
+                      <div>
+                        <h3 className={styles.sectionTitleClean}>
+                          Analiză GitHub
+                        </h3>
+                        <p className={styles.sectionSubtitleClean}>
+                          {githubAnalysis.analyzedReposCount} repository-uri
+                          analizate · scor {githubAnalysis.githubScore}%
+                        </p>
+                      </div>
+                    </div>
+
+                    {githubAnalysis.validatedSkills.length > 0 && (
+                      <div style={{ marginBottom: 12 }}>
+                        <p
+                          className={styles.metaLabel}
+                          style={{ marginBottom: 8 }}
+                        >
+                          Skill-uri validate prin cod:
+                        </p>
+                        <div className={styles.skillsCloud}>
+                          {githubAnalysis.validatedSkills.map((s) => (
+                            <span key={s} className={styles.skillPill}>
+                              {s}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {githubAnalysis.redFlags.length > 0 && (
+                      <div>
+                        <p
+                          className={styles.metaLabel}
+                          style={{ marginBottom: 8 }}
+                        >
+                          Observații:
+                        </p>
+                        <ul className={styles.evaluationList}>
+                          {githubAnalysis.redFlags.map((flag) => (
+                            <li
+                              key={flag}
+                              className={styles.evaluationListItemInfo}
+                            >
+                              <span className={styles.listBulletInfo} />
+                              <span>{flag}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {/* Raport AI */}
                 <section className={`${styles.card} ${styles.aiReportCard}`}>
                   <div className={styles.aiReportHeader}>
                     <RobotIcon className={styles.aiRobotIcon} />
@@ -678,7 +844,7 @@ ${signatureSafe}
                       {analysisSummary || "Nu există un rezumat generat."}
                     </p>
 
-                    {reasoningShort ? (
+                    {reasoningShort && (
                       <div className={styles.reasoningContainerWow}>
                         <div className={styles.reasoningLabel}>
                           LOGICA DECIZIEI
@@ -687,34 +853,195 @@ ${signatureSafe}
                           {reasoningShort}
                         </code>
                       </div>
-                    ) : null}
+                    )}
+                  </div>
+                </section>
+
+                {/* Evaluare detaliata */}
+                <section className={`${styles.card} ${styles.evaluationCard}`}>
+                  <div className={styles.sectionHeaderClean}>
+                    <div className={styles.headerIconChip}>
+                      <RobotIcon className={styles.headerIconClean} />
+                    </div>
+                    <div>
+                      <h3 className={styles.sectionTitleClean}>
+                        Evaluare detaliată
+                      </h3>
+                      <p className={styles.sectionSubtitleClean}>
+                        Sinteză structurată a compatibilității candidatului cu
+                        rolul
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className={styles.evaluationGrid}>
+                    <div
+                      className={`${styles.evaluationPanel} ${styles.panelPositive}`}
+                    >
+                      <div className={styles.evaluationPanelHeader}>
+                        <h4>Cerințe acoperite</h4>
+                        <span className={styles.panelCount}>
+                          {matchedRequirements.length}
+                        </span>
+                      </div>
+
+                      {matchedRequirements.length ? (
+                        <div className={styles.evaluationTags}>
+                          {matchedRequirements.map((item) => (
+                            <span key={item} className={styles.tagPositive}>
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className={styles.emptyStateBox}>
+                          Nu au fost identificate potriviri clare.
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className={`${styles.evaluationPanel} ${styles.panelNeutral}`}
+                    >
+                      <div className={styles.evaluationPanelHeader}>
+                        <h4>Cerințe lipsă</h4>
+                        <span className={styles.panelCount}>
+                          {missingRequirements.length}
+                        </span>
+                      </div>
+
+                      {missingRequirements.length ? (
+                        <div className={styles.evaluationTags}>
+                          {missingRequirements.map((item) => (
+                            <span key={item} className={styles.tagNeutral}>
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className={styles.emptyStateBox}>
+                          Nu au fost identificate lipsuri majore.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className={styles.evaluationGridSecondary}>
+                    <div
+                      className={`${styles.evaluationPanel} ${styles.panelWarning}`}
+                    >
+                      <div className={styles.evaluationPanelHeader}>
+                        <h4>Semnale de risc</h4>
+                        <span className={styles.panelCount}>
+                          {redFlags.length}
+                        </span>
+                      </div>
+
+                      {redFlags.length ? (
+                        <ul className={styles.evaluationList}>
+                          {redFlags.map((flag) => (
+                            <li
+                              key={flag}
+                              className={styles.evaluationListItemWarning}
+                            >
+                              <span className={styles.listBulletWarning} />
+                              <span>{flag}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className={styles.emptyStateBox}>
+                          Nu au fost detectate semnale de risc.
+                        </div>
+                      )}
+                    </div>
+
+                    <div
+                      className={`${styles.evaluationPanel} ${styles.panelInfo}`}
+                    >
+                      <div className={styles.evaluationPanelHeader}>
+                        <h4>Dovezi identificate</h4>
+                        <span className={styles.panelCount}>
+                          {evidence.length}
+                        </span>
+                      </div>
+
+                      {evidence.length ? (
+                        <ul className={styles.evaluationList}>
+                          {evidence.map((item) => (
+                            <li
+                              key={item}
+                              className={styles.evaluationListItemInfo}
+                            >
+                              <span className={styles.listBulletInfo} />
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <div className={styles.emptyStateBox}>
+                          Nu există dovezi suplimentare extrase din analiză.
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </section>
               </div>
             </div>
 
+            {/* PDF Viewer */}
             <section className={styles.pdfCard}>
               <div className={styles.pdfHeader}>
-                <h2 className={styles.pdfTitle}>Document PDF</h2>
-                <span className={styles.helperPill}>Preview</span>
+                <h2 className={styles.pdfTitle}>Document</h2>
+                <span className={styles.helperPill}>
+                  {isPdf ? "Preview" : "Download"}
+                </span>
               </div>
 
-              {pdfUrl ? (
-                <iframe
-                  src={pdfUrl}
-                  className={styles.pdfViewer}
-                  title="PDF Viewer"
-                />
+              {!fileUrl ? (
+                <div className={styles.pdfFallback}>
+                  Document indisponibil. CV-ul nu are fișier asociat.
+                </div>
+              ) : isPdf ? (
+                blobUrl ? (
+                  <iframe
+                    src={blobUrl}
+                    className={styles.pdfViewer}
+                    title="PDF Viewer"
+                  />
+                ) : (
+                  <div className={styles.pdfFallback}>
+                    Se încarcă documentul...
+                  </div>
+                )
               ) : (
                 <div className={styles.pdfFallback}>
-                  PDF indisponibil. CV-ul nu are fișier asociat (filePath
-                  lipsă).
+                  Preview indisponibil pentru acest format. Descarcă fișierul
+                  pentru vizualizare.
+                  <div style={{ marginTop: 12 }}>
+                    <a
+                      href={fileUrl}
+                      className={styles.downloadBtn}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Descarcă document
+                    </a>
+                  </div>
                 </div>
               )}
             </section>
           </>
         )}
       </div>
+
+      <EmailCandidateModal
+        isOpen={isEmailModalOpen}
+        draft={emailDraft}
+        setDraft={setEmailDraft}
+        onClose={() => setIsEmailModalOpen(false)}
+        onSubmit={sendEmailNow}
+      />
     </div>
   );
 };
