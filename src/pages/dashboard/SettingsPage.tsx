@@ -14,11 +14,10 @@ import {
   FaMapMarkerAlt,
   FaBriefcase,
   FaInfoCircle,
-  FaShieldAlt,
   FaKey,
-  FaSignOutAlt,
-  FaChevronRight,
   FaLink,
+  FaChevronRight,
+  FaTimes,
 } from "react-icons/fa";
 
 import type { ComponentType } from "react";
@@ -34,11 +33,10 @@ const PhoneIcon = FaPhone as unknown as ComponentType<IconBaseProps>;
 const MarkerIcon = FaMapMarkerAlt as unknown as ComponentType<IconBaseProps>;
 const JobIcon = FaBriefcase as unknown as ComponentType<IconBaseProps>;
 const InfoIcon = FaInfoCircle as unknown as ComponentType<IconBaseProps>;
-const ShieldIcon = FaShieldAlt as unknown as ComponentType<IconBaseProps>;
 const KeyIcon = FaKey as unknown as ComponentType<IconBaseProps>;
-const LogoutIcon = FaSignOutAlt as unknown as ComponentType<IconBaseProps>;
-const RightIcon = FaChevronRight as unknown as ComponentType<IconBaseProps>;
 const WebLinkIcon = FaLink as unknown as ComponentType<IconBaseProps>;
+const RightIcon = FaChevronRight as unknown as ComponentType<IconBaseProps>;
+const CloseIcon = FaTimes as unknown as ComponentType<IconBaseProps>;
 
 type Profile = {
   firstName: string;
@@ -49,11 +47,16 @@ type Profile = {
   role: string;
   website: string;
   bio: string;
-  avatarDataUrl: string; // pentru preview local
+  avatarUrl: string;
 };
 
+const API_BASE_URL =
+  process.env.REACT_APP_API_URL?.replace(/\/$/, "") || "http://localhost:5000";
+
 const safeTrim = (s: string) => s.trim();
+
 const isValidEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
+
 const isValidUrl = (s: string) => {
   if (!s.trim()) return true;
   try {
@@ -70,10 +73,29 @@ const initialsFrom = (firstName: string, lastName: string) => {
   return a + b || "U";
 };
 
+const getAvatarSrc = (avatarUrl: string) => {
+  if (!avatarUrl) return "";
+  if (avatarUrl.startsWith("http://") || avatarUrl.startsWith("https://")) {
+    return avatarUrl;
+  }
+  return `${API_BASE_URL}${avatarUrl}`;
+};
+
+const mapUserToProfile = (user: any): Profile => ({
+  firstName: user.firstName || "",
+  lastName: user.lastName || "",
+  email: user.email || "",
+  phone: user.phone || "",
+  location: user.location || "",
+  role: user.role || "",
+  website: user.website || "",
+  bio: user.bio || "",
+  avatarUrl: user.avatarUrl || "",
+});
+
 const SettingsPage: React.FC = () => {
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  // TODO: înlocuiești cu getCurrentUserProfile() din API
   const emptyProfile: Profile = useMemo(
     () => ({
       firstName: "",
@@ -84,7 +106,7 @@ const SettingsPage: React.FC = () => {
       role: "",
       website: "",
       bio: "",
-      avatarDataUrl: "",
+      avatarUrl: "",
     }),
     [],
   );
@@ -93,6 +115,15 @@ const SettingsPage: React.FC = () => {
   const [form, setForm] = useState<Profile>(emptyProfile);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -103,18 +134,7 @@ const SettingsPage: React.FC = () => {
         const me = await usersApi.me();
         if (cancelled) return;
 
-        const p: Profile = {
-          firstName: me.firstName || "",
-          lastName: me.lastName || "",
-          email: me.email || "",
-          phone: me.phone || "",
-          location: me.location || "",
-          role: me.role || "",
-          website: me.website || "",
-          bio: me.bio || "",
-          avatarDataUrl: me.avatarDataUrl || "",
-        };
-
+        const p = mapUserToProfile(me);
         setSaved(p);
         setForm(p);
       } catch (err: any) {
@@ -140,23 +160,43 @@ const SettingsPage: React.FC = () => {
       toast.error("Te rog selectează o imagine.");
       return;
     }
-    if (file.size > 3 * 1024 * 1024) {
-      toast.error("Imaginea e prea mare. Max 3MB.");
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Imaginea e prea mare. Max 10MB.");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = String(reader.result || "");
-      setForm((p) => ({ ...p, avatarDataUrl: result }));
-      toast.success("Poză încărcată (preview)");
-    };
-    reader.readAsDataURL(file);
+    setIsUploadingAvatar(true);
+    try {
+      const updated = await usersApi.uploadAvatar(file);
+      const next = mapUserToProfile(updated);
+
+      setSaved(next);
+      setForm(next);
+      toast.success("Poza de profil a fost actualizată.");
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || "Nu am putut încărca imaginea",
+      );
+    } finally {
+      setIsUploadingAvatar(false);
+    }
   };
 
-  const removeAvatar = () => {
-    setForm((p) => ({ ...p, avatarDataUrl: "" }));
-    toast.success("Poză eliminată");
+  const removeAvatar = async () => {
+    setIsUploadingAvatar(true);
+    try {
+      const updated = await usersApi.deleteAvatar();
+      const next = mapUserToProfile(updated);
+
+      setSaved(next);
+      setForm(next);
+      toast.success("Poza a fost eliminată.");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Nu am putut elimina poza");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
   };
 
   const resetChanges = () => {
@@ -171,12 +211,15 @@ const SettingsPage: React.FC = () => {
         message: "Completează numele și prenumele.",
       };
     }
+
     if (!safeTrim(p.email) || !isValidEmail(p.email)) {
       return { ok: false as const, message: "Email invalid." };
     }
+
     if (!isValidUrl(p.website)) {
       return { ok: false as const, message: "Website invalid." };
     }
+
     return { ok: true as const };
   };
 
@@ -198,20 +241,9 @@ const SettingsPage: React.FC = () => {
         role: form.role,
         website: form.website,
         bio: form.bio,
-        avatarDataUrl: form.avatarDataUrl,
       });
 
-      const next: Profile = {
-        firstName: updated.firstName || "",
-        lastName: updated.lastName || "",
-        email: updated.email || "",
-        phone: updated.phone || "",
-        location: updated.location || "",
-        role: updated.role || "",
-        website: updated.website || "",
-        bio: updated.bio || "",
-        avatarDataUrl: updated.avatarDataUrl || "",
-      };
+      const next = mapUserToProfile(updated);
 
       setSaved(next);
       setForm(next);
@@ -223,8 +255,64 @@ const SettingsPage: React.FC = () => {
     }
   };
 
-  const securityAction = (label: string) => {
-    toast(`Acțiune: ${label}`, { icon: "🔒" });
+  const openPasswordModal = () => {
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setIsPasswordModalOpen(true);
+  };
+
+  const closePasswordModal = () => {
+    if (isChangingPassword) return;
+
+    setIsPasswordModalOpen(false);
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+  };
+
+  const onChangePassword = async () => {
+    const { currentPassword, newPassword, confirmPassword } = passwordForm;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error("Completează toate câmpurile pentru parolă.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast.error("Noua parolă trebuie să aibă minim 6 caractere.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast.error("Confirmarea parolei nu corespunde.");
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      await usersApi.changePassword({
+        currentPassword,
+        newPassword,
+      });
+
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+
+      setIsPasswordModalOpen(false);
+      toast.success("Parola a fost schimbată.");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Nu am putut schimba parola");
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   if (loadingProfile) {
@@ -278,14 +366,13 @@ const SettingsPage: React.FC = () => {
       </header>
 
       <div className={styles.layout}>
-        {/* Left: profile card */}
         <aside className={styles.sideCard}>
           <div className={styles.profileTop}>
             <div className={styles.avatarWrap}>
-              {form.avatarDataUrl ? (
+              {form.avatarUrl ? (
                 <img
                   className={styles.avatarImg}
-                  src={form.avatarDataUrl}
+                  src={getAvatarSrc(form.avatarUrl)}
                   alt="Avatar"
                 />
               ) : (
@@ -300,6 +387,7 @@ const SettingsPage: React.FC = () => {
                 type="button"
                 className={styles.avatarEditBtn}
                 onClick={onPickAvatar}
+                disabled={isUploadingAvatar}
               >
                 <CameraIcon />
               </button>
@@ -353,17 +441,18 @@ const SettingsPage: React.FC = () => {
               type="button"
               className={styles.ghostBtn}
               onClick={onPickAvatar}
-              disabled={isSaving}
+              disabled={isSaving || isUploadingAvatar}
             >
-              <CameraIcon /> Schimbă poza
+              <CameraIcon />{" "}
+              {isUploadingAvatar ? "Se încarcă..." : "Schimbă poza"}
             </button>
 
             <button
               type="button"
               className={styles.dangerGhostBtn}
               onClick={removeAvatar}
-              disabled={isSaving || !form.avatarDataUrl}
-              title={!form.avatarDataUrl ? "Nu ai poză setată" : "Elimină poza"}
+              disabled={isSaving || isUploadingAvatar || !form.avatarUrl}
+              title={!form.avatarUrl ? "Nu ai poză setată" : "Elimină poza"}
             >
               <TrashIcon /> Elimină
             </button>
@@ -376,16 +465,14 @@ const SettingsPage: React.FC = () => {
             <div>
               <strong>Sfat</strong>
               <p>
-                Folosește o poză clară, fundal simplu. Profilul arată mai
-                profesional și crește încrederea.
+                Folosește o poză clară, cu fundal simplu. Profilul arată mai
+                profesional și inspiră mai multă încredere.
               </p>
             </div>
           </div>
         </aside>
 
-        {/* Right: settings sections */}
         <main className={styles.main}>
-          {/* Personal */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
               <div>
@@ -419,7 +506,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={styles.field}>
-                <label>Rol (opțional)</label>
+                <label>Rol, opțional</label>
                 <input
                   value={form.role}
                   onChange={(e) =>
@@ -430,7 +517,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={styles.field}>
-                <label>Locație (opțional)</label>
+                <label>Locație, opțional</label>
                 <input
                   value={form.location}
                   onChange={(e) =>
@@ -441,7 +528,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={[styles.field, styles.full].join(" ")}>
-                <label>Bio (opțional)</label>
+                <label>Bio, opțional</label>
                 <textarea
                   rows={4}
                   value={form.bio}
@@ -454,7 +541,6 @@ const SettingsPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Contact */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
               <div>
@@ -481,7 +567,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={styles.field}>
-                <label>Telefon (opțional)</label>
+                <label>Telefon, opțional</label>
                 <div className={styles.inputIcon}>
                   <PhoneIcon />
                   <input
@@ -496,7 +582,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={[styles.field, styles.full].join(" ")}>
-                <label>Website (opțional)</label>
+                <label>Website, opțional</label>
                 <div className={styles.inputIcon}>
                   <WebLinkIcon />
                   <input
@@ -511,12 +597,11 @@ const SettingsPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Security */}
           <section className={styles.card}>
             <div className={styles.cardHeader}>
               <div>
                 <h2>Securitate</h2>
-                <p>Gestionare parolă și sesiuni.</p>
+                <p>Gestionează parola contului tău.</p>
               </div>
               <span className={styles.sectionPill}>Security</span>
             </div>
@@ -525,7 +610,7 @@ const SettingsPage: React.FC = () => {
               <button
                 type="button"
                 className={styles.actionRow}
-                onClick={() => securityAction("Schimbă parola")}
+                onClick={openPasswordModal}
               >
                 <span className={styles.actionLeft}>
                   <span className={styles.actionIcon}>
@@ -534,57 +619,11 @@ const SettingsPage: React.FC = () => {
                   <span className={styles.actionText}>
                     <strong>Schimbă parola</strong>
                     <small>
-                      Recomandat dacă folosești aceeași parolă în mai multe
-                      locuri.
+                      Actualizează parola contului într-un mod sigur.
                     </small>
                   </span>
                 </span>
-                <span className={styles.actionRight}>
-                  <RightIcon />
-                </span>
-              </button>
 
-              <button
-                type="button"
-                className={styles.actionRow}
-                onClick={() => securityAction("Sesiuni active")}
-              >
-                <span className={styles.actionLeft}>
-                  <span className={styles.actionIcon}>
-                    <ShieldIcon />
-                  </span>
-                  <span className={styles.actionText}>
-                    <strong>Sesiuni active</strong>
-                    <small>
-                      Vezi dispozitivele conectate și deconectează-le.
-                    </small>
-                  </span>
-                </span>
-                <span className={styles.actionRight}>
-                  <RightIcon />
-                </span>
-              </button>
-
-              <button
-                type="button"
-                className={[styles.actionRow, styles.dangerRow].join(" ")}
-                onClick={() =>
-                  toast("Demo UI: delogare din toate sesiunile", { icon: "⚠️" })
-                }
-              >
-                <span className={styles.actionLeft}>
-                  <span
-                    className={[styles.actionIcon, styles.dangerIcon].join(" ")}
-                  >
-                    <LogoutIcon />
-                  </span>
-                  <span className={styles.actionText}>
-                    <strong>Deloghează-te peste tot</strong>
-                    <small>
-                      Închide toate sesiunile active (inclusiv aceasta).
-                    </small>
-                  </span>
-                </span>
                 <span className={styles.actionRight}>
                   <RightIcon />
                 </span>
@@ -592,7 +631,6 @@ const SettingsPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Danger zone */}
           <section className={[styles.card, styles.dangerCard].join(" ")}>
             <div className={styles.cardHeader}>
               <div>
@@ -646,6 +684,110 @@ const SettingsPage: React.FC = () => {
           </div>
         </main>
       </div>
+
+      {isPasswordModalOpen ? (
+        <div className={styles.modalOverlay} onClick={closePasswordModal}>
+          <div
+            className={styles.modalCard}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalHeader}>
+              <div>
+                <h3>Schimbă parola</h3>
+                <p>
+                  Completează câmpurile de mai jos pentru a actualiza parola.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.modalCloseBtn}
+                onClick={closePasswordModal}
+                disabled={isChangingPassword}
+              >
+                <CloseIcon />
+              </button>
+            </div>
+
+            <div className={styles.modalBody}>
+              <div className={styles.field}>
+                <label>Parola curentă</label>
+                <div className={styles.inputIcon}>
+                  <KeyIcon />
+                  <input
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) =>
+                      setPasswordForm((p) => ({
+                        ...p,
+                        currentPassword: e.target.value,
+                      }))
+                    }
+                    placeholder="Introdu parola curentă"
+                  />
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label>Parola nouă</label>
+                <div className={styles.inputIcon}>
+                  <KeyIcon />
+                  <input
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) =>
+                      setPasswordForm((p) => ({
+                        ...p,
+                        newPassword: e.target.value,
+                      }))
+                    }
+                    placeholder="Introdu parola nouă"
+                  />
+                </div>
+              </div>
+
+              <div className={styles.field}>
+                <label>Confirmă parola nouă</label>
+                <div className={styles.inputIcon}>
+                  <KeyIcon />
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) =>
+                      setPasswordForm((p) => ({
+                        ...p,
+                        confirmPassword: e.target.value,
+                      }))
+                    }
+                    placeholder="Reintrodu parola nouă"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={closePasswordModal}
+                disabled={isChangingPassword}
+              >
+                Anulează
+              </button>
+
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={onChangePassword}
+                disabled={isChangingPassword}
+              >
+                <KeyIcon />{" "}
+                {isChangingPassword ? "Se schimbă..." : "Schimbă parola"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
