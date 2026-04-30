@@ -52,6 +52,16 @@ body {
   background-color: var(--deep-abyss);
 }
 
+.backgroundFallback {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% -20%, rgba(30, 64, 175, 0.35) 0%, rgba(0, 169, 211, 0.18) 15%, rgba(15, 46, 63, 0.9) 70%, #000000 100%),
+    var(--deep-abyss);
+}
+
 /* =========================================
    2. CARDUL 
    ========================================= */

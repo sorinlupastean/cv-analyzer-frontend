@@ -179,7 +179,11 @@ const PaginaAuth: React.FC = () => {
         />
       )}
 
-      <ParticlesBackground />
+      <Suspense
+        fallback={<div className={styles.backgroundFallback} aria-hidden="true" />}
+      >
+        <ParticlesBackground />
+      </Suspense>
 
       <div className={styles["forms-container"]}>
         <div className={styles["signin-signup"]}>
