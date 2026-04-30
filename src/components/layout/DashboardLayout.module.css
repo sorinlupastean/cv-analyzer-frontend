@@ -2,7 +2,19 @@
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
   min-height: 100vh;
-  align-items: start;
+  align-items: stretch;
+  background:
+    radial-gradient(
+      900px 520px at 15% 20%,
+      rgba(74, 207, 238, 0.08),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 520px at 85% 80%,
+      rgba(57, 163, 196, 0.06),
+      transparent 60%
+    ),
+    #f8fafc;
 }
 
 .mainContentArea {
@@ -10,12 +22,14 @@
   flex-direction: column;
   min-height: 0;
   min-width: 0;
-  height: auto;
   min-height: 100vh;
+  background: inherit;
 }
 
 .pageContentWrapper {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   color: #334155;
   overflow: visible;
   min-height: 0;
