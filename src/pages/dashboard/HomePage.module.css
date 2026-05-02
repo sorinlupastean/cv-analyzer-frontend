@@ -9,7 +9,8 @@
   --electric-glow: #4acfee;
   --mist-cyan: #99deeb;
   --text-dark: #0f172a;
-  --text-muted: #64748b;
+  --text-muted: #475569;
+  --text-body: #334155;
 }
 
 .wrapper {
@@ -240,7 +241,7 @@
 .miniHint {
   margin: 0;
   font-size: 0.86rem;
-  color: #475569;
+  color: var(--text-body);
   font-weight: 600;
 }
 

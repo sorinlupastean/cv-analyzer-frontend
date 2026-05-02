@@ -11,8 +11,8 @@
   --electric-glow: #4acfee;
   --mist-cyan: #99deeb;
   --text-white: #eaf6f8;
-  --text-soft: rgba(234, 246, 248, 0.74);
-  --text-muted: rgba(153, 222, 235, 0.68);
+  --text-soft: rgba(234, 246, 248, 0.82);
+  --text-muted: rgba(199, 247, 255, 0.8);
   --shadow-deep: 0 28px 70px rgba(0, 0, 0, 0.42);
   --shadow-soft: 0 12px 30px rgba(10, 22, 34, 0.25);
 }
@@ -173,7 +173,7 @@
 
 .subtitle {
   margin: 10px 0 22px;
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   line-height: 1.55;
   text-align: center;
   color: var(--text-muted);
@@ -485,7 +485,7 @@
   margin: 0;
   max-width: 360px;
   color: var(--text-soft);
-  font-size: 1rem;
+  font-size: 1.02rem;
   line-height: 1.65;
 }
 
@@ -700,7 +700,7 @@
 
   .subtitle {
     margin-bottom: 16px;
-    font-size: 0.84rem;
+    font-size: 0.9rem;
   }
 
   .input-field,

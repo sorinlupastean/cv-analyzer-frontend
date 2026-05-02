@@ -11,8 +11,8 @@
 
   --bg: #f8fafc;
   --text-dark: #0f172a;
-  --text-muted: #64748b;
-  --text-body: #475569;
+  --text-muted: #475569;
+  --text-body: #334155;
 
   --card-bg: rgba(255, 255, 255, 0.86);
   --card-border: rgba(0, 0, 0, 0.06);
@@ -436,9 +436,9 @@
 
 .cardSubtitle {
   margin: 0;
-  font-size: 0.74rem;
+  font-size: 0.78rem;
   font-weight: 650;
-  color: var(--text-muted);
+  color: var(--text-body);
 }
 
 /* ================= STATE ================= */
@@ -546,9 +546,9 @@
 }
 
 .metaLabel {
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-body);
   letter-spacing: 0.5px;
 }
 
@@ -1376,11 +1376,11 @@
 }
 
 .reasoningLabel {
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 700;
   letter-spacing: 1px;
   margin-bottom: 10px;
-  color: var(--electric-glow);
+  color: var(--text-body);
 }
 
 .reasoningCode {
@@ -1572,7 +1572,7 @@
 
 .emptyInline {
   padding: 10px 2px;
-  color: var(--text-muted);
+  color: var(--text-body);
   font-weight: 650;
   font-size: 0.9rem;
 }
@@ -1608,7 +1608,7 @@
 .helperPill {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-body);
   border: 1px solid rgba(15, 23, 42, 0.08);
   background: rgba(255, 255, 255, 0.2);
   padding: 7px 10px;
@@ -1706,9 +1706,9 @@
 .emailModalTitle span {
   display: block;
   margin-top: 2px;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: rgba(100, 116, 139, 0.92);
+  color: var(--text-body);
 }
 
 .emailModalIcon {
@@ -1835,9 +1835,9 @@
 
 .sectionSubtitleClean {
   margin: 4px 0 0 0;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-body);
   line-height: 1.45;
 }
 

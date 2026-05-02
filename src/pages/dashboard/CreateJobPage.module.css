@@ -10,8 +10,8 @@
 
   --bg: #f8fafc;
   --text-dark: #0f172a;
-  --text-muted: #64748b;
-  --text-body: #475569;
+  --text-muted: #475569;
+  --text-body: #334155;
 
   --card-bg: rgba(255, 255, 255, 0.86);
   --card-border: rgba(0, 0, 0, 0.06);
@@ -136,9 +136,10 @@
 
 .heroSubtitle {
   margin: 0;
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 0.82rem;
+  color: var(--text-body);
   font-weight: 600;
+  line-height: 1.5;
 }
 
 /* Primary button */
@@ -189,8 +190,8 @@
 }
 
 .searchWrapper input::placeholder {
-  color: rgba(100, 116, 139, 0.7);
-  font-weight: 550;
+  color: rgba(51, 65, 85, 0.72);
+  font-weight: 600;
 }
 
 .searchWrapper input:focus {
@@ -542,9 +543,9 @@
 
 .skillsHint {
   margin: 0 0 14px 0;
-  font-size: 0.7rem;
+  font-size: 0.76rem;
   font-weight: 600;
-  color: rgba(100, 116, 139, 0.78);
+  color: var(--text-body);
   justify-content: center;
   align-items: center;
   display: flex;
@@ -663,9 +664,9 @@
 .emptyText {
   margin: 12px auto 0 auto;
   max-width: 520px;
-  font-size: 0.8rem;
+  font-size: 0.86rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-body);
   line-height: 1.55;
   position: relative;
   z-index: 1;
