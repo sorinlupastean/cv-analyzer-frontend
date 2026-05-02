@@ -53,10 +53,10 @@
   justify-content: space-between;
   padding: 18px 20px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(20px);
-  box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
 }
 
 .headerLeft {
@@ -67,17 +67,18 @@
 
 .title {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-dark);
 }
 
 .subtitle {
   margin: 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  font-size: 0.88rem;
+  color: #334155;
+  font-weight: 600;
   max-width: 720px;
+  line-height: 1.45;
 }
 
 .headerRight {
@@ -140,12 +141,12 @@
 
 /* ================= BASE CARD ================= */
 .card {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(15, 23, 42, 0.07);
   backdrop-filter: blur(12px);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   transition: all 0.25s ease;
 }
 
@@ -200,10 +201,10 @@
 
 .metricLabel {
   margin: 0;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 700;
-  color: var(--text-muted);
-  letter-spacing: 0.4px;
+  color: #334155;
+  letter-spacing: 0.35px;
   text-transform: uppercase;
   white-space: nowrap;
   overflow: hidden;
@@ -230,17 +231,17 @@
 
 .metricValue {
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 1.62rem;
+  font-weight: 800;
+  color: #08111f;
   letter-spacing: -0.6px;
 }
 
 .miniHint {
   margin: 0;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 500;
+  font-size: 0.86rem;
+  color: #475569;
+  font-weight: 600;
 }
 
 /* Progress */
@@ -294,8 +295,8 @@
 .chartSub {
   margin: 0;
   font-size: 0.8rem;
-  color: #64748b;
-  font-weight: 500;
+  color: #334155;
+  font-weight: 600;
 }
 
 /* =============================================

@@ -40,9 +40,10 @@
 
 .subtitle {
   margin: 6px 0 0 0;
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.4;
 }
 
 .badge {
@@ -99,9 +100,9 @@
   justify-content: space-between;
   gap: 12px;
   margin: 6px 0;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 600;
-  color: var(--text-body);
+  color: #334155;
 }
 
 .tooltipValueScore {
@@ -119,9 +120,9 @@
   gap: 16px;
   margin-top: auto;
   padding-top: 6px;
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 700;
-  color: var(--text-body);
+  color: #334155;
   flex-wrap: wrap;
 }
 
@@ -149,7 +150,7 @@
   text-align: center;
   padding: 18px;
   border-radius: 14px;
-  color: #64748b;
+  color: #334155;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.55);
   border: 1px dashed rgba(148, 163, 184, 0.5);
@@ -161,7 +162,7 @@
     font-size: 0.82rem;
   }
   .subtitle {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
   .tooltipBox {
     min-width: 140px;
@@ -172,7 +173,7 @@
     font-size: 0.68rem;
   }
   .tooltipRow {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
   }
 }
 

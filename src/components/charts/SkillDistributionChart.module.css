@@ -41,9 +41,10 @@
 
 .subtitle {
   margin: 6px 0 0 0;
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #334155;
+  line-height: 1.4;
 }
 
 .badge {
@@ -129,9 +130,9 @@
 }
 
 .centerLabel {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--text-muted);
+  color: #475569;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
@@ -240,16 +241,16 @@
 }
 
 .label {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--text-strong);
+  color: #1e293b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .value {
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
   flex-shrink: 0;
 }
@@ -274,17 +275,17 @@
     font-size: 0.82rem;
   }
   .subtitle {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
   .legendRow {
     padding: 6px 8px;
     gap: 5px;
   }
   .label {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
   }
   .value {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
   }
 }
 
@@ -315,7 +316,7 @@
     height: 5px;
   }
   .centerLabel {
-    font-size: 0.58rem;
+    font-size: 0.62rem;
   }
   .centerValue {
     font-size: 0.78rem;
@@ -332,10 +333,10 @@
     border-radius: 8px;
   }
   .label {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
   }
   .value {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
   }
   .dot {
     width: 6px;
