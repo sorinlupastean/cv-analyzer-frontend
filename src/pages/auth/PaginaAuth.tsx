@@ -19,9 +19,6 @@ import type { IconBaseProps } from "react-icons";
 
 import { login, register } from "../../api/auth.service";
 
-/* =========================
-   ICON TYPES
-   ========================= */
 const EnvelopeIcon = FaEnvelope as unknown as ComponentType<IconBaseProps>;
 const LockIcon = FaLock as unknown as ComponentType<IconBaseProps>;
 const UserIcon = FaUser as unknown as ComponentType<IconBaseProps>;
@@ -33,18 +30,13 @@ const ParticlesBackground = lazy(
   () => import("../../components/ParticlesBackground/ParticlesBackground"),
 );
 
-/* =========================
-   API URL
-   ========================= */
 const API_URL = process.env.REACT_APP_API_URL;
-const GOOGLE_AUTH_URL = `${API_URL}/auth/google`;
+const GOOGLE_AUTH_URL = API_URL ? `${API_URL}/auth/google` : "/auth/google";
 
 const PaginaAuth: React.FC = () => {
   const navigate = useNavigate();
 
   const [isSignUpMode, setIsSignUpMode] = useState(false);
-
-  // Inputs
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nume, setNume] = useState("");
@@ -68,38 +60,36 @@ const PaginaAuth: React.FC = () => {
     }
   };
 
-  /* =========================
-     GOOGLE CALLBACK
-     ========================= */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
-    if (token) {
-      localStorage.setItem("access_token", token);
-      window.history.replaceState({}, document.title, window.location.pathname);
-      setNotification({
-        type: "success",
-        title: "Autentificare Google",
-        message: "Conectare reușită.",
-      });
-      setTimeout(() => {
-        navigate(`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`, {
-          replace: true,
-        });
-      }, 700);
+    if (!token) {
+      return;
     }
+
+    localStorage.setItem("access_token", token);
+    window.history.replaceState({}, document.title, window.location.pathname);
+    setNotification({
+      type: "success",
+      title: "Autentificare Google",
+      message: "Conectare reușită.",
+    });
+
+    setTimeout(() => {
+      navigate(`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`, {
+        replace: true,
+      });
+    }, 700);
   }, [navigate]);
 
   const handleGoogleAuth = () => {
     window.location.href = GOOGLE_AUTH_URL;
   };
 
-  /* =========================
-     HANDLERS
-     ========================= */
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const newErrors: { [key: string]: boolean } = {};
     if (!email) newErrors.email = true;
     if (!password) newErrors.password = true;
@@ -133,6 +123,7 @@ const PaginaAuth: React.FC = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const newErrors: { [key: string]: boolean } = {};
     if (!nume) newErrors.nume = true;
     if (!prenume) newErrors.prenume = true;
@@ -187,13 +178,15 @@ const PaginaAuth: React.FC = () => {
 
       <div className={styles["forms-container"]}>
         <div className={styles["signin-signup"]}>
-          {/* ----- LOGIN FORM ----- */}
           <form
             className={`${styles.authForm} ${styles.signInForm}`}
             onSubmit={handleSignIn}
             noValidate
           >
             <h2 className={styles.title}>Conectare</h2>
+            <p className={styles.subtitle}>
+              Intră în cont pentru a continua analiza CV-urilor și a posturilor.
+            </p>
 
             <div
               className={`${styles["input-field"]} ${
@@ -213,6 +206,7 @@ const PaginaAuth: React.FC = () => {
                   clearError("email");
                 }}
                 autoComplete="email"
+                aria-invalid={errors.email}
               />
 
               <div className={styles["glow-bar"]} />
@@ -236,6 +230,7 @@ const PaginaAuth: React.FC = () => {
                   clearError("password");
                 }}
                 autoComplete="current-password"
+                aria-invalid={errors.password}
               />
 
               <button
@@ -274,13 +269,15 @@ const PaginaAuth: React.FC = () => {
             </button>
           </form>
 
-          {/* ----- REGISTER FORM ----- */}
           <form
             className={`${styles.authForm} ${styles.signUpForm}`}
             onSubmit={handleSignUp}
             noValidate
           >
             <h2 className={styles.title}>Înregistrare</h2>
+            <p className={styles.subtitle}>
+              Creează-ți contul și începe să gestionezi procesul de recrutare.
+            </p>
 
             <div
               className={`${styles["input-field"]} ${
@@ -299,6 +296,9 @@ const PaginaAuth: React.FC = () => {
                   setNume(e.target.value);
                   clearError("nume");
                 }}
+                autoComplete="given-name"
+                autoCapitalize="words"
+                aria-invalid={errors.nume}
               />
 
               <div className={styles["glow-bar"]} />
@@ -321,6 +321,9 @@ const PaginaAuth: React.FC = () => {
                   setPrenume(e.target.value);
                   clearError("prenume");
                 }}
+                autoComplete="family-name"
+                autoCapitalize="words"
+                aria-invalid={errors.prenume}
               />
 
               <div className={styles["glow-bar"]} />
@@ -344,6 +347,7 @@ const PaginaAuth: React.FC = () => {
                   clearError("email");
                 }}
                 autoComplete="email"
+                aria-invalid={errors.email}
               />
 
               <div className={styles["glow-bar"]} />
@@ -367,6 +371,7 @@ const PaginaAuth: React.FC = () => {
                   clearError("password");
                 }}
                 autoComplete="new-password"
+                aria-invalid={errors.password}
               />
 
               <button
@@ -387,7 +392,7 @@ const PaginaAuth: React.FC = () => {
               type="submit"
               className={`${styles.btn} ${styles["btn-liquid"]}`}
             >
-              Creează Cont
+              Creează cont
             </button>
 
             <div className={styles["social-divider"]}>
@@ -417,7 +422,7 @@ const PaginaAuth: React.FC = () => {
             <h1 className={styles["hero-title-left"]}>Bine ai venit!</h1>
 
             <p className={styles["hero-subtitle-left"]}>
-              Nu ai un cont încă? Creează unul rapid.
+              Nu ai un cont încă? Creează unul rapid și intră în câteva secunde.
             </p>
 
             <button
