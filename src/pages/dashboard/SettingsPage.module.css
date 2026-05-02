@@ -75,8 +75,9 @@
     ),
     var(--bg);
 
-  height: auto;
-  overflow: visible;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Optional wrappers kept (in case your shell uses them) */
@@ -88,12 +89,15 @@
 }
 
 .mainContentArea {
-  overflow: auto;
+  overflow: hidden;
   height: 100vh;
 }
 
 .pageContentWrapper {
   padding: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* ================= HERO (premium glass) ================= */
@@ -255,6 +259,7 @@
   gap: var(--gap);
   align-items: start;
   min-height: 0;
+  flex: 1;
 }
 
 /* ================= SIDE CARD (crystal) ================= */
@@ -592,6 +597,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--gap);
+  overflow-y: auto;
 }
 
 /* ================= CARDS ================= */

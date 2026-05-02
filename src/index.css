@@ -6,10 +6,20 @@ body,
   padding: 0;
 }
 
-/* scroll global pe pagini */
 body {
-  overflow-y: auto;
+  overflow: hidden;
   overflow-x: hidden;
+}
+
+#root {
+  min-height: 100%;
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 /* Firefox */

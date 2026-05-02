@@ -53,8 +53,8 @@
 
 /* ================= PAGE SHELL ================= */
 .pageShell {
-  min-height: 100vh;
-  height: auto;
+  height: 100%;
+  min-height: 0;
   display: flex;
   font-family: "Montserrat", sans-serif;
 
@@ -82,9 +82,9 @@
 .container {
   flex: 1;
   display: flex;
-  min-height: 100vh;
-  height: auto;
-  overflow: visible;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
   min-width: 0;
 }
 
@@ -102,7 +102,7 @@
 
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-height: 0;
 }
 
 .panelHeader {

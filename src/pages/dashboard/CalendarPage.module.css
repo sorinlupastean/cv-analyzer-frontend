@@ -31,7 +31,8 @@
 }
 
 .pageShell {
-  min-height: 100vh;
+  height: 100%;
+  min-height: 0;
   font-family: "Montserrat", sans-serif;
   background-color: #f8fafc;
   background-image: var(--bg-gradient);
@@ -42,7 +43,8 @@
   max-width: 1600px;
   margin: 0 auto;
   padding: 24px;
-  height: 100vh;
+  height: 100%;
+  min-height: 0;
   box-sizing: border-box;
 }
 
