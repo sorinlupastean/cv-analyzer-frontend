@@ -54,7 +54,8 @@
   height: 100%;
   min-height: 0;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
   font-family: "Montserrat", sans-serif;
 
   background:
@@ -82,8 +83,8 @@
   max-width: 100%;
   margin: 0 auto;
   padding: 22px 18px 34px;
-  height: 100%;
-  min-height: 0;
+  min-height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
 }
@@ -328,11 +329,12 @@
 /* ================= GRID ================= */
 .grid {
   display: grid;
-  grid-template-columns: 360px 1fr;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
   flex: 1;
   min-height: 0;
+  min-width: 0;
 }
 
 .leftColumn {
@@ -346,6 +348,7 @@
 
   max-height: calc(100vh - 140px);
   overflow-y: auto;
+  min-width: 0;
   scrollbar-width: none;
 }
 
@@ -367,6 +370,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-width: 0;
 }
 
 /* ================= CARDS ================= */
@@ -1617,7 +1621,8 @@
 
 .pdfViewer {
   width: 100%;
-  height: 680px;
+  height: min(680px, calc(100vh - 220px));
+  min-height: 520px;
   border: none;
   border-radius: var(--radius-lg);
   background: #fff;
@@ -1655,6 +1660,11 @@
   .backBtn {
     width: 100%;
   }
+
+  .pdfViewer {
+    height: 540px;
+    min-height: 420px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1663,7 +1673,8 @@
   }
 
   .pdfViewer {
-    height: 540px;
+    height: 480px;
+    min-height: 360px;
   }
 }
 
