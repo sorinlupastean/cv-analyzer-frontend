@@ -4,7 +4,6 @@ import { PATHS } from "../../routs/paths";
 import styles from "./PaginaAuth.module.css";
 
 import Notification from "../../components/Notification/Notification";
-import Logo from "../../assets/logo.svg";
 
 import {
   FaUser,
@@ -267,6 +266,13 @@ const PaginaAuth: React.FC = () => {
             >
               <GoogleIcon className={styles["google-icon"]} /> Google
             </button>
+
+            <div className={styles["auth-switch"]}>
+              <span>Nu ai cont?</span>
+              <button type="button" onClick={() => setIsSignUpMode(true)}>
+                Înregistrare
+              </button>
+            </div>
           </form>
 
           <form
@@ -408,53 +414,14 @@ const PaginaAuth: React.FC = () => {
             >
               <GoogleIcon className={styles["google-icon"]} /> Google
             </button>
+
+            <div className={styles["auth-switch"]}>
+              <span>Ai deja cont?</span>
+              <button type="button" onClick={() => setIsSignUpMode(false)}>
+                Conectare
+              </button>
+            </div>
           </form>
-        </div>
-      </div>
-
-      <div className={styles["panels-container"]}>
-        <div className={`${styles.panel} ${styles["left-panel"]}`}>
-          <div className={`${styles.content} ${styles["hero-content-left"]}`}>
-            <div className={styles["hero-logo-left"]}>
-              <img src={Logo} alt="Logo" />
-            </div>
-
-            <h1 className={styles["hero-title-left"]}>Bine ai venit!</h1>
-
-            <p className={styles["hero-subtitle-left"]}>
-              Nu ai un cont încă? Creează unul rapid și intră în câteva secunde.
-            </p>
-
-            <button
-              className={styles["hero-button-left"]}
-              onClick={() => setIsSignUpMode(true)}
-              type="button"
-            >
-              Înregistrare
-            </button>
-          </div>
-        </div>
-
-        <div className={`${styles.panel} ${styles["right-panel"]}`}>
-          <div className={`${styles.content} ${styles["hero-content-right"]}`}>
-            <div className={styles["hero-logo-right"]}>
-              <img src={Logo} alt="Logo" />
-            </div>
-
-            <h1 className={styles["hero-title-right"]}>Salutare!</h1>
-
-            <p className={styles["hero-subtitle-right"]}>
-              Ai deja cont? Conectează-te aici.
-            </p>
-
-            <button
-              className={styles["hero-button-right"]}
-              onClick={() => setIsSignUpMode(false)}
-              type="button"
-            >
-              Conectare
-            </button>
-          </div>
         </div>
       </div>
     </div>
