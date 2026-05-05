@@ -334,10 +334,12 @@ const SettingsPage: React.FC = () => {
             <UserIcon size={26} />
           </div>
           <div className={styles.heroText}>
-            <h1>Setări cont</h1>
+            <h1>
+              <span>Setări</span> personale
+            </h1>
             <p>
-              Personalizează profilul, datele de contact și setările de
-              securitate.
+              Actualizează profilul, datele de contact și opțiunile de
+              securitate dintr-un singur loc.
             </p>
           </div>
         </div>
@@ -473,11 +475,11 @@ const SettingsPage: React.FC = () => {
         </aside>
 
         <main className={styles.main}>
-          <section className={styles.card}>
+          <section className={[styles.card, styles.profileCard].join(" ")}>
             <div className={styles.cardHeader}>
               <div>
-                <h2>Date personale</h2>
-                <p>Numele și informațiile publice din aplicație.</p>
+                <h2>Profil public</h2>
+                <p>Numele, rolul și biografia vizibile în aplicație.</p>
               </div>
               <span className={styles.sectionPill}>Profil</span>
             </div>
@@ -541,11 +543,11 @@ const SettingsPage: React.FC = () => {
             </div>
           </section>
 
-          <section className={styles.card}>
+          <section className={[styles.card, styles.contactCard].join(" ")}>
             <div className={styles.cardHeader}>
               <div>
-                <h2>Date de contact</h2>
-                <p>Email, telefon și website pentru comunicare.</p>
+                <h2>Detalii de contact</h2>
+                <p>Email, telefon și website pentru comunicare clară.</p>
               </div>
               <span className={styles.sectionPill}>Contact</span>
             </div>
@@ -597,13 +599,13 @@ const SettingsPage: React.FC = () => {
             </div>
           </section>
 
-          <section className={styles.card}>
+          <section className={[styles.card, styles.securityCard].join(" ")}>
             <div className={styles.cardHeader}>
               <div>
-                <h2>Securitate</h2>
-                <p>Gestionează parola contului tău.</p>
+                <h2>Securitate cont</h2>
+                <p>Gestionează parola contului tău în siguranță.</p>
               </div>
-              <span className={styles.sectionPill}>Security</span>
+              <span className={styles.sectionPill}>Securitate</span>
             </div>
 
             <div className={styles.actionList}>
@@ -635,12 +637,12 @@ const SettingsPage: React.FC = () => {
             <div className={styles.cardHeader}>
               <div>
                 <h2>Zona de risc</h2>
-                <p>Acțiuni ireversibile, folosește cu grijă.</p>
+                <p>Acțiuni ireversibile, folosește-le cu grijă.</p>
               </div>
               <span
                 className={[styles.sectionPill, styles.dangerPill].join(" ")}
               >
-                Danger
+                Pericol
               </span>
             </div>
 

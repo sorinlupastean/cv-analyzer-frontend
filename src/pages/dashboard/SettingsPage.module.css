@@ -4,24 +4,27 @@
 :root {
   --deep-abyss: #03111c;
 
-  --ocean-mid: #3b7f9b;
-  --sky-highlight: #39a3c4;
-  --electric-glow: #4acfee;
-  --mist-cyan: #99deeb;
+  --ocean-mid: #346b82;
+  --sky-highlight: #3aa5c7;
+  --electric-glow: #49d0ee;
+  --mist-cyan: #9fe3ef;
+  --sage-glow: #8edbc5;
+  --warm-ice: #f3fbfc;
 
   --bg: #f8fafc;
 
-  --text-dark: #0f172a;
-  --text-muted: #475569;
+  --text-dark: #0b1220;
+  --text-muted: #516074;
   --text-body: #334155;
 
-  --card-bg: rgba(255, 255, 255, 0.86);
+  --card-bg: rgba(255, 255, 255, 0.9);
   --card-border: rgba(15, 23, 42, 0.08);
 
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.02);
   --shadow-md:
     0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 20px 40px -12px rgba(0, 0, 0, 0.12);
+  --shadow-lg:
+    0 20px 40px -12px rgba(0, 0, 0, 0.12), 0 24px 60px rgba(74, 207, 238, 0.06);
 
   --accent: var(--ocean-mid);
   --accent-strong: var(--sky-highlight);
@@ -43,7 +46,7 @@
   --radius-lg: 20px;
   --radius-md: 14px;
 
-  --page-pad: 22px;
+  --page-pad: 24px;
   --gap: 18px;
 }
 
@@ -51,6 +54,7 @@
 .page {
   font-family: "Montserrat", sans-serif;
   color: var(--text-dark);
+  position: relative;
 
   padding: var(--page-pad);
   display: flex;
@@ -59,25 +63,62 @@
 
   background:
     radial-gradient(
-      900px 520px at 12% 12%,
-      rgba(74, 207, 238, 0.12),
+      960px 560px at 10% 8%,
+      rgba(73, 208, 238, 0.14),
+      transparent 62%
+    ),
+    radial-gradient(
+      960px 560px at 90% 84%,
+      rgba(142, 219, 197, 0.12),
       transparent 60%
     ),
     radial-gradient(
-      900px 520px at 88% 86%,
-      rgba(57, 163, 196, 0.1),
-      transparent 60%
-    ),
-    radial-gradient(
-      700px 420px at 55% 45%,
-      rgba(153, 222, 235, 0.1),
-      transparent 65%
+      680px 420px at 55% 44%,
+      rgba(159, 227, 239, 0.1),
+      transparent 66%
     ),
     var(--bg);
 
   height: 100%;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.page::before,
+.page::after {
+  content: "";
+  position: fixed;
+  inset: auto;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page::before {
+  width: 320px;
+  height: 320px;
+  left: -90px;
+  top: 72px;
+  background: radial-gradient(
+    circle,
+    rgba(73, 208, 238, 0.14),
+    transparent 68%
+  );
+  filter: blur(8px);
+}
+
+.page::after {
+  width: 420px;
+  height: 420px;
+  right: -120px;
+  bottom: 20px;
+  background: radial-gradient(
+    circle,
+    rgba(142, 219, 197, 0.12),
+    transparent 70%
+  );
+  filter: blur(12px);
 }
 
 /* Optional wrappers kept (in case your shell uses them) */
@@ -98,6 +139,9 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ================= HERO (premium glass) ================= */
@@ -106,24 +150,53 @@
   top: 0;
   z-index: 30;
 
-  padding: 18px 20px;
-  border-radius: calc(var(--radius-xl) + 2px);
+  padding: 20px 22px;
+  border-radius: calc(var(--radius-xl) + 4px);
 
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.86),
+    rgba(243, 251, 252, 0.76)
+  );
+  backdrop-filter: blur(22px) saturate(185%);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
 
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.72);
 
   box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.06),
-    0 18px 45px rgba(74, 207, 238, 0.08),
-    0 0 0 1px rgba(74, 207, 238, 0.08);
+    0 8px 18px rgba(0, 0, 0, 0.06),
+    0 20px 48px rgba(74, 207, 238, 0.09),
+    0 0 0 1px rgba(74, 207, 238, 0.08) inset;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: -45%;
+  background:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(74, 207, 238, 0.16),
+      transparent 52%
+    ),
+    radial-gradient(
+      circle at 82% 82%,
+      rgba(57, 163, 196, 0.12),
+      transparent 55%
+    );
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.hero > * {
+  position: relative;
+  z-index: 1;
 }
 
 .heroLeft {
@@ -131,12 +204,13 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
+  flex: 1;
 }
 
 .heroBadge {
-  width: 46px;
-  height: 46px;
-  border-radius: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
   display: grid;
   place-items: center;
 
@@ -171,16 +245,26 @@
 
 .heroText h1 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.15rem;
   font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.heroText h1 span {
+  background: linear-gradient(135deg, var(--ocean-mid), var(--sky-highlight));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .heroText p {
-  margin: 4px 0 0 0;
-  font-size: 0.86rem;
+  margin: 2px 0 0 0;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-body);
-  line-height: 1.4;
+  line-height: 1.55;
+  max-width: 760px;
 }
 
 .heroRight {
@@ -188,14 +272,15 @@
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 /* ================= BUTTONS ================= */
 .primaryBtn,
 .secondaryBtn {
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
-  font-size: 0.8rem;
+  border-radius: 16px;
+  padding: 11px 15px;
+  font-size: 0.82rem;
   font-weight: 600;
 
   cursor: pointer;
@@ -208,18 +293,19 @@
     box-shadow 0.18s ease,
     background 0.18s ease,
     border-color 0.18s ease,
-    filter 0.18s ease;
+    filter 0.18s ease,
+    color 0.18s ease;
 }
 
 .primaryBtn {
   border: 1px solid rgba(74, 207, 238, 0.32);
   background: linear-gradient(
     135deg,
-    rgba(57, 163, 196, 0.18),
-    rgba(74, 207, 238, 0.18)
+    rgba(57, 163, 196, 0.2),
+    rgba(74, 207, 238, 0.22)
   );
   color: rgba(14, 116, 144, 0.98);
-  box-shadow: 0 14px 30px rgba(74, 207, 238, 0.12);
+  box-shadow: 0 14px 30px rgba(74, 207, 238, 0.14);
 }
 
 .primaryBtn:hover {
@@ -231,7 +317,7 @@
 
 .secondaryBtn {
   border: 1px solid rgba(15, 23, 42, 0.12);
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.78);
   color: rgba(15, 23, 42, 0.85);
   box-shadow: 0 10px 22px rgba(2, 132, 199, 0.06);
 }
@@ -255,40 +341,43 @@
 /* ================= LAYOUT ================= */
 .layout {
   display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: var(--gap);
+  grid-template-columns: 380px 1fr;
+  gap: 20px;
   align-items: start;
   min-height: 0;
   flex: 1;
+  position: relative;
+  z-index: 1;
 }
 
 /* ================= SIDE CARD (crystal) ================= */
 .sideCard {
   position: sticky;
-  top: calc(var(--page-pad) + 88px);
+  top: calc(var(--page-pad) + 94px);
 
   border-radius: 34px;
-  padding: 18px 20px;
+  padding: 20px 20px 18px;
 
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.92) 0%,
-    rgba(240, 253, 255, 0.82) 55%,
-    rgba(255, 255, 255, 0.9) 100%
+    rgba(255, 255, 255, 0.96) 0%,
+    rgba(240, 253, 255, 0.88) 58%,
+    rgba(255, 255, 255, 0.94) 100%
   );
 
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.76);
   box-shadow:
-    0 30px 60px -14px rgba(3, 17, 28, 0.12),
+    0 28px 60px -18px rgba(3, 17, 28, 0.16),
     0 0 0 1px rgba(74, 207, 238, 0.06) inset,
-    0 0 26px rgba(74, 207, 238, 0.08);
+    0 0 30px rgba(74, 207, 238, 0.08);
 
-  backdrop-filter: blur(22px) saturate(1.7);
-  -webkit-backdrop-filter: blur(22px) saturate(1.7);
+  backdrop-filter: blur(24px) saturate(1.75);
+  -webkit-backdrop-filter: blur(24px) saturate(1.75);
 
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   overflow: hidden;
 }
 
@@ -322,14 +411,18 @@
 }
 
 .avatarWrap {
-  width: 118px;
-  height: 118px;
+  width: 126px;
+  height: 126px;
   border-radius: 999px;
   position: relative;
   display: grid;
   place-items: center;
 
-  background: rgba(255, 255, 255, 0.8);
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0.72)
+  );
   border: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow:
     0 18px 44px rgba(2, 6, 23, 0.12),
@@ -417,6 +510,20 @@
   box-shadow: 0 14px 30px rgba(74, 207, 238, 0.14);
 }
 
+.avatarEditBtn:focus-visible,
+.ghostBtn:focus-visible,
+.dangerGhostBtn:focus-visible,
+.primaryBtn:focus-visible,
+.secondaryBtn:focus-visible,
+.dangerBtn:focus-visible,
+.actionRow:focus-visible,
+.modalCloseBtn:focus-visible,
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
 .hiddenFile {
   display: none;
 }
@@ -427,6 +534,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  padding-inline: 4px;
 }
 
 .nameLine {
@@ -475,18 +583,18 @@
 /* actions on side */
 .profileActions {
   width: 100%;
-  margin-top: 14px;
+  margin-top: 16px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 12px;
   position: relative;
   z-index: 1;
 }
 
 .ghostBtn,
 .dangerGhostBtn {
-  border-radius: var(--radius-md);
-  padding: 10px 12px;
+  border-radius: 16px;
+  padding: 11px 12px;
 
   cursor: pointer;
   font-weight: 700;
@@ -534,14 +642,18 @@
 /* tip box */
 .tipBox {
   width: 100%;
-  margin-top: 16px;
+  margin-top: 18px;
   display: flex;
   gap: 12px;
-  padding: 14px;
+  padding: 15px;
 
-  border-radius: 18px;
+  border-radius: 22px;
   border: 1px solid rgba(74, 207, 238, 0.18);
-  background: rgba(74, 207, 238, 0.08);
+  background: linear-gradient(
+    135deg,
+    rgba(74, 207, 238, 0.1),
+    rgba(255, 255, 255, 0.7)
+  );
   color: rgba(15, 23, 42, 0.9);
 
   position: relative;
@@ -585,7 +697,7 @@
 
 .tipBox p {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: rgba(71, 85, 105, 0.95);
   line-height: 1.5;
@@ -596,23 +708,33 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
-  overflow-y: auto;
+  gap: 20px;
+  overflow: visible;
 }
 
 /* ================= CARDS ================= */
 .card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius-xl);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95),
+    rgba(248, 252, 255, 0.9)
+  );
+  border: 1px solid rgba(15, 23, 42, 0.07);
+  border-radius: 28px;
 
-  box-shadow: var(--shadow-md);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 12px 28px rgba(15, 23, 42, 0.06),
+    0 0 0 1px rgba(74, 207, 238, 0.04) inset;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-  padding: 18px 20px;
+  padding: 20px 22px;
   position: relative;
   overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .card::before {
@@ -634,6 +756,58 @@
   pointer-events: none;
 }
 
+.card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(74, 207, 238, 0.18);
+  box-shadow:
+    0 18px 42px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(74, 207, 238, 0.06) inset;
+}
+
+.profileCard::after,
+.contactCard::after,
+.securityCard::after,
+.dangerCard::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+  opacity: 0.95;
+}
+
+.profileCard::after {
+  background: linear-gradient(
+    90deg,
+    rgba(74, 207, 238, 0.92),
+    rgba(61, 220, 151, 0.84)
+  );
+}
+
+.contactCard::after {
+  background: linear-gradient(
+    90deg,
+    rgba(57, 163, 196, 0.92),
+    rgba(74, 207, 238, 0.76)
+  );
+}
+
+.securityCard::after {
+  background: linear-gradient(
+    90deg,
+    rgba(49, 146, 175, 0.92),
+    rgba(142, 219, 197, 0.86)
+  );
+}
+
+.dangerCard::after {
+  background: linear-gradient(
+    90deg,
+    rgba(239, 68, 68, 0.9),
+    rgba(251, 146, 60, 0.8)
+  );
+}
+
 .cardHeader {
   position: relative;
   z-index: 1;
@@ -643,21 +817,21 @@
   gap: 12px;
   align-items: flex-start;
 
-  padding-bottom: 12px;
+  padding-bottom: 14px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .cardHeader h2 {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.02rem;
+  font-weight: 800;
   color: rgba(15, 23, 42, 0.92);
 }
 
 .cardHeader p {
   margin: 6px 0 0 0;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-muted);
   line-height: 1.45;
@@ -669,7 +843,7 @@
 
   font-size: 0.7rem;
   font-weight: 700;
-  padding: 6px 10px;
+  padding: 7px 11px;
   border-radius: 999px;
 
   border: 1px solid rgba(74, 207, 238, 0.22);
@@ -679,6 +853,30 @@
   box-shadow: 0 10px 22px rgba(74, 207, 238, 0.08);
 }
 
+.profileCard .sectionPill {
+  border-color: rgba(74, 207, 238, 0.22);
+  background: rgba(74, 207, 238, 0.1);
+  color: rgba(14, 116, 144, 0.96);
+}
+
+.contactCard .sectionPill {
+  border-color: rgba(57, 163, 196, 0.22);
+  background: rgba(57, 163, 196, 0.1);
+  color: rgba(18, 112, 137, 0.96);
+}
+
+.securityCard .sectionPill {
+  border-color: rgba(61, 220, 151, 0.2);
+  background: rgba(61, 220, 151, 0.12);
+  color: rgba(24, 110, 77, 0.96);
+}
+
+.dangerCard .sectionPill {
+  border-color: rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.1);
+  color: rgba(185, 28, 28, 0.95);
+}
+
 /* ================= FORMS ================= */
 .formGrid {
   position: relative;
@@ -686,7 +884,7 @@
 
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 16px;
 }
 
 .full {
@@ -696,7 +894,7 @@
 .field {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
 }
 
 .field label {
@@ -710,15 +908,15 @@
 .field input,
 .field textarea {
   width: 100%;
-  padding: 10px;
+  padding: 11px 12px;
 
-  border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.11);
 
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.84);
   color: rgba(15, 23, 42, 0.92);
 
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
 
   outline: none;
@@ -743,7 +941,7 @@
 
 .field textarea {
   resize: none;
-  min-height: 120px;
+  min-height: 132px;
 }
 
 /* icon input */
@@ -770,18 +968,22 @@
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .actionRow {
   width: 100%;
   text-align: left;
 
-  border-radius: 18px;
+  border-radius: 20px;
   border: 1px solid rgba(15, 23, 42, 0.08);
 
-  background: rgba(255, 255, 255, 0.66);
-  padding: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.84),
+    rgba(248, 252, 255, 0.92)
+  );
+  padding: 13px;
 
   cursor: pointer;
 
@@ -836,12 +1038,12 @@
 }
 
 .actionText strong {
-  font-weight: 700;
+  font-weight: 800;
   color: rgba(15, 23, 42, 0.92);
 }
 
 .actionText small {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: rgba(100, 116, 139, 0.95);
   line-height: 1.4;
@@ -863,7 +1065,7 @@
 
 /* ================= DANGER CARD ================= */
 .dangerCard {
-  border-color: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.15);
 }
 
 .dangerPill {
@@ -885,14 +1087,14 @@
 }
 
 .dangerInfo strong {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.92rem;
+  font-weight: 800;
   color: rgba(15, 23, 42, 0.92);
 }
 
 .dangerInfo p {
   margin: 6px 0 0 0;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: rgba(100, 116, 139, 0.95);
   max-width: 560px;
@@ -900,8 +1102,8 @@
 }
 
 .dangerBtn {
-  border-radius: var(--radius-md);
-  padding: 10px 14px;
+  border-radius: 16px;
+  padding: 11px 14px;
 
   cursor: pointer;
   font-weight: 600;
@@ -939,8 +1141,8 @@
   gap: 10px;
   padding: 12px;
 
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.82);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.6);
 
   backdrop-filter: blur(18px) saturate(180%);
@@ -968,7 +1170,7 @@
 
 @media (max-width: 640px) {
   .page {
-    padding: 18px;
+    padding: 16px;
   }
 
   .hero {
@@ -989,6 +1191,19 @@
   .formGrid {
     grid-template-columns: 1fr;
   }
+
+  .layout {
+    gap: 16px;
+  }
+
+  .card {
+    padding: 18px 16px;
+    border-radius: 22px;
+  }
+
+  .sideCard {
+    padding: 18px 16px 16px;
+  }
 }
 
 .modalOverlay {
@@ -1000,28 +1215,39 @@
   align-items: center;
   justify-content: center;
 
-  padding: 20px;
-  background: rgba(3, 17, 28, 0.45);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  padding: 22px;
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(74, 207, 238, 0.12),
+      transparent 30%
+    ),
+    rgba(3, 17, 28, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .modalCard {
   width: 100%;
   max-width: 520px;
 
-  border-radius: 28px;
-  padding: 20px;
+  border-radius: 30px;
+  padding: 22px;
 
-  background: rgba(255, 255, 255, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(245, 252, 255, 0.92)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.72);
 
   box-shadow:
-    0 30px 60px rgba(3, 17, 28, 0.2),
-    0 0 0 1px rgba(74, 207, 238, 0.08);
+    0 30px 60px rgba(3, 17, 28, 0.22),
+    0 0 0 1px rgba(74, 207, 238, 0.08),
+    0 0 26px rgba(74, 207, 238, 0.08);
 
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(185%);
+  -webkit-backdrop-filter: blur(22px) saturate(185%);
 
   position: relative;
   overflow: hidden;
@@ -1055,21 +1281,21 @@
   justify-content: space-between;
   gap: 12px;
 
-  padding-bottom: 12px;
-  margin-bottom: 14px;
+  padding-bottom: 14px;
+  margin-bottom: 16px;
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .modalHeader h3 {
   margin: 0;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 800;
   color: rgba(15, 23, 42, 0.94);
 }
 
 .modalHeader p {
   margin: 6px 0 0 0;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--text-muted);
   line-height: 1.45;
@@ -1113,7 +1339,7 @@
 
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .modalActions {
@@ -1123,7 +1349,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 
 @media (max-width: 640px) {
