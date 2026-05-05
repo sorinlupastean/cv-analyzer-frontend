@@ -297,7 +297,9 @@
   border: 0;
   outline: none;
   background: transparent;
-  color: var(--text-main);
+  color: #fff;
+  caret-color: #fff;
+  -webkit-text-fill-color: #fff;
   font: inherit;
   font-size: 0.92rem;
   font-weight: 500;
@@ -518,6 +520,14 @@
 
 .input-field.error input {
   color: #fff2e9;
+}
+
+.input-field input:-webkit-autofill,
+.input-field input:-webkit-autofill:hover,
+.input-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  box-shadow: 0 0 0px 1000px rgba(10, 28, 41, 0.7) inset;
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 .panels-container {

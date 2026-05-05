@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./UploadCVPage.module.css";
 import Notification from "../../components/Notification/Notification";
@@ -55,6 +55,8 @@ const UploadCVPage: React.FC = () => {
   } | null>(null);
 
   const [cvCounts, setCvCounts] = useState<Record<number, number>>({});
+  const [isDraggingFiles, setIsDraggingFiles] = useState(false);
+  const dragDepthRef = useRef(0);
 
   useEffect(() => {
     (async () => {
@@ -139,47 +141,109 @@ const UploadCVPage: React.FC = () => {
     }));
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-
+  const canUploadFiles = (showMessage = true) => {
     if (!selectedJobId) {
-      setNotification({
-        type: "error",
-        title: "SISTEM BLOCAT",
-        message: "Selectează un job înainte să încarci CV-uri.",
-      });
-      return;
+      if (showMessage) {
+        setNotification({
+          type: "error",
+          title: "SISTEM BLOCAT",
+          message: "Selectează un job înainte să încarci CV-uri.",
+        });
+      }
+      return false;
     }
 
     if (isClosed) {
-      setNotification({
-        type: "error",
-        title: "POST ÎNCHIS",
-        message: "Postul este închis, încărcarea este blocată.",
-      });
+      if (showMessage) {
+        setNotification({
+          type: "error",
+          title: "POST ÎNCHIS",
+          message: "Postul este închis, încărcarea este blocată.",
+        });
+      }
+      return false;
+    }
+
+    return true;
+  };
+
+  const uploadFiles = async (files: File[]) => {
+    if (!canUploadFiles()) return;
+    if (files.length === 0) return;
+
+    const acceptedFiles = files.filter((file) =>
+      /\.(pdf|docx?)$/i.test(file.name),
+    );
+
+    if (acceptedFiles.length === 0) {
+      toast.error("Te rog încarcă doar fișiere PDF sau DOCX");
       return;
     }
 
-    if (!files || files.length === 0) return;
-
-    const fileArr = Array.from(files);
-
     try {
       await Promise.all(
-        fileArr.map((f) => cvsApi.uploadForJob(selectedJobId, f)),
+        acceptedFiles.map((file) => cvsApi.uploadForJob(selectedJobId!, file)),
       );
-      await refreshCvs(selectedJobId);
+      await refreshCvs(selectedJobId!);
 
       setNotification({
         type: "success",
         title: "DOCUMENTE ÎNCĂRCATE",
-        message: `${fileArr.length} fișier(e) au fost încărcate în backend.`,
+        message: `${acceptedFiles.length} fișier(e) au fost încărcate în backend.`,
       });
     } catch {
       toast.error("Upload eșuat");
+    }
+  };
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+
+    if (!files || files.length === 0) return;
+
+    try {
+      await uploadFiles(Array.from(files));
     } finally {
       e.target.value = "";
     }
+  };
+
+  const handleDragEnter = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!canUploadFiles(false)) return;
+
+    dragDepthRef.current += 1;
+    setIsDraggingFiles(true);
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!canUploadFiles(false)) return;
+
+    event.dataTransfer.dropEffect = "copy";
+    setIsDraggingFiles(true);
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    dragDepthRef.current = Math.max(0, dragDepthRef.current - 1);
+    if (dragDepthRef.current === 0) {
+      setIsDraggingFiles(false);
+    }
+  };
+
+  const handleDrop = async (event: React.DragEvent<HTMLLabelElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    dragDepthRef.current = 0;
+    setIsDraggingFiles(false);
+
+    const files = Array.from(event.dataTransfer.files || []);
+    await uploadFiles(files);
   };
 
   const handleDelete = async (cvId: number) => {
@@ -422,8 +486,13 @@ const UploadCVPage: React.FC = () => {
                 <label
                   className={[
                     styles.uploadZone,
+                    isDraggingFiles ? styles.uploadZoneDragging : "",
                     isClosed ? styles.uploadZoneDisabled : "",
                   ].join(" ")}
+                  onDragEnter={handleDragEnter}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
                   title={
                     isClosed ? "Post închis, upload blocat" : "Încarcă CV-uri"
                   }
