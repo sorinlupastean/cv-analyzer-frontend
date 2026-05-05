@@ -154,7 +154,13 @@ const Sidebar: React.FC = () => {
       <aside className={`${styles.sidebar} ${open ? styles.sidebarOpen : ""}`}>
         <div>
           <div className={styles.brand}>
-            <img src={Logo} alt="CV-Analyzer" className={styles.brandLogo} />
+            <div className={styles.brandMark}>
+              <img src={Logo} alt="CV Analyzer" className={styles.brandLogo} />
+            </div>
+            <div className={styles.brandCopy}>
+              <span className={styles.brandKicker}>AI CV review</span>
+              <span className={styles.brandName}>CV Analyzer</span>
+            </div>
           </div>
 
           <div className={styles.profileSection}>

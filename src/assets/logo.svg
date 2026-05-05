@@ -1,52 +1,56 @@
-<svg width="100" height="150" viewBox="0 0 200 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="avatarGrad" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+    <linearGradient id="logoGradient" x1="20" y1="16" x2="108" y2="112" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#22D3EE" />
+      <stop offset="55%" stop-color="#0EA5E9" />
       <stop offset="100%" stop-color="#2563EB" />
     </linearGradient>
 
-    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
-      <feGaussianBlur stdDeviation="4" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    <linearGradient id="sheetGradient" x1="36" y1="24" x2="92" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#7DD3FC" stop-opacity="0.85" />
+    </linearGradient>
+
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feColorMatrix
+        in="blur"
+        type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.55 0"
+      />
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
     </filter>
   </defs>
 
-  <g filter="url(#glow)">
-    <path d="M65 30 H115 L155 70 V150 C155 158.284 148.284 165 140 165 H60 C51.7157 165 45 158.284 45 150 V45 C45 36.7157 51.7157 30 60 30Z" 
-          stroke="url(#avatarGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" />
-    
-    <path d="M65 75 H135" stroke="url(#avatarGrad)" stroke-width="4" stroke-linecap="round" opacity="0.4" />
-    <path d="M65 95 H115" stroke="url(#avatarGrad)" stroke-width="4" stroke-linecap="round" opacity="0.3" />
-    <path d="M65 115 H95" stroke="url(#avatarGrad)" stroke-width="4" stroke-linecap="round" opacity="0.2" />
+  <circle cx="64" cy="64" r="54" fill="#061826" />
+  <circle cx="64" cy="64" r="52" stroke="url(#logoGradient)" stroke-opacity="0.22" stroke-width="2" />
 
-    <circle cx="135" cy="140" r="12" fill="#c5f3fc" opacity="0.95" />
-    <path d="M127 140 L133 146 L143 134" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <g filter="url(#softGlow)">
+    <path
+      d="M42 24H72L90 42V88C90 95.732 83.732 102 76 102H42C34.268 102 28 95.732 28 88V38C28 30.268 34.268 24 42 24Z"
+      fill="url(#sheetGradient)"
+      stroke="url(#logoGradient)"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+
+    <path d="M72 24V39C72 41.7614 74.2386 44 77 44H90" stroke="url(#logoGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+    <path d="M37 51H75" stroke="#0F172A" stroke-opacity="0.55" stroke-width="4" stroke-linecap="round" />
+    <path d="M37 63H68" stroke="#0F172A" stroke-opacity="0.42" stroke-width="4" stroke-linecap="round" />
+    <path d="M37 75H60" stroke="#0F172A" stroke-opacity="0.3" stroke-width="4" stroke-linecap="round" />
+
+    <path d="M42 88L50 80L58 84L67 70L76 76" stroke="url(#logoGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+
+    <circle cx="84" cy="84" r="18" fill="#052235" fill-opacity="0.95" stroke="url(#logoGradient)" stroke-width="4" />
+    <circle cx="84" cy="84" r="9" fill="none" stroke="#E0F2FE" stroke-opacity="0.9" stroke-width="3" />
+    <path d="M95 95L103 103" stroke="#E0F2FE" stroke-opacity="0.9" stroke-width="4" stroke-linecap="round" />
+    <circle cx="80" cy="80" r="2.5" fill="#22D3EE" />
   </g>
-
-  <circle cx="155" cy="50" r="4" fill="#22D3EE">
-    <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite" />
-    <animate attributeName="r" values="4;6;4" dur="3s" repeatCount="indefinite" />
-  </circle>
-
-  <defs>
-  <linearGradient id="lightWowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-    <stop offset="0%" stop-color="#22D3EE" />
-    <stop offset="100%" stop-color="#0EA5E9" />
-  </linearGradient>
-
-  <filter id="ultraLightGlow" x="-10%" y="-10%" width="120%" height="120%">
-    <feGaussianBlur stdDeviation="1.5" result="blur" />
-    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-  </filter>
-</defs>
-
-<g filter="url(#ultraLightGlow)">
-  <text x="100" y="210" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="25" font-weight="600" fill="url(#lightWowGradient)" style="text-transform: uppercase; letter-spacing: 3px;">
-    CV ANALYZER
-  </text>
-  
-  <text x="100" y="232" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="500" fill="#FFFFFF" opacity="0.4" style="text-transform: uppercase; letter-spacing: 8px;">
-    STUDIO
-  </text>
-</g>
 </svg>

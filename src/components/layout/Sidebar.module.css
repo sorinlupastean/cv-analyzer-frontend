@@ -117,16 +117,87 @@
 /* ================= BRAND ================= */
 .brand {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 8px 0 14px 0;
+  gap: 12px;
+  padding: 8px 16px 18px 16px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.brand::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(34, 211, 238, 0),
+    rgba(34, 211, 238, 0.18),
+    rgba(255, 255, 255, 0.05),
+    rgba(34, 211, 238, 0)
+  );
+}
+
+.brandMark {
+  width: 60px;
+  height: 60px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 55%),
+    linear-gradient(135deg, rgba(8, 24, 39, 0.95), rgba(3, 17, 28, 0.92));
+  border: 1px solid rgba(34, 211, 238, 0.16);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.brandMark::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 40%);
+  pointer-events: none;
+}
+
+.brandCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.brandKicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.78);
+  margin-bottom: 4px;
+}
+
+.brandName {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #e2e8f0;
+  line-height: 1.1;
 }
 
 .brandLogo {
-  width: 110px;
-  height: 110px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
-  filter: drop-shadow(0 10px 22px rgba(34, 211, 238, 0.18));
+  filter: drop-shadow(0 8px 18px rgba(34, 211, 238, 0.22));
+  position: relative;
+  z-index: 1;
 }
 
 /* ================= NAVIGATION ================= */
@@ -286,8 +357,22 @@
   }
 
   .brandLogo {
-    width: 80px;
-    height: 80px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .brandMark {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
+
+  .brandKicker {
+    font-size: 0.62rem;
+  }
+
+  .brandName {
+    font-size: 0.92rem;
   }
 
   .profileName {
