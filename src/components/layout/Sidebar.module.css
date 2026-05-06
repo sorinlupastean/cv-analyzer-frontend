@@ -142,14 +142,18 @@
 }
 
 .brandMark {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at top left, rgba(34, 211, 238, 0.18), transparent 55%),
+    radial-gradient(
+      circle at top left,
+      rgba(34, 211, 238, 0.18),
+      transparent 55%
+    ),
     linear-gradient(135deg, rgba(8, 24, 39, 0.95), rgba(3, 17, 28, 0.92));
   border: 1px solid rgba(34, 211, 238, 0.16);
   box-shadow:
@@ -164,7 +168,11 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 40%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12),
+    transparent 40%
+  );
   pointer-events: none;
 }
 
@@ -176,7 +184,7 @@
 }
 
 .brandKicker {
-  font-size: 0.68rem;
+  font-size: 0.6rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(148, 163, 184, 0.78);
@@ -184,7 +192,7 @@
 }
 
 .brandName {
-  font-size: 1.02rem;
+  font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.01em;
   color: #e2e8f0;
@@ -192,8 +200,8 @@
 }
 
 .brandLogo {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   object-fit: contain;
   filter: drop-shadow(0 8px 18px rgba(34, 211, 238, 0.22));
   position: relative;

@@ -1,0 +1,133 @@
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  min-width: 300px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border-radius: 16px;
+
+  background: rgba(12, 17, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  color: #f7f8fa;
+}
+
+.accent {
+  width: 3px;
+  align-self: stretch;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.success .accent {
+  background: linear-gradient(180deg, #39c98a, #1d8a5e);
+}
+
+.error .accent {
+  background: linear-gradient(180deg, #ff8a6b, #d95b3f);
+}
+
+.loading .accent {
+  background: linear-gradient(180deg, #aab2bf, #6d7583);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  margin-top: 1px;
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.04);
+  color: #dce1e8;
+}
+
+.success .icon {
+  color: #52d39a;
+}
+
+.error .icon {
+  color: #ff896f;
+}
+
+.loading .icon {
+  color: #c1c7d0;
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.56);
+}
+
+.message {
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.92);
+  word-break: break-word;
+}
+
+.closeBtn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.42);
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  margin-left: 4px;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.closeBtn:hover {
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-1px);
+}
+
+.closeBtn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.28);
+  outline-offset: 2px;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

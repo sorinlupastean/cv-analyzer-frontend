@@ -2,6 +2,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { PATHS } from "./routs/paths";
+import AppToaster from "./components/notifications/AppToaster";
 
 // Components
 import ProtectedRoute from "./routs/ProtectedRoute";
@@ -26,6 +27,7 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
+      <AppToaster />
       <Routes>
         {/* PUBLIC ROUTE */}
         <Route

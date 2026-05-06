@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./SettingsPage.module.css";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { usersApi } from "../../api/users.service";
 
 import {
@@ -318,7 +318,6 @@ const SettingsPage: React.FC = () => {
   if (loadingProfile) {
     return (
       <div className={styles.page}>
-        <Toaster position="bottom-right" />
         <div style={{ padding: 24 }}>Se încarcă profilul...</div>
       </div>
     );
@@ -326,7 +325,6 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className={styles.page}>
-      <Toaster position="bottom-right" />
 
       <header className={styles.hero}>
         <div className={styles.heroLeft}>

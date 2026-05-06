@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import styles from "./CalendarPage.module.css";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import CalendarEventModal from "../../components/CalendarEventModal/CalendarEventModal";
 import {
   interviewsApi,
@@ -743,7 +743,6 @@ const CalendarPage: React.FC = () => {
 
   return (
     <div className={styles.pageShell}>
-      <Toaster />
       <div className={styles.container}>
         <div className={styles.grid}>
           {/* CALENDAR */}

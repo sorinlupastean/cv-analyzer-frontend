@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import styles from "./UploadCVPage.module.css";
-import Notification from "../../components/Notification/Notification";
-import toast, { Toaster } from "react-hot-toast";
 import { jobsApi } from "../../api/jobs.service";
 import { cvsApi, type Cv } from "../../api/cvs.service";
 import { PATHS } from "../../routs/paths";
@@ -48,12 +47,6 @@ const UploadCVPage: React.FC = () => {
   const [cvs, setCvs] = useState<Cv[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [notification, setNotification] = useState<{
-    type: "success" | "error";
-    title: string;
-    message: string;
-  } | null>(null);
-
   const [cvCounts, setCvCounts] = useState<Record<number, number>>({});
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const dragDepthRef = useRef(0);
@@ -61,7 +54,7 @@ const UploadCVPage: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        const data = (await jobsApi.list()) as JobLite[];
+        const data = (await jobsApi.list()) as JobLite[] | null;
         const jobsList = data ?? [];
 
         setJobs(jobsList);
@@ -80,7 +73,7 @@ const UploadCVPage: React.FC = () => {
 
         setCvCounts(Object.fromEntries(pairs));
       } catch {
-        toast.error("Nu pot încărca job-urile din backend");
+        toast.error("Nu pot încărca job-urile din backend.");
       }
     })();
   }, []);
@@ -95,7 +88,7 @@ const UploadCVPage: React.FC = () => {
       try {
         await refreshCvs(selectedJobId);
       } catch {
-        toast.error("Nu pot încărca CV-urile pentru job");
+        toast.error("Nu pot încărca CV-urile pentru job.");
       }
     })();
   }, [selectedJobId]);
@@ -143,24 +136,12 @@ const UploadCVPage: React.FC = () => {
 
   const canUploadFiles = (showMessage = true) => {
     if (!selectedJobId) {
-      if (showMessage) {
-        setNotification({
-          type: "error",
-          title: "SISTEM BLOCAT",
-          message: "Selectează un job înainte să încarci CV-uri.",
-        });
-      }
+      if (showMessage) toast.error("Selectează un job înainte să încarci CV-uri.");
       return false;
     }
 
     if (isClosed) {
-      if (showMessage) {
-        setNotification({
-          type: "error",
-          title: "POST ÎNCHIS",
-          message: "Postul este închis, încărcarea este blocată.",
-        });
-      }
+      if (showMessage) toast.error("Postul este închis.");
       return false;
     }
 
@@ -176,7 +157,7 @@ const UploadCVPage: React.FC = () => {
     );
 
     if (acceptedFiles.length === 0) {
-      toast.error("Te rog încarcă doar fișiere PDF sau DOCX");
+      toast.error("Te rog încarcă doar fișiere PDF sau DOCX.");
       return;
     }
 
@@ -186,13 +167,9 @@ const UploadCVPage: React.FC = () => {
       );
       await refreshCvs(selectedJobId!);
 
-      setNotification({
-        type: "success",
-        title: "DOCUMENTE ÎNCĂRCATE",
-        message: `${acceptedFiles.length} fișier(e) au fost încărcate în backend.`,
-      });
+      toast.success(`${acceptedFiles.length} fișier(e) încărcate.`);
     } catch {
-      toast.error("Upload eșuat");
+      toast.error("Upload eșuat.");
     }
   };
 
@@ -254,13 +231,9 @@ const UploadCVPage: React.FC = () => {
         await refreshCvs(selectedJobId);
       }
 
-      setNotification({
-        type: "success",
-        title: "UNITATE ELIMINATĂ",
-        message: "Fișierul a fost șters din backend.",
-      });
+      toast.success("Fișierul a fost șters.");
     } catch {
-      toast.error("Nu pot șterge fișierul");
+      toast.error("Nu pot șterge fișierul.");
     }
   };
 
@@ -268,20 +241,18 @@ const UploadCVPage: React.FC = () => {
     if (!selectedJobId || cvs.length === 0) return;
 
     if (isClosed) {
-      toast.error("Post închis, analiza este blocată");
+      toast.error("Post închis, analiza este blocată.");
       return;
     }
 
     try {
       toast.loading("Rulez analiza pentru CV-uri...", { id: "bulkAnalyze" });
 
-      // Procesează unul câte unul, nu în paralel
       for (let i = 0; i < cvs.length; i++) {
         const cv = cvs[i];
-        toast.loading(
-          `Analizez CV ${i + 1} din ${cvs.length}: ${cv.fileName}...`,
-          { id: "bulkAnalyze" },
-        );
+        toast.loading(`Analizez CV ${i + 1} din ${cvs.length}: ${cv.fileName}...`, {
+          id: "bulkAnalyze",
+        });
         await cvsApi.analyzeForJob(selectedJobId, cv.id);
 
         if (i < cvs.length - 1) {
@@ -293,12 +264,6 @@ const UploadCVPage: React.FC = () => {
 
       toast.success("Analiza a fost salvată în backend.", {
         id: "bulkAnalyze",
-      });
-
-      setNotification({
-        type: "success",
-        title: "ANALIZĂ COMPLETĂ",
-        message: `${cvs.length} CV-uri au fost analizate cu succes.`,
       });
     } catch {
       toast.error("Analiza a eșuat", { id: "bulkAnalyze" });
@@ -317,17 +282,6 @@ const UploadCVPage: React.FC = () => {
   return (
     <div className={styles.pageShell}>
       <div className={styles.container}>
-        <Toaster position="bottom-right" />
-
-        {notification && (
-          <Notification
-            type={notification.type}
-            title={notification.title}
-            message={notification.message}
-            onClose={() => setNotification(null)}
-          />
-        )}
-
         <aside className={styles.jobsPanel}>
           <div className={styles.panelHeader}>
             <div className={styles.brandBlock}>
@@ -493,9 +447,7 @@ const UploadCVPage: React.FC = () => {
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  title={
-                    isClosed ? "Post închis, upload blocat" : "Încarcă CV-uri"
-                  }
+                  title={isClosed ? "Post închis, upload blocat" : "Încarcă CV-uri"}
                 >
                   <div className={styles.uploadIconPulse}>
                     <CloudUploadAlt />
@@ -540,8 +492,7 @@ const UploadCVPage: React.FC = () => {
                           Niciun fișier asociat
                         </h3>
                         <p className={styles.emptyText}>
-                          Încarcă CV-uri pentru acest job ca să începi
-                          matching-ul.
+                          Încarcă CV-uri pentru acest job ca să începi matching-ul.
                         </p>
                       </div>
                     </div>

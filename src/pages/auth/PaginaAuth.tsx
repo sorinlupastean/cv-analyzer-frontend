@@ -1,9 +1,8 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { PATHS } from "../../routs/paths";
 import styles from "./PaginaAuth.module.css";
-
-import Notification from "../../components/Notification/Notification";
 
 import {
   FaUser,
@@ -42,16 +41,8 @@ const PaginaAuth: React.FC = () => {
   const [prenume, setPrenume] = useState("");
 
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
-  const [notification, setNotification] = useState<{
-    type: "success" | "error";
-    title: string;
-    message: string;
-  } | null>(null);
-
   const [showPasswordSignIn, setShowPasswordSignIn] = useState(false);
   const [showPasswordSignUp, setShowPasswordSignUp] = useState(false);
-
-  const closeNotification = () => setNotification(null);
 
   const clearError = (field: string) => {
     if (errors[field]) {
@@ -69,11 +60,7 @@ const PaginaAuth: React.FC = () => {
 
     localStorage.setItem("access_token", token);
     window.history.replaceState({}, document.title, window.location.pathname);
-    setNotification({
-      type: "success",
-      title: "Autentificare Google",
-      message: "Conectare reușită.",
-    });
+    toast.success("Conectare reușită prin Google.");
 
     setTimeout(() => {
       navigate(`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`, {
@@ -101,22 +88,14 @@ const PaginaAuth: React.FC = () => {
     try {
       const data = await login(email, password);
       localStorage.setItem("access_token", data.access_token);
-      setNotification({
-        type: "success",
-        title: "Succes",
-        message: "Bine ai revenit!",
-      });
+      toast.success("Bine ai revenit.");
       setTimeout(() => {
         navigate(`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`, {
           replace: true,
         });
       }, 700);
     } catch {
-      setNotification({
-        type: "error",
-        title: "Eroare",
-        message: "Email sau parolă incorecte.",
-      });
+      toast.error("Email sau parolă incorecte.");
     }
   };
 
@@ -136,21 +115,13 @@ const PaginaAuth: React.FC = () => {
 
     try {
       await register(email, password, nume, prenume);
-      setNotification({
-        type: "success",
-        title: "Cont creat",
-        message: "Te poți autentifica acum.",
-      });
+      toast.success("Cont creat. Te poți autentifica acum.");
       setTimeout(() => {
         setIsSignUpMode(false);
         setPassword("");
       }, 900);
     } catch {
-      setNotification({
-        type: "error",
-        title: "Eroare",
-        message: "Nu am putut crea contul.",
-      });
+      toast.error("Nu am putut crea contul.");
     }
   };
 
@@ -160,15 +131,6 @@ const PaginaAuth: React.FC = () => {
         isSignUpMode ? styles["sign-up-mode"] : ""
       }`}
     >
-      {notification && (
-        <Notification
-          type={notification.type}
-          title={notification.title}
-          message={notification.message}
-          onClose={closeNotification}
-        />
-      )}
-
       <Suspense
         fallback={<div className={styles.backgroundFallback} aria-hidden="true" />}
       >

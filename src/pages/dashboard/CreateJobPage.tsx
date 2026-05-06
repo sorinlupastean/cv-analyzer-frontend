@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./CreateJobPage.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { jobsApi, type JobStatus } from "../../api/jobs.service";
 import JobModal from "../../components/JobModal/JobModal";
 import { PATHS } from "../../routs/paths";
@@ -251,7 +251,6 @@ const CreateJobPage: React.FC = () => {
   return (
     <div className={styles.pageShell}>
       <div className={styles.container}>
-        <Toaster position="bottom-right" />
 
         {/* JOBS PANEL */}
         <aside className={styles.jobsPanel}>
