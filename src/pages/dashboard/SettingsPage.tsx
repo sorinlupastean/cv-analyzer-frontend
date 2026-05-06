@@ -325,7 +325,6 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className={styles.page}>
-
       <header className={styles.hero}>
         <div className={styles.heroLeft}>
           <div className={styles.heroBadge}>
@@ -506,7 +505,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={styles.field}>
-                <label>Rol, opțional</label>
+                <label>Rol(opțional)</label>
                 <input
                   value={form.role}
                   onChange={(e) =>
@@ -517,7 +516,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={styles.field}>
-                <label>Locație, opțional</label>
+                <label>Locație(opțional)</label>
                 <input
                   value={form.location}
                   onChange={(e) =>
@@ -528,7 +527,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={[styles.field, styles.full].join(" ")}>
-                <label>Bio, opțional</label>
+                <label>Bio(opțional)</label>
                 <textarea
                   rows={4}
                   value={form.bio}
@@ -567,7 +566,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={styles.field}>
-                <label>Telefon, opțional</label>
+                <label>Telefon(opțional)</label>
                 <div className={styles.inputIcon}>
                   <PhoneIcon />
                   <input
@@ -582,7 +581,7 @@ const SettingsPage: React.FC = () => {
               </div>
 
               <div className={[styles.field, styles.full].join(" ")}>
-                <label>Website, opțional</label>
+                <label>Website(opțional)</label>
                 <div className={styles.inputIcon}>
                   <WebLinkIcon />
                   <input

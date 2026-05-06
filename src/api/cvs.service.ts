@@ -1,4 +1,5 @@
 import { http } from "./http";
+import { normalizeUnicodeText } from "../utils/text-normalization";
 
 export type Recommendation = "INVITA" | "REVIZUIRE" | "RESPINGE";
 
@@ -192,7 +193,12 @@ export const cvsPickerApi = {
     const { data } = await http.get<CandidatePickerItem[]>("/picker", {
       params: { q, limit },
     });
-    return data;
+    return data.map((item) => ({
+      ...item,
+      fullName: normalizeUnicodeText(item.fullName) || item.fullName,
+      email: normalizeUnicodeText(item.email) || item.email,
+      label: normalizeUnicodeText(item.label) || item.label,
+    }));
   },
 };
 
@@ -201,12 +207,12 @@ const API_URL = process.env.REACT_APP_API_URL;
 export const cvsApi = {
   listForJob: async (jobId: number): Promise<Cv[]> => {
     const { data } = await http.get<Cv[]>(`/jobs/${jobId}/cvs`);
-    return data;
+    return data.map(normalizeCv);
   },
 
   getById: async (cvId: number): Promise<Cv> => {
     const { data } = await http.get<Cv>(`/cvs/${cvId}`);
-    return data;
+    return normalizeCv(data);
   },
 
   createForJob: async (jobId: number, body: CreateCvBody): Promise<Cv> => {
@@ -239,7 +245,7 @@ export const cvsApi = {
 
   analyze: async (cvId: number): Promise<Cv> => {
     const { data } = await http.post<Cv>(`/cvs/${cvId}/analyze`, {});
-    return data;
+    return normalizeCv(data);
   },
 
   analyzeForJob: async (jobId: number, cvId: number): Promise<Cv> => {
@@ -247,7 +253,7 @@ export const cvsApi = {
       `/jobs/${jobId}/cvs/${cvId}/analyze`,
       {},
     );
-    return data;
+    return normalizeCv(data);
   },
 
   sendEmail: async (
@@ -264,3 +270,62 @@ export const cvsApi = {
     return data;
   },
 };
+
+function normalizeCv(cv: Cv): Cv {
+  const safeAnalysis = cv.analysisRaw
+    ? {
+        ...cv.analysisRaw,
+        candidateName:
+          normalizeUnicodeText(cv.analysisRaw.candidateName) ||
+          cv.analysisRaw.candidateName,
+        summary:
+          normalizeUnicodeText(cv.analysisRaw.summary) ||
+          cv.analysisRaw.summary,
+        reasoningShort:
+          normalizeUnicodeText(cv.analysisRaw.reasoningShort) ||
+          cv.analysisRaw.reasoningShort,
+        evidence: (cv.analysisRaw.evidence || []).map(
+          (item) => normalizeUnicodeText(item) || item,
+        ),
+        matchedRequirements: (cv.analysisRaw.matchedRequirements || []).map(
+          (item) => normalizeUnicodeText(item) || item,
+        ),
+        missingRequirements: (cv.analysisRaw.missingRequirements || []).map(
+          (item) => normalizeUnicodeText(item) || item,
+        ),
+        redFlags: (cv.analysisRaw.redFlags || []).map(
+          (item) => normalizeUnicodeText(item) || item,
+        ),
+        skills: (cv.analysisRaw.skills || []).map(
+          (item) => normalizeUnicodeText(item) || item,
+        ),
+        languages: (cv.analysisRaw.languages || []).map(
+          (item) => normalizeUnicodeText(item) || item,
+        ),
+        domains: (cv.analysisRaw.domains || []).map(
+          (item) => normalizeUnicodeText(item) || item,
+        ),
+      }
+    : cv.analysisRaw;
+
+  return {
+    ...cv,
+    fileName: normalizeUnicodeText(cv.fileName) || cv.fileName,
+    candidateName: normalizeUnicodeText(cv.candidateName) || cv.candidateName,
+    status: normalizeUnicodeText(cv.status) || cv.status,
+    email: cv.email ? normalizeUnicodeText(cv.email) || cv.email : cv.email,
+    phone: cv.phone ? normalizeUnicodeText(cv.phone) || cv.phone : cv.phone,
+    analysisSummary:
+      cv.analysisSummary
+        ? normalizeUnicodeText(cv.analysisSummary) || cv.analysisSummary
+        : cv.analysisSummary,
+    skills: (cv.skills || []).map((item) => normalizeUnicodeText(item) || item),
+    languages: (cv.languages || []).map(
+      (item) => normalizeUnicodeText(item) || item,
+    ),
+    domains: (cv.domains || []).map(
+      (item) => normalizeUnicodeText(item) || item,
+    ),
+    analysisRaw: safeAnalysis,
+  };
+}
