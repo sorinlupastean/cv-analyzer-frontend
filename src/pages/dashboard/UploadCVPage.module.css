@@ -343,12 +343,12 @@
 }
 
 .countPillStrong {
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 700;
-  color: var(--accent);
-  background: rgba(74, 207, 238, 0.08);
-  border: 1px solid rgba(74, 207, 238, 0.18);
-  padding: 8px 12px;
+  color: var(--text-muted);
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 5px 9px;
   border-radius: 999px;
 }
 
@@ -551,30 +551,30 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
 .sectionTitle {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: var(--accent);
+  gap: 8px;
+  color: var(--text-muted);
 }
 
 .sectionTitle h3 {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   color: var(--text-dark);
   font-weight: 700;
 }
 
 .helperPill {
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   font-weight: 600;
-  color: var(--text-body);
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  background: rgba(255, 255, 255, 0.2);
-  padding: 7px 10px;
+  color: var(--text-muted);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  background: rgba(255, 255, 255, 0.12);
+  padding: 6px 9px;
   border-radius: 999px;
 }
 
@@ -673,9 +673,13 @@
 .tableCard {
   flex: 1;
   min-height: 0;
-  max-height: 350px;
+  max-height: 320px;
   display: flex;
   flex-direction: column;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.76);
+  border-color: rgba(15, 23, 42, 0.05);
+  box-shadow: none;
 }
 
 .tableScroll {
@@ -703,7 +707,7 @@
 
 .crystalTable th {
   text-align: left;
-  padding: 14px 12px;
+  padding: 12px 10px;
   color: var(--text-muted);
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -713,7 +717,7 @@
 }
 
 .crystalTable td {
-  padding: 14px 12px;
+  padding: 12px 10px;
   font-size: 0.8rem;
   font-weight: 600;
   border-bottom: 1px solid rgba(226, 232, 240, 0.65);
@@ -785,27 +789,22 @@
 
 /* ================= EMPTY STATE (same as CreateJobPage) ================= */
 .emptyState {
-  margin-top: 10px;
+  margin-top: 6px;
   display: grid;
   place-items: center;
 }
 
 .emptyCard {
   width: 100%;
-  min-height: 240px;
+  min-height: 176px;
 
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 26px;
+  background: rgba(248, 250, 252, 0.72);
+  border: 1px dashed rgba(74, 207, 238, 0.18);
+  border-radius: 20px;
 
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  box-shadow: none;
 
-  box-shadow:
-    0 22px 46px rgba(74, 207, 238, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.04);
-
-  padding: 34px 28px;
+  padding: 24px 20px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -814,64 +813,53 @@
 .emptyCard::before {
   content: "";
   position: absolute;
-  inset: -50%;
-  background:
-    radial-gradient(
-      circle at 30% 20%,
-      rgba(74, 207, 238, 0.16),
-      transparent 48%
-    ),
-    radial-gradient(
-      circle at 70% 80%,
-      rgba(57, 163, 196, 0.12),
-      transparent 55%
-    );
-  opacity: 0.6;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0)
+  );
+  opacity: 0.55;
   pointer-events: none;
 }
 
 .emptyBadge {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  margin: 0 auto 16px auto;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  margin: 0 auto 12px auto;
 
   display: grid;
   place-items: center;
 
-  background: linear-gradient(
-    135deg,
-    rgba(74, 207, 238, 0.16),
-    rgba(57, 163, 196, 0.1)
-  );
-  border: 1px solid rgba(74, 207, 238, 0.22);
-  box-shadow: 0 16px 34px rgba(74, 207, 238, 0.12);
+  background: rgba(74, 207, 238, 0.1);
+  border: 1px solid rgba(74, 207, 238, 0.18);
+  box-shadow: none;
   position: relative;
   z-index: 1;
 }
 
 .emptyIcon {
-  font-size: 22px;
+  font-size: 16px;
   color: var(--accent);
 }
 
 .emptyTitle {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: var(--text-dark);
-  letter-spacing: -0.2px;
   position: relative;
   z-index: 1;
 }
 
 .emptyText {
-  margin: 12px auto 0 auto;
+  margin: 8px auto 0 auto;
   max-width: 520px;
-  font-size: 0.86rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: 500;
   color: var(--text-body);
-  line-height: 1.55;
+  line-height: 1.4;
   position: relative;
   z-index: 1;
 }

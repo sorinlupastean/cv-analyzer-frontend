@@ -689,35 +689,20 @@ const UploadCVPage: React.FC = () => {
                 </div>
               </section>
 
-              <section className={`${styles.card} ${styles.tableCard}`}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.sectionTitle}>
-                    <EyeIcon />
-                    <h3>CV-uri analizate</h3>
+              {analyzedCvs.length > 0 ? (
+                <section className={`${styles.card} ${styles.tableCard}`}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.sectionTitle}>
+                      <EyeIcon />
+                      <h3>CV-uri analizate</h3>
+                    </div>
+
+                    <span className={styles.countPillStrong}>
+                      {analyzedCvs.length} analizate
+                    </span>
                   </div>
 
-                  <span className={styles.countPillStrong}>
-                    {analyzedCvs.length} analizate
-                  </span>
-                </div>
-
-                <div className={styles.tableScroll}>
-                  {analyzedCvs.length === 0 ? (
-                    <div className={styles.emptyState}>
-                      <div className={styles.emptyCard}>
-                        <div className={styles.emptyBadge}>
-                          <EyeIcon className={styles.emptyIcon} />
-                        </div>
-
-                        <h3 className={styles.emptyTitle}>
-                          Niciun CV analizat
-                        </h3>
-                        <p className={styles.emptyText}>
-                          După analiză, CV-urile procesate vor apărea aici.
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
+                  <div className={styles.tableScroll}>
                     <table className={styles.crystalTable}>
                       <thead>
                         <tr>
@@ -777,9 +762,9 @@ const UploadCVPage: React.FC = () => {
                         ))}
                       </tbody>
                     </table>
-                  )}
-                </div>
-              </section>
+                  </div>
+                </section>
+              ) : null}
             </>
           ) : (
             <div className={styles.noJobSelected}>
