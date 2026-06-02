@@ -38,18 +38,53 @@ type JobLite = {
   status?: "ACTIVE" | "CLOSED" | string;
 };
 
+const SELECTED_JOB_STORAGE_KEY = "upload-cv:selected-job-id";
+
+const isAnalyzedCv = (cv: Cv): boolean => {
+  const status = String(cv.status ?? "").toLowerCase();
+  return status.includes("analiz") || Boolean(cv.analysisRaw);
+};
+
+const readStoredJobId = (): number | null => {
+  if (typeof window === "undefined") return null;
+
+  const raw = window.localStorage.getItem(SELECTED_JOB_STORAGE_KEY);
+  if (!raw) return null;
+
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
 const UploadCVPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [jobs, setJobs] = useState<JobLite[]>([]);
-  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(() =>
+    readStoredJobId(),
+  );
 
   const [cvs, setCvs] = useState<Cv[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const [cvCounts, setCvCounts] = useState<Record<number, number>>({});
+  const [analyzedCvCounts, setAnalyzedCvCounts] = useState<
+    Record<number, number>
+  >({});
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
   const dragDepthRef = useRef(0);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (selectedJobId === null) {
+      window.localStorage.removeItem(SELECTED_JOB_STORAGE_KEY);
+      return;
+    }
+
+    window.localStorage.setItem(
+      SELECTED_JOB_STORAGE_KEY,
+      String(selectedJobId),
+    );
+  }, [selectedJobId]);
 
   useEffect(() => {
     (async () => {
@@ -58,20 +93,32 @@ const UploadCVPage: React.FC = () => {
         const jobsList = data ?? [];
 
         setJobs(jobsList);
-        setSelectedJobId(jobsList.length ? jobsList[0].id : null);
+
+        setSelectedJobId((current) => {
+          if (current && jobsList.some((job) => job.id === current)) {
+            return current;
+          }
+
+          const stored = readStoredJobId();
+          if (stored && jobsList.some((job) => job.id === stored)) {
+            return stored;
+          }
+
+          return jobsList.length ? jobsList[0].id : null;
+        });
 
         const pairs = await Promise.all(
-          jobsList.map(async (j) => {
+          jobsList.map(async (job) => {
             try {
-              const list = await cvsApi.listForJob(j.id);
-              return [j.id, list.length] as const;
+              const list = await cvsApi.listForJob(job.id);
+              return [job.id, list.filter(isAnalyzedCv).length] as const;
             } catch {
-              return [j.id, 0] as const;
+              return [job.id, 0] as const;
             }
           }),
         );
 
-        setCvCounts(Object.fromEntries(pairs));
+        setAnalyzedCvCounts(Object.fromEntries(pairs));
       } catch {
         toast.error("Nu pot încărca job-urile din backend.");
       }
@@ -96,15 +143,25 @@ const UploadCVPage: React.FC = () => {
   const filteredJobs = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
     if (!q) return jobs;
-    return jobs.filter((j) => j.title.toLowerCase().includes(q));
+    return jobs.filter((job) => job.title.toLowerCase().includes(q));
   }, [jobs, searchTerm]);
 
   const selectedJob = useMemo(
-    () => jobs.find((j) => j.id === selectedJobId) || null,
+    () => jobs.find((job) => job.id === selectedJobId) || null,
     [jobs, selectedJobId],
   );
 
   const isClosed = selectedJob?.status === "CLOSED";
+
+  const { pendingCvs, analyzedCvs } = useMemo(() => {
+    const pending = cvs.filter((cv) => !isAnalyzedCv(cv));
+    const analyzed = cvs.filter((cv) => isAnalyzedCv(cv));
+
+    return {
+      pendingCvs: pending,
+      analyzedCvs: analyzed,
+    };
+  }, [cvs]);
 
   const formatDate = (value?: string | null) => {
     if (!value) return "—";
@@ -128,15 +185,17 @@ const UploadCVPage: React.FC = () => {
     const refreshed = await cvsApi.listForJob(jobId);
     setCvs(refreshed);
 
-    setCvCounts((prev) => ({
+    setAnalyzedCvCounts((prev) => ({
       ...prev,
-      [jobId]: refreshed.length,
+      [jobId]: refreshed.filter(isAnalyzedCv).length,
     }));
   };
 
   const canUploadFiles = (showMessage = true) => {
     if (!selectedJobId) {
-      if (showMessage) toast.error("Selectează un job înainte să încarci CV-uri.");
+      if (showMessage) {
+        toast.error("Selectează un job înainte să încarci CV-uri.");
+      }
       return false;
     }
 
@@ -161,16 +220,45 @@ const UploadCVPage: React.FC = () => {
       return;
     }
 
-    try {
-      await Promise.all(
-        acceptedFiles.map((file) => cvsApi.uploadForJob(selectedJobId!, file)),
-      );
-      await refreshCvs(selectedJobId!);
+    const results = await Promise.allSettled(
+      acceptedFiles.map((file) => cvsApi.uploadForJob(selectedJobId!, file)),
+    );
 
-      toast.success(`${acceptedFiles.length} fișier(e) încărcate.`);
+    let refreshFailed = false;
+    try {
+      await refreshCvs(selectedJobId!);
     } catch {
-      toast.error("Upload eșuat.");
+      refreshFailed = true;
     }
+
+    const successCount = results.filter(
+      (result) => result.status === "fulfilled",
+    ).length;
+    const failedCount = acceptedFiles.length - successCount;
+
+    if (failedCount === 0) {
+      toast.success(`${successCount} fișier(e) încărcate.`);
+      if (refreshFailed) {
+        toast.error(
+          "Fișierele au fost încărcate, dar lista nu s-a putut sincroniza imediat.",
+        );
+      }
+      return;
+    }
+
+    if (successCount > 0) {
+      toast.error(
+        `Am încărcat ${successCount} fișier(e), dar ${failedCount} nu au putut fi salvate.`,
+      );
+      if (refreshFailed) {
+        toast.error(
+          "Lista nu s-a putut sincroniza imediat după upload.",
+        );
+      }
+      return;
+    }
+
+    toast.error("Upload eșuat.");
   };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -238,33 +326,87 @@ const UploadCVPage: React.FC = () => {
   };
 
   const runAnalysis = async () => {
-    if (!selectedJobId || cvs.length === 0) return;
+    if (!selectedJobId || pendingCvs.length === 0) return;
 
     if (isClosed) {
       toast.error("Post închis, analiza este blocată.");
       return;
     }
 
-    try {
-      toast.loading("Rulez analiza pentru CV-uri...", { id: "bulkAnalyze" });
+    const failedFiles: string[] = [];
+    let analyzedCount = 0;
 
-      for (let i = 0; i < cvs.length; i++) {
-        const cv = cvs[i];
-        toast.loading(`Analizez CV ${i + 1} din ${cvs.length}: ${cv.fileName}...`, {
+    try {
+      toast.loading("Rulez analiza pentru CV-urile noi...", {
+        id: "bulkAnalyze",
+      });
+
+      for (let i = 0; i < pendingCvs.length; i++) {
+        const cv = pendingCvs[i];
+
+        toast.loading(`Analizez ${i + 1}/${pendingCvs.length}: ${cv.fileName}...`, {
           id: "bulkAnalyze",
         });
-        await cvsApi.analyzeForJob(selectedJobId, cv.id);
 
-        if (i < cvs.length - 1) {
-          await new Promise((res) => setTimeout(res, 2000));
+        try {
+          const updated = await cvsApi.analyzeForJob(selectedJobId, cv.id);
+          analyzedCount += 1;
+          setCvs((prev) =>
+            prev.map((item) => (item.id === updated.id ? updated : item)),
+          );
+        } catch {
+          failedFiles.push(cv.fileName);
         }
       }
 
-      await refreshCvs(selectedJobId);
+      let refreshFailed = false;
+      try {
+        await refreshCvs(selectedJobId);
+      } catch {
+        refreshFailed = true;
+      }
 
-      toast.success("Analiza a fost salvată în backend.", {
-        id: "bulkAnalyze",
-      });
+      if (failedFiles.length === 0) {
+        toast.success(`Au fost analizate ${analyzedCount} CV-uri noi.`, {
+          id: "bulkAnalyze",
+        });
+        if (refreshFailed) {
+          toast.error(
+            "Analiza a fost salvată, dar lista nu s-a putut sincroniza imediat.",
+            { id: "bulkAnalyze-sync" },
+          );
+        }
+        return;
+      }
+
+      const failedPreview = failedFiles.slice(0, 3).join(", ");
+      const failedTail =
+        failedFiles.length > 3 ? ` și încă ${failedFiles.length - 3}` : "";
+
+      if (analyzedCount > 0) {
+        toast.error(
+          `Am analizat ${analyzedCount} CV-uri, dar au rămas nereușite: ${failedPreview}${failedTail}.`,
+          { id: "bulkAnalyze" },
+        );
+        if (refreshFailed) {
+          toast.error(
+            "Lista nu s-a putut sincroniza imediat după analiză.",
+            { id: "bulkAnalyze-sync" },
+          );
+        }
+        return;
+      }
+
+      toast.error(
+        `Nu am putut analiza CV-urile selectate: ${failedPreview}${failedTail}.`,
+        { id: "bulkAnalyze" },
+      );
+      if (refreshFailed) {
+        toast.error(
+          "Lista nu s-a putut sincroniza imediat după analiză.",
+          { id: "bulkAnalyze-sync" },
+        );
+      }
     } catch {
       toast.error("Analiza a eșuat", { id: "bulkAnalyze" });
     }
@@ -352,7 +494,7 @@ const UploadCVPage: React.FC = () => {
 
                   <div className={styles.rightMeta}>
                     <span className={styles.countPill}>
-                      {cvCounts[job.id] ?? 0} CV
+                      {analyzedCvCounts[job.id] ?? 0} analizate
                     </span>
                   </div>
                 </button>
@@ -409,11 +551,13 @@ const UploadCVPage: React.FC = () => {
                     type="button"
                     className={styles.headerPrimaryBtn}
                     onClick={runAnalysis}
-                    disabled={cvs.length === 0 || isClosed}
+                    disabled={pendingCvs.length === 0 || isClosed}
                     title={
                       isClosed
                         ? "Post închis, acțiunile sunt blocate"
-                        : "Inițiază analiza"
+                        : pendingCvs.length === 0
+                          ? "Nu există CV-uri noi de analizat"
+                          : "Inițiază analiza"
                     }
                   >
                     <Robot />
@@ -421,8 +565,8 @@ const UploadCVPage: React.FC = () => {
                   </button>
 
                   <div className={styles.statsCircle}>
-                    <strong>{cvs.length}</strong>
-                    <span>CV-uri</span>
+                    <strong>{pendingCvs.length}</strong>
+                    <span>În așteptare</span>
                   </div>
                 </div>
               </header>
@@ -472,16 +616,16 @@ const UploadCVPage: React.FC = () => {
                 <div className={styles.cardHeader}>
                   <div className={styles.sectionTitle}>
                     <RegFilePdf />
-                    <h3>Baza de date curentă</h3>
+                    <h3>CV-uri în așteptare</h3>
                   </div>
 
                   <span className={styles.countPillStrong}>
-                    {cvs.length} fișiere
+                    {pendingCvs.length} noi
                   </span>
                 </div>
 
                 <div className={styles.tableScroll}>
-                  {cvs.length === 0 ? (
+                  {pendingCvs.length === 0 ? (
                     <div className={styles.emptyState}>
                       <div className={styles.emptyCard}>
                         <div className={styles.emptyBadge}>
@@ -489,10 +633,87 @@ const UploadCVPage: React.FC = () => {
                         </div>
 
                         <h3 className={styles.emptyTitle}>
-                          Niciun fișier asociat
+                          Nu există CV-uri noi
                         </h3>
                         <p className={styles.emptyText}>
-                          Încarcă CV-uri pentru acest job ca să începi matching-ul.
+                          Când adaugi CV-uri pentru acest job, ele apar aici până
+                          la analiză.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <table className={styles.crystalTable}>
+                      <thead>
+                        <tr>
+                          <th>Document</th>
+                          <th>Mărime</th>
+                          <th>Data</th>
+                          <th>Status</th>
+                          <th>Acțiune</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {pendingCvs.map((cv) => (
+                          <tr key={cv.id}>
+                            <td className={styles.fileNameCell}>
+                              <RegFilePdf className={styles.pdfIcon} />
+                              <span className={styles.fileNameText}>
+                                {cv.fileName}
+                              </span>
+                            </td>
+
+                            <td>{formatSize(cv.fileSize ?? null)}</td>
+
+                            <td>{formatDate(cv.uploadDate ?? cv.createdAt)}</td>
+
+                            <td>În așteptare</td>
+
+                            <td>
+                              <button
+                                type="button"
+                                className={styles.deleteBtn}
+                                onClick={() => handleDelete(cv.id)}
+                                aria-label="Șterge"
+                                title="Șterge"
+                                disabled={isClosed}
+                              >
+                                <TrashAlt />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </section>
+
+              <section className={`${styles.card} ${styles.tableCard}`}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.sectionTitle}>
+                    <EyeIcon />
+                    <h3>CV-uri analizate</h3>
+                  </div>
+
+                  <span className={styles.countPillStrong}>
+                    {analyzedCvs.length} analizate
+                  </span>
+                </div>
+
+                <div className={styles.tableScroll}>
+                  {analyzedCvs.length === 0 ? (
+                    <div className={styles.emptyState}>
+                      <div className={styles.emptyCard}>
+                        <div className={styles.emptyBadge}>
+                          <EyeIcon className={styles.emptyIcon} />
+                        </div>
+
+                        <h3 className={styles.emptyTitle}>
+                          Niciun CV analizat
+                        </h3>
+                        <p className={styles.emptyText}>
+                          După analiză, CV-urile procesate vor apărea aici.
                         </p>
                       </div>
                     </div>
@@ -511,7 +732,7 @@ const UploadCVPage: React.FC = () => {
                       </thead>
 
                       <tbody>
-                        {cvs.map((cv) => (
+                        {analyzedCvs.map((cv) => (
                           <tr key={cv.id}>
                             <td className={styles.fileNameCell}>
                               <RegFilePdf className={styles.pdfIcon} />
