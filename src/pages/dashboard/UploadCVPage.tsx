@@ -546,29 +546,6 @@ const UploadCVPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className={styles.headerRightActions}>
-                  <button
-                    type="button"
-                    className={styles.headerPrimaryBtn}
-                    onClick={runAnalysis}
-                    disabled={pendingCvs.length === 0 || isClosed}
-                    title={
-                      isClosed
-                        ? "Post închis, acțiunile sunt blocate"
-                        : pendingCvs.length === 0
-                          ? "Nu există CV-uri noi de analizat"
-                          : "Inițiază analiza"
-                    }
-                  >
-                    <Robot />
-                    Analizează
-                  </button>
-
-                  <div className={styles.statsCircle}>
-                    <strong>{pendingCvs.length}</strong>
-                    <span>În așteptare</span>
-                  </div>
-                </div>
               </header>
 
               <section className={styles.card}>
@@ -619,9 +596,28 @@ const UploadCVPage: React.FC = () => {
                     <h3>CV-uri în așteptare</h3>
                   </div>
 
-                  <span className={styles.countPillStrong}>
-                    {pendingCvs.length} noi
-                  </span>
+                  <div className={styles.cardHeaderActions}>
+                    <span className={styles.countPillStrong}>
+                      {pendingCvs.length} noi
+                    </span>
+
+                    {pendingCvs.length > 0 ? (
+                      <button
+                        type="button"
+                        className={styles.pendingPrimaryBtn}
+                        onClick={runAnalysis}
+                        disabled={isClosed}
+                        title={
+                          isClosed
+                            ? "Post închis, acțiunile sunt blocate"
+                            : "Inițiază analiza"
+                        }
+                      >
+                        <Robot />
+                        Analizează
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className={styles.tableScroll}>
@@ -639,10 +635,11 @@ const UploadCVPage: React.FC = () => {
                           Când adaugi CV-uri pentru acest job, ele apar aici până
                           la analiză.
                         </p>
+
                       </div>
                     </div>
                   ) : (
-                    <table className={styles.crystalTable}>
+                    <table className={`${styles.crystalTable} ${styles.pendingTable}`}>
                       <thead>
                         <tr>
                           <th>Document</th>
@@ -656,20 +653,22 @@ const UploadCVPage: React.FC = () => {
                       <tbody>
                         {pendingCvs.map((cv) => (
                           <tr key={cv.id}>
-                            <td className={styles.fileNameCell}>
-                              <RegFilePdf className={styles.pdfIcon} />
-                              <span className={styles.fileNameText}>
-                                {cv.fileName}
-                              </span>
+                            <td>
+                              <div className={styles.fileNameCell}>
+                                <RegFilePdf className={styles.pdfIcon} />
+                                <span className={styles.fileNameText}>
+                                  {cv.fileName}
+                                </span>
+                              </div>
                             </td>
 
                             <td>{formatSize(cv.fileSize ?? null)}</td>
 
                             <td>{formatDate(cv.uploadDate ?? cv.createdAt)}</td>
 
-                            <td>În așteptare</td>
+                            <td className={styles.statusCell}>În așteptare</td>
 
-                            <td>
+                            <td className={styles.actionCell}>
                               <button
                                 type="button"
                                 className={styles.deleteBtn}
@@ -703,7 +702,7 @@ const UploadCVPage: React.FC = () => {
                   </div>
 
                   <div className={styles.tableScroll}>
-                    <table className={styles.crystalTable}>
+                    <table className={`${styles.crystalTable} ${styles.analyzedTable}`}>
                       <thead>
                         <tr>
                           <th>Document</th>
@@ -719,22 +718,24 @@ const UploadCVPage: React.FC = () => {
                       <tbody>
                         {analyzedCvs.map((cv) => (
                           <tr key={cv.id}>
-                            <td className={styles.fileNameCell}>
-                              <RegFilePdf className={styles.pdfIcon} />
-                              <span className={styles.fileNameText}>
-                                {cv.fileName}
-                              </span>
+                            <td>
+                              <div className={styles.fileNameCell}>
+                                <RegFilePdf className={styles.pdfIcon} />
+                                <span className={styles.fileNameText}>
+                                  {cv.fileName}
+                                </span>
+                              </div>
                             </td>
 
                             <td>{formatSize(cv.fileSize ?? null)}</td>
 
                             <td>{formatDate(cv.uploadDate ?? cv.createdAt)}</td>
 
-                            <td>{cv.matchScore ?? 0}%</td>
+                            <td className={styles.scoreCell}>{cv.matchScore ?? 0}%</td>
 
-                            <td>{cv.status || "—"}</td>
+                            <td className={styles.statusCell}>{cv.status || "—"}</td>
 
-                            <td>
+                            <td className={styles.actionCell}>
                               <button
                                 type="button"
                                 className={styles.viewBtn}
@@ -746,7 +747,7 @@ const UploadCVPage: React.FC = () => {
                               </button>
                             </td>
 
-                            <td>
+                            <td className={styles.actionCell}>
                               <button
                                 type="button"
                                 className={styles.deleteBtn}

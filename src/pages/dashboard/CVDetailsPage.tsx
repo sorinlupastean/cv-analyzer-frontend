@@ -232,9 +232,6 @@ const CVDetailsPage: React.FC = () => {
   }, [cv]);
 
   const match = analysis?.finalScore ?? cv?.matchScore ?? 0;
-  const cvScore = analysis?.cvScore ?? null;
-  const githubScore = analysis?.githubScore ?? null;
-  const confidenceScore = analysis?.confidenceScore ?? null;
   const githubAnalysis = analysis?.githubAnalysis ?? null;
 
   const scoreLabel = useMemo(() => {
@@ -625,17 +622,6 @@ ${signatureSafe}
                     <p className={styles.scoreDesc}>
                       Potrivire calculată pe baza algoritmului Studio AI.
                     </p>
-
-                    <div className={styles.scoreMetaList}>
-                      <span>Scor final: {match}%</span>
-                      {cvScore !== null && <span>CV: {cvScore}%</span>}
-                      {githubScore !== null && (
-                        <span>GitHub: {githubScore}%</span>
-                      )}
-                      {confidenceScore !== null && (
-                        <span>Încredere: {confidenceScore}%</span>
-                      )}
-                    </div>
                   </div>
                 </section>
 

@@ -504,10 +504,10 @@ const CreateJobPage: React.FC = () => {
                         <Lightbulb className={styles.emptyIcon} />
                       </div>
                       <h3 className={styles.emptyTitle}>
-                        Momentan nu există rezultate
+                        Niciun rezultat încă
                       </h3>
                       <p className={styles.emptyText}>
-                        Încarcă CV-uri pentru acest post.
+                        Încarcă CV-uri ca să vezi potrivirile.
                       </p>
                       <div className={styles.emptyActions}>
                         <button

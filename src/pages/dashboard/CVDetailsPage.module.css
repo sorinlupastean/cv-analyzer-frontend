@@ -1820,15 +1820,6 @@
   filter: brightness(0.98);
 }
 
-.scoreMetaList {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 10px;
-  font-size: 14px;
-  opacity: 0.9;
-}
-
 /* ================= EVALUARE DETALIATĂ ================= */
 
 .evaluationCard {

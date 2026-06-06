@@ -100,7 +100,15 @@ function normalizeCvResult(cv: CVResult): CVResult {
   };
 }
 
+function isAnalyzedCvResult(cv: CVResult): boolean {
+  return String(cv.status ?? "").trim().toLowerCase() === "analizat";
+}
+
 function normalizeJob(job: Job): Job {
+  const cvs = (job.cvs || [])
+    .map(normalizeCvResult)
+    .filter(isAnalyzedCvResult);
+
   return {
     ...job,
     title: normalizeUnicodeText(job.title) || job.title,
@@ -110,6 +118,6 @@ function normalizeJob(job: Job): Job {
     description: normalizeUnicodeText(job.description) || job.description,
     requirements: normalizeUnicodeText(job.requirements) || job.requirements,
     status: normalizeUnicodeText(job.status) || job.status,
-    cvs: (job.cvs || []).map(normalizeCvResult),
+    cvs,
   };
 }
