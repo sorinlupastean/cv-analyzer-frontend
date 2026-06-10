@@ -1,6 +1,11 @@
 // src/routes/paths.ts
 export const PATHS = {
   ROOT: "/",
+  AUTH: {
+    ROOT: "/auth",
+    LOGIN: "/auth/login",
+    REGISTER: "/auth/register",
+  },
   DASHBOARD: {
     ROOT: "/dashboard",
     HOME: "home",

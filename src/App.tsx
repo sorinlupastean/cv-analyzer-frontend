@@ -9,6 +9,7 @@ import ProtectedRoute from "./routs/ProtectedRoute";
 import DashboardLayout from "./components/layout/DashboardLayout";
 
 // Pages
+import LandingPage from "./pages/landing/LandingPage";
 import PaginaAuth from "./pages/auth/PaginaAuth";
 import HomePage from "./pages/dashboard/HomePage";
 import CreateJobPage from "./pages/dashboard/CreateJobPage";
@@ -32,6 +33,39 @@ const App: React.FC = () => {
         {/* PUBLIC ROUTE */}
         <Route
           path={PATHS.ROOT}
+          element={
+            !isAuthenticated ? (
+              <LandingPage />
+            ) : (
+              <Navigate
+                to={`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`}
+                replace
+              />
+            )
+          }
+        />
+
+        <Route
+          path={PATHS.AUTH.ROOT}
+          element={<Navigate to={PATHS.AUTH.LOGIN} replace />}
+        />
+
+        <Route
+          path={PATHS.AUTH.LOGIN}
+          element={
+            !isAuthenticated ? (
+              <PaginaAuth />
+            ) : (
+              <Navigate
+                to={`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`}
+                replace
+              />
+            )
+          }
+        />
+
+        <Route
+          path={PATHS.AUTH.REGISTER}
           element={
             !isAuthenticated ? (
               <PaginaAuth />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { PATHS } from "../../routs/paths";
 import styles from "./PaginaAuth.module.css";
@@ -33,8 +33,11 @@ const GOOGLE_AUTH_URL = API_URL ? `${API_URL}/auth/google` : "/auth/google";
 
 const PaginaAuth: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [isSignUpMode, setIsSignUpMode] = useState(
+    location.pathname === PATHS.AUTH.REGISTER,
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nume, setNume] = useState("");
@@ -68,6 +71,10 @@ const PaginaAuth: React.FC = () => {
       });
     }, 700);
   }, [navigate]);
+
+  useEffect(() => {
+    setIsSignUpMode(location.pathname === PATHS.AUTH.REGISTER);
+  }, [location.pathname]);
 
   const handleGoogleAuth = () => {
     window.location.href = GOOGLE_AUTH_URL;
@@ -117,8 +124,8 @@ const PaginaAuth: React.FC = () => {
       await register(email, password, nume, prenume);
       toast.success("Cont creat. Te poți autentifica acum.");
       setTimeout(() => {
-        setIsSignUpMode(false);
         setPassword("");
+        navigate(PATHS.AUTH.LOGIN, { replace: true });
       }, 900);
     } catch {
       toast.error("Nu am putut crea contul.");
@@ -231,7 +238,10 @@ const PaginaAuth: React.FC = () => {
 
             <div className={styles["auth-switch"]}>
               <span>Nu ai cont?</span>
-              <button type="button" onClick={() => setIsSignUpMode(true)}>
+              <button
+                type="button"
+                onClick={() => navigate(PATHS.AUTH.REGISTER)}
+              >
                 Înregistrare
               </button>
             </div>
@@ -379,7 +389,7 @@ const PaginaAuth: React.FC = () => {
 
             <div className={styles["auth-switch"]}>
               <span>Ai deja cont?</span>
-              <button type="button" onClick={() => setIsSignUpMode(false)}>
+              <button type="button" onClick={() => navigate(PATHS.AUTH.LOGIN)}>
                 Conectare
               </button>
             </div>
