@@ -358,6 +358,30 @@ const CVDetailsPage: React.FC = () => {
     ? cv.candidateName
     : "Nume indisponibil";
 
+  const candidatePhotoSrc = useMemo(() => {
+    const raw =
+      analysis?.candidatePhotoDataUrl ||
+      analysis?.cvAnalysis?.candidatePhotoDataUrl ||
+      null;
+
+    if (typeof raw !== "string") return null;
+
+    const trimmed = raw.trim();
+    if (!trimmed) return null;
+
+    if (
+      trimmed.startsWith("data:image/") ||
+      trimmed.startsWith("http://") ||
+      trimmed.startsWith("https://")
+    ) {
+      return trimmed;
+    }
+
+    return null;
+  }, [analysis]);
+
+  const candidateInitial = safeCandidateName.trim().charAt(0).toUpperCase() || "G";
+
   const allSkills: string[] = (cv?.skills ?? analysis?.skills ?? []).filter(
     Boolean,
   );
@@ -664,7 +688,15 @@ ${signatureSafe}
                     <div className={styles.avatarAuraContainer}>
                       <div className={styles.avatarAuraBreathing} />
                       <div className={styles.avatarGlassElement}>
-                        {safeCandidateName[0]}
+                        {candidatePhotoSrc ? (
+                          <img
+                            src={candidatePhotoSrc}
+                            alt={safeCandidateName}
+                            className={styles.avatarPhoto}
+                          />
+                        ) : (
+                          <span>{candidateInitial}</span>
+                        )}
                       </div>
                     </div>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import styles from "./CreateJobPage.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -13,11 +13,9 @@ import {
   FaPlus,
   FaSearch,
   FaTrash,
-  FaTimes,
   FaEdit,
   FaCalendarAlt,
   FaGraduationCap,
-  FaFileAlt,
 } from "react-icons/fa";
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
@@ -31,7 +29,6 @@ const TrashIcon = FaTrash as unknown as ComponentType<IconBaseProps>;
 const EditIcon = FaEdit as unknown as ComponentType<IconBaseProps>;
 const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 const CategoryIcon = FaGraduationCap as unknown as ComponentType<IconBaseProps>;
-const FileIcon = FaFileAlt as unknown as ComponentType<IconBaseProps>;
 
 interface CVResult {
   id: number;
@@ -242,12 +239,6 @@ const CreateJobPage: React.FC = () => {
     }
   };
 
-  const [reqExpanded, setReqExpanded] = useState(false);
-
-  useEffect(() => {
-    setReqExpanded(false);
-  }, [selectedJob?.id]);
-
   return (
     <div className={styles.pageShell}>
       <div className={styles.container}>
@@ -385,156 +376,144 @@ const CreateJobPage: React.FC = () => {
                         ? "Inchide postul"
                         : "Activeaza postul"
                     }
-                  >
-                    {selectedJob.status === "ACTIVE"
-                      ? "Inchide post"
-                      : "Activeaza post"}
+                    >
+                      {selectedJob.status === "ACTIVE"
+                        ? "Inchide post"
+                        : "Activeaza post"}
                   </button>
-                  <div className={styles.statsCircle}>
-                    <strong>{selectedJob.cvs.length}</strong>
-                    <span>CV-uri</span>
-                  </div>
                 </div>
               </header>
 
-              {/* requirements preview */}
-              <section className={styles.reqCard}>
-                <div className={styles.reqHeader}>
-                  <p className={styles.reqTitle}>Cerințe</p>
-                  <button
-                    type="button"
-                    className={styles.reqToggleBtn}
-                    onClick={() => setReqExpanded((v) => !v)}
-                    title={reqExpanded ? "Micșorează" : "Vezi mai mult"}
-                  >
-                    {reqExpanded ? "Micșorează" : "Vezi mai mult"}
-                  </button>
+              <section className={styles.candidateFolder}>
+                <div className={styles.candidateFolderHeader}>
+                  <div>
+                    <p className={styles.candidateFolderKicker}>Candidați</p>
+                    <h2 className={styles.candidateFolderTitle}>
+                      Lista candidaților mei
+                    </h2>
+                  </div>
+                  <span className={styles.candidateFolderCount}>
+                    {selectedJob.cvs.length} CV-uri
+                  </span>
                 </div>
-                <p
-                  className={[
-                    styles.reqText,
-                    reqExpanded
-                      ? styles.reqTextExpanded
-                      : styles.reqTextClamped,
-                  ].join(" ")}
-                >
-                  {selectedJob.requirements?.trim()
-                    ? selectedJob.requirements
-                    : "—"}
-                </p>
-              </section>
 
-              <div className={styles.cvContainer}>
-                {selectedJob.cvs.length > 0 ? (
-                  <div className={styles.cvGrid}>
+                <div className={styles.cvContainer}>
+                  {selectedJob.cvs.length > 0 ? (
+                    <div className={styles.cvGrid}>
                     {selectedJob.cvs.map((cv) => {
-                      const topSkills = (cv.skills ?? [])
-                        .filter(Boolean)
-                        .slice(0, 2);
+                      const candidatePhotoSrc =
+                        cv.analysisRaw?.candidatePhotoDataUrl ||
+                        cv.analysisRaw?.cvAnalysis?.candidatePhotoDataUrl ||
+                        null;
                       return (
-                        <div key={cv.id} className={styles.cvCard}>
+                        <div
+                          key={cv.id}
+                          className={[
+                            styles.cvCard,
+                            isClosed ? styles.cvCardDisabled : "",
+                          ].join(" ")}
+                          role="button"
+                          tabIndex={isClosed ? -1 : 0}
+                          aria-disabled={isClosed}
+                          onClick={() => {
+                            if (isClosed) return;
+                            navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
+                              state: {
+                                fromResults: true,
+                                jobId: selectedJob.id,
+                              },
+                            });
+                          }}
+                          onKeyDown={(e) => {
+                            if (isClosed) return;
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
+                                state: {
+                                  fromResults: true,
+                                  jobId: selectedJob.id,
+                                },
+                              });
+                            }
+                          }}
+                          title={
+                            isClosed
+                              ? "Post inchis, nu se pot deschide CV-urile"
+                              : "Deschide detaliile CV-ului"
+                          }
+                        >
                           <div className={styles.cvTop}>
                             <div className={styles.candidate}>
-                              <UserCircle className={styles.userIcon} />
-                              <div>
+                              <div
+                                className={[
+                                  styles.candidateAvatar,
+                                  candidatePhotoSrc
+                                    ? styles.candidateAvatarPhoto
+                                    : styles.candidateAvatarFallback,
+                                ].join(" ")}
+                              >
+                                {candidatePhotoSrc ? (
+                                  <img
+                                    src={candidatePhotoSrc}
+                                    alt={cv.candidateName || "Candidat"}
+                                    className={styles.candidateAvatarImg}
+                                  />
+                                ) : (
+                                  <UserCircle className={styles.userIcon} />
+                                )}
+                              </div>
+                              <div className={styles.candidateText}>
                                 <h4>{cv.candidateName}</h4>
-                                <p>{cv.fileName}</p>
+                                <p className={styles.cvFileName}>{cv.fileName}</p>
                               </div>
                             </div>
                             <div className={styles.scoreBadge}>
                               {cv.matchScore}%
                             </div>
                           </div>
-
-                          <div className={styles.progressSection}>
-                            <div className={styles.barContainer}>
-                              <div
-                                className={styles.barFill}
-                                style={{ width: `${cv.matchScore}%` }}
-                              />
-                            </div>
-                          </div>
-
-                          <div className={styles.skills}>
-                            {topSkills.length > 0 ? (
-                              topSkills.map((s: string) => (
-                                <span key={s} className={styles.sTag}>
-                                  {s}
-                                </span>
-                              ))
-                            ) : (
-                              <span className={styles.skillsEmpty}>
-                                Competențe neidentificate
-                              </span>
-                            )}
-                          </div>
-
-                          <p className={styles.skillsHint}>
-                            Competențe principale (din CV)
-                          </p>
-
-                          <button
-                            className={styles.viewBtn}
-                            disabled={isClosed}
-                            title={
-                              isClosed
-                                ? "Post închis, acțiunile sunt blocate"
-                                : "Vezi detalii CV"
-                            }
-                            onClick={() =>
-                              navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
-                                state: {
-                                  fromResults: true,
-                                  jobId: selectedJob.id,
-                                },
-                              })
-                            }
-                          >
-                            <FileIcon />
-                            Vezi detalii
-                          </button>
                         </div>
                       );
                     })}
-                  </div>
-                ) : (
-                  <div className={styles.emptyState}>
-                    <div className={styles.emptyCard}>
-                      <div className={styles.emptyBadge}>
-                        <Lightbulb className={styles.emptyIcon} />
-                      </div>
-                      <h3 className={styles.emptyTitle}>
+                    </div>
+                  ) : (
+                    <div className={styles.emptyState}>
+                      <div className={styles.emptyCard}>
+                        <div className={styles.emptyBadge}>
+                          <Lightbulb className={styles.emptyIcon} />
+                        </div>
+                        <h3 className={styles.emptyTitle}>
                         Niciun rezultat încă
-                      </h3>
-                      <p className={styles.emptyText}>
+                        </h3>
+                        <p className={styles.emptyText}>
                         Încarcă CV-uri ca să vezi potrivirile.
-                      </p>
-                      <div className={styles.emptyActions}>
-                        <button
-                          type="button"
-                          className={styles.emptyPrimary}
-                          disabled={isClosed}
-                          title={
-                            isClosed
-                              ? "Post închis, nu mai poți încărca CV-uri"
-                              : "Încarcă CV-uri"
-                          }
-                          onClick={() =>
-                            navigate(
-                              `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
-                              {
-                                state: { jobId: selectedJob.id },
-                              },
-                            )
-                          }
-                        >
-                          Încarcă CV-uri
-                        </button>
+                        </p>
+                        <div className={styles.emptyActions}>
+                          <button
+                            type="button"
+                            className={styles.emptyPrimary}
+                            disabled={isClosed}
+                            title={
+                              isClosed
+                                ? "Post închis, nu mai poți încărca CV-uri"
+                                : "Încarcă CV-uri"
+                            }
+                            onClick={() =>
+                              navigate(
+                                `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
+                                {
+                                  state: { jobId: selectedJob.id },
+                                },
+                              )
+                            }
+                          >
+                            Încarcă CV-uri
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              </section>
             </>
           ) : (
             <div className={styles.noJobSelected}>

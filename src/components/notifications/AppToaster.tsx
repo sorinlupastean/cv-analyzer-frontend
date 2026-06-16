@@ -67,7 +67,9 @@ const AppToaster: React.FC = () => {
 
                 <div className={styles.content}>
                   <span className={styles.label}>{label}</span>
-                  <div className={styles.message}>{resolveValue(t.message, t)}</div>
+                  <div className={styles.message}>
+                    {resolveValue(t.message, t)}
+                  </div>
                 </div>
 
                 {t.type !== "loading" && (

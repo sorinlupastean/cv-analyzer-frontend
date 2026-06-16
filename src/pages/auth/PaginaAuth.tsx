@@ -1,10 +1,11 @@
-import React, { useEffect, useState, lazy, Suspense } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { PATHS } from "../../routs/paths";
 import styles from "./PaginaAuth.module.css";
 
 import {
+  FaArrowRight,
   FaUser,
   FaEnvelope,
   FaLock,
@@ -17,16 +18,38 @@ import type { IconBaseProps } from "react-icons";
 
 import { login, register } from "../../api/auth.service";
 
+type ParticleStyle = React.CSSProperties & {
+  "--x"?: string;
+  "--y"?: string;
+  "--dx"?: string;
+  "--dy"?: string;
+  "--duration"?: string;
+  "--delay"?: string;
+  "--size"?: string;
+};
+
+const AUTH_PARTICLES: ParticleStyle[] = [
+  { "--x": "7%", "--y": "16%", "--dx": "5vw", "--dy": "-7vh", "--duration": "22s", "--delay": "0s", "--size": "9px" },
+  { "--x": "15%", "--y": "74%", "--dx": "4vw", "--dy": "-10vh", "--duration": "28s", "--delay": "-6s", "--size": "6px" },
+  { "--x": "24%", "--y": "24%", "--dx": "8vw", "--dy": "-9vh", "--duration": "24s", "--delay": "-3s", "--size": "11px" },
+  { "--x": "31%", "--y": "67%", "--dx": "5vw", "--dy": "-8vh", "--duration": "26s", "--delay": "-11s", "--size": "7px" },
+  { "--x": "43%", "--y": "17%", "--dx": "6vw", "--dy": "-6vh", "--duration": "30s", "--delay": "-8s", "--size": "6px" },
+  { "--x": "56%", "--y": "80%", "--dx": "7vw", "--dy": "-9vh", "--duration": "25s", "--delay": "-5s", "--size": "10px" },
+  { "--x": "64%", "--y": "29%", "--dx": "4vw", "--dy": "-7vh", "--duration": "23s", "--delay": "-9s", "--size": "6px" },
+  { "--x": "73%", "--y": "71%", "--dx": "5vw", "--dy": "-11vh", "--duration": "27s", "--delay": "-1s", "--size": "8px" },
+  { "--x": "82%", "--y": "22%", "--dx": "4vw", "--dy": "-8vh", "--duration": "29s", "--delay": "-12s", "--size": "7px" },
+  { "--x": "90%", "--y": "76%", "--dx": "3vw", "--dy": "-9vh", "--duration": "21s", "--delay": "-4s", "--size": "6px" },
+  { "--x": "48%", "--y": "47%", "--dx": "2vw", "--dy": "-4vh", "--duration": "34s", "--delay": "-10s", "--size": "5px" },
+  { "--x": "60%", "--y": "40%", "--dx": "3vw", "--dy": "-5vh", "--duration": "31s", "--delay": "-15s", "--size": "5px" },
+];
+
+const ArrowRight = FaArrowRight as unknown as ComponentType<IconBaseProps>;
+const UserIcon = FaUser as unknown as ComponentType<IconBaseProps>;
 const EnvelopeIcon = FaEnvelope as unknown as ComponentType<IconBaseProps>;
 const LockIcon = FaLock as unknown as ComponentType<IconBaseProps>;
-const UserIcon = FaUser as unknown as ComponentType<IconBaseProps>;
 const GoogleIcon = FaGoogle as unknown as ComponentType<IconBaseProps>;
 const EyeIcon = FaEye as unknown as ComponentType<IconBaseProps>;
 const EyeSlashIcon = FaEyeSlash as unknown as ComponentType<IconBaseProps>;
-
-const ParticlesBackground = lazy(
-  () => import("../../components/ParticlesBackground/ParticlesBackground"),
-);
 
 const API_URL = process.env.REACT_APP_API_URL;
 const GOOGLE_AUTH_URL = API_URL ? `${API_URL}/auth/google` : "/auth/google";
@@ -34,15 +57,12 @@ const GOOGLE_AUTH_URL = API_URL ? `${API_URL}/auth/google` : "/auth/google";
 const PaginaAuth: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isSignUpMode = location.pathname === PATHS.AUTH.REGISTER;
 
-  const [isSignUpMode, setIsSignUpMode] = useState(
-    location.pathname === PATHS.AUTH.REGISTER,
-  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nume, setNume] = useState("");
   const [prenume, setPrenume] = useState("");
-
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
   const [showPasswordSignIn, setShowPasswordSignIn] = useState(false);
   const [showPasswordSignUp, setShowPasswordSignUp] = useState(false);
@@ -71,10 +91,6 @@ const PaginaAuth: React.FC = () => {
       });
     }, 700);
   }, [navigate]);
-
-  useEffect(() => {
-    setIsSignUpMode(location.pathname === PATHS.AUTH.REGISTER);
-  }, [location.pathname]);
 
   const handleGoogleAuth = () => {
     window.location.href = GOOGLE_AUTH_URL;
@@ -125,277 +141,234 @@ const PaginaAuth: React.FC = () => {
       toast.success("Cont creat. Te poți autentifica acum.");
       setTimeout(() => {
         setPassword("");
-        navigate(PATHS.AUTH.LOGIN, { replace: true });
+        navigate(PATHS.AUTH.LOGIN);
       }, 900);
     } catch {
       toast.error("Nu am putut crea contul.");
     }
   };
 
+  const title = isSignUpMode ? "Înregistrare" : "Autentificare";
+  const subtitle = isSignUpMode
+    ? "Creează-ți contul și începe să gestionezi procesul de recrutare."
+    : "Intră în cont pentru a continua gestionarea CV-urilor și posturilor.";
+
   return (
-    <div
-      className={`${styles.container} ${
-        isSignUpMode ? styles["sign-up-mode"] : ""
-      }`}
-    >
-      <Suspense
-        fallback={<div className={styles.backgroundFallback} aria-hidden="true" />}
-      >
-        <ParticlesBackground />
-      </Suspense>
-
-      <div className={styles["forms-container"]}>
-        <div className={styles["signin-signup"]}>
-          <form
-            className={`${styles.authForm} ${styles.signInForm}`}
-            onSubmit={handleSignIn}
-            noValidate
-          >
-            <h2 className={styles.title}>Conectare</h2>
-            <p className={styles.subtitle}>
-              Intră în cont pentru a continua analiza CV-urilor și a posturilor.
-            </p>
-
-            <div
-              className={`${styles["input-field"]} ${
-                errors.email ? styles.error : ""
-              }`}
-            >
-              <div className={styles["icon-wrapper"]}>
-                <EnvelopeIcon />
-              </div>
-
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  clearError("email");
-                }}
-                autoComplete="email"
-                aria-invalid={errors.email}
-              />
-
-              <div className={styles["glow-bar"]} />
-            </div>
-
-            <div
-              className={`${styles["input-field"]} ${
-                errors.password ? styles.error : ""
-              }`}
-            >
-              <div className={styles["icon-wrapper"]}>
-                <LockIcon />
-              </div>
-
-              <input
-                type={showPasswordSignIn ? "text" : "password"}
-                placeholder="Parolă"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  clearError("password");
-                }}
-                autoComplete="current-password"
-                aria-invalid={errors.password}
-              />
-
-              <button
-                type="button"
-                className={styles["password-toggle"]}
-                onClick={() => setShowPasswordSignIn((v) => !v)}
-                aria-label={
-                  showPasswordSignIn ? "Ascunde parola" : "Afișează parola"
-                }
-              >
-                {showPasswordSignIn ? <EyeSlashIcon /> : <EyeIcon />}
-              </button>
-
-              <div className={styles["glow-bar"]} />
-            </div>
-
-            <button
-              type="submit"
-              className={`${styles.btn} ${styles["btn-liquid"]}`}
-            >
-              Autentificare
-            </button>
-
-            <div className={styles["social-divider"]}>
-              <span />
-              <p>sau</p>
-              <span />
-            </div>
-
-            <button
-              type="button"
-              className={styles["btn-social"]}
-              onClick={handleGoogleAuth}
-            >
-              <GoogleIcon className={styles["google-icon"]} /> Google
-            </button>
-
-            <div className={styles["auth-switch"]}>
-              <span>Nu ai cont?</span>
-              <button
-                type="button"
-                onClick={() => navigate(PATHS.AUTH.REGISTER)}
-              >
-                Înregistrare
-              </button>
-            </div>
-          </form>
-
-          <form
-            className={`${styles.authForm} ${styles.signUpForm}`}
-            onSubmit={handleSignUp}
-            noValidate
-          >
-            <h2 className={styles.title}>Înregistrare</h2>
-            <p className={styles.subtitle}>
-              Creează-ți contul și începe să gestionezi procesul de recrutare.
-            </p>
-
-            <div
-              className={`${styles["input-field"]} ${
-                errors.nume ? styles.error : ""
-              }`}
-            >
-              <div className={styles["icon-wrapper"]}>
-                <UserIcon />
-              </div>
-
-              <input
-                type="text"
-                placeholder="Nume"
-                value={nume}
-                onChange={(e) => {
-                  setNume(e.target.value);
-                  clearError("nume");
-                }}
-                autoComplete="given-name"
-                autoCapitalize="words"
-                aria-invalid={errors.nume}
-              />
-
-              <div className={styles["glow-bar"]} />
-            </div>
-
-            <div
-              className={`${styles["input-field"]} ${
-                errors.prenume ? styles.error : ""
-              }`}
-            >
-              <div className={styles["icon-wrapper"]}>
-                <UserIcon />
-              </div>
-
-              <input
-                type="text"
-                placeholder="Prenume"
-                value={prenume}
-                onChange={(e) => {
-                  setPrenume(e.target.value);
-                  clearError("prenume");
-                }}
-                autoComplete="family-name"
-                autoCapitalize="words"
-                aria-invalid={errors.prenume}
-              />
-
-              <div className={styles["glow-bar"]} />
-            </div>
-
-            <div
-              className={`${styles["input-field"]} ${
-                errors.email ? styles.error : ""
-              }`}
-            >
-              <div className={styles["icon-wrapper"]}>
-                <EnvelopeIcon />
-              </div>
-
-              <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  clearError("email");
-                }}
-                autoComplete="email"
-                aria-invalid={errors.email}
-              />
-
-              <div className={styles["glow-bar"]} />
-            </div>
-
-            <div
-              className={`${styles["input-field"]} ${
-                errors.password ? styles.error : ""
-              }`}
-            >
-              <div className={styles["icon-wrapper"]}>
-                <LockIcon />
-              </div>
-
-              <input
-                type={showPasswordSignUp ? "text" : "password"}
-                placeholder="Parolă"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  clearError("password");
-                }}
-                autoComplete="new-password"
-                aria-invalid={errors.password}
-              />
-
-              <button
-                type="button"
-                className={styles["password-toggle"]}
-                onClick={() => setShowPasswordSignUp((v) => !v)}
-                aria-label={
-                  showPasswordSignUp ? "Ascunde parola" : "Afișează parola"
-                }
-              >
-                {showPasswordSignUp ? <EyeSlashIcon /> : <EyeIcon />}
-              </button>
-
-              <div className={styles["glow-bar"]} />
-            </div>
-
-            <button
-              type="submit"
-              className={`${styles.btn} ${styles["btn-liquid"]}`}
-            >
-              Creează cont
-            </button>
-
-            <div className={styles["social-divider"]}>
-              <span />
-              <p>sau</p>
-              <span />
-            </div>
-
-            <button
-              type="button"
-              className={styles["btn-social"]}
-              onClick={handleGoogleAuth}
-            >
-              <GoogleIcon className={styles["google-icon"]} /> Google
-            </button>
-
-            <div className={styles["auth-switch"]}>
-              <span>Ai deja cont?</span>
-              <button type="button" onClick={() => navigate(PATHS.AUTH.LOGIN)}>
-                Conectare
-              </button>
-            </div>
-          </form>
-        </div>
+    <div className={styles.container}>
+      <div className={styles.ambientLayer} aria-hidden="true">
+        <span className={styles.ambientOrbOne} />
+        <span className={styles.ambientOrbTwo} />
+        <span className={styles.ambientOrbThree} />
       </div>
+
+      <div className={styles.particles} aria-hidden="true">
+        {AUTH_PARTICLES.map((particle, index) => (
+          <span
+            key={index}
+            className={styles.particle}
+            style={particle}
+            aria-hidden="true"
+          />
+        ))}
+      </div>
+
+      <header className={styles.header}>
+        <Link to={PATHS.ROOT} className={styles.brand} aria-label="CV-Analyzer Studio">
+          <span className={styles.brandMark}>CV</span>
+          <div className={styles.brandText}>
+            <span className={styles.brandName}>CV-Analyzer Studio</span>
+            <span className={styles.brandTag}>Recruitment intelligence</span>
+          </div>
+        </Link>
+      </header>
+
+      <main className={styles.main}>
+        <section className={styles.centerWrap}>
+          <div
+            className={`${styles.formCard} ${
+              isSignUpMode ? styles.formCardWide : ""
+            }`}
+          >
+            <span className={styles.badge}>Acces securizat</span>
+            <h1>{title}</h1>
+            <p className={styles.subtitle}>{subtitle}</p>
+
+            {!isSignUpMode ? (
+              <form className={styles.form} onSubmit={handleSignIn} noValidate>
+                <div className={styles.field} data-invalid={errors.email ? "true" : "false"}>
+                  <span className={styles.fieldIcon}>
+                    <EnvelopeIcon />
+                  </span>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      clearError("email");
+                    }}
+                    autoComplete="email"
+                    aria-invalid={errors.email}
+                  />
+                </div>
+
+                <div className={styles.field} data-invalid={errors.password ? "true" : "false"}>
+                  <span className={styles.fieldIcon}>
+                    <LockIcon />
+                  </span>
+                  <input
+                    type={showPasswordSignIn ? "text" : "password"}
+                    placeholder="Parolă"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      clearError("password");
+                    }}
+                    autoComplete="current-password"
+                    aria-invalid={errors.password}
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordToggle}
+                    onClick={() => setShowPasswordSignIn((v) => !v)}
+                    aria-label={showPasswordSignIn ? "Ascunde parola" : "Afișează parola"}
+                  >
+                    {showPasswordSignIn ? <EyeSlashIcon /> : <EyeIcon />}
+                  </button>
+                </div>
+
+                <button type="submit" className={styles.primaryAction}>
+                  Autentificare
+                  <ArrowRight />
+                </button>
+
+                <div className={styles.divider}>
+                  <span />
+                  <p>sau</p>
+                  <span />
+                </div>
+
+                <button type="button" className={styles.secondaryAction} onClick={handleGoogleAuth}>
+                  <GoogleIcon className={styles.googleIcon} />
+                  Google
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.switchAction}
+                  onClick={() => navigate(PATHS.AUTH.REGISTER)}
+                >
+                  Nu ai cont? Înregistrare
+                </button>
+              </form>
+            ) : (
+              <form className={styles.form} onSubmit={handleSignUp} noValidate>
+                <div className={styles.field} data-invalid={errors.nume ? "true" : "false"}>
+                  <span className={styles.fieldIcon}>
+                    <UserIcon />
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Nume"
+                    value={nume}
+                    onChange={(e) => {
+                      setNume(e.target.value);
+                      clearError("nume");
+                    }}
+                    autoComplete="given-name"
+                    autoCapitalize="words"
+                    aria-invalid={errors.nume}
+                  />
+                </div>
+
+                <div className={styles.field} data-invalid={errors.prenume ? "true" : "false"}>
+                  <span className={styles.fieldIcon}>
+                    <UserIcon />
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Prenume"
+                    value={prenume}
+                    onChange={(e) => {
+                      setPrenume(e.target.value);
+                      clearError("prenume");
+                    }}
+                    autoComplete="family-name"
+                    autoCapitalize="words"
+                    aria-invalid={errors.prenume}
+                  />
+                </div>
+
+                <div className={styles.field} data-invalid={errors.email ? "true" : "false"}>
+                  <span className={styles.fieldIcon}>
+                    <EnvelopeIcon />
+                  </span>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      clearError("email");
+                    }}
+                    autoComplete="email"
+                    aria-invalid={errors.email}
+                  />
+                </div>
+
+                <div className={styles.field} data-invalid={errors.password ? "true" : "false"}>
+                  <span className={styles.fieldIcon}>
+                    <LockIcon />
+                  </span>
+                  <input
+                    type={showPasswordSignUp ? "text" : "password"}
+                    placeholder="Parolă"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      clearError("password");
+                    }}
+                    autoComplete="new-password"
+                    aria-invalid={errors.password}
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordToggle}
+                    onClick={() => setShowPasswordSignUp((v) => !v)}
+                    aria-label={showPasswordSignUp ? "Ascunde parola" : "Afișează parola"}
+                  >
+                    {showPasswordSignUp ? <EyeSlashIcon /> : <EyeIcon />}
+                  </button>
+                </div>
+
+                <button type="submit" className={styles.primaryAction}>
+                  Creează cont
+                  <ArrowRight />
+                </button>
+
+                <div className={styles.divider}>
+                  <span />
+                  <p>sau</p>
+                  <span />
+                </div>
+
+                <button type="button" className={styles.secondaryAction} onClick={handleGoogleAuth}>
+                  <GoogleIcon className={styles.googleIcon} />
+                  Google
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.switchAction}
+                  onClick={() => navigate(PATHS.AUTH.LOGIN)}
+                >
+                  Ai deja cont? Autentificare
+                </button>
+              </form>
+            )}
+          </div>
+        </section>
+      </main>
     </div>
   );
 };

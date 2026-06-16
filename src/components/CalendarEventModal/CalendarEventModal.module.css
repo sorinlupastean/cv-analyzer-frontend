@@ -33,40 +33,54 @@
 }
 
 .modalHeader {
-  padding: 16px; /* Spațiere redusă */
+  padding: 18px 22px 18px 18px;
   border-bottom: 1px solid rgba(74, 207, 238, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: rgba(255, 255, 255, 0.4);
   flex-shrink: 0;
+  gap: 18px;
 }
 
 .modalTitle {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+  min-width: 0;
+}
+
+.modalTitle > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
 }
 
 .modalHeaderTitle {
   font-size: 1rem;
   font-weight: 800;
+  line-height: 1.15;
+  margin: 0;
 }
 
 .modalHeaderSubTitle {
   font-size: 0.8rem;
   font-weight: 500;
+  line-height: 1.35;
+  margin: 4px 0 0 0;
 }
 
 .modalIcon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #4acfee 0%, #3b7f9b 100%);
   color: white;
   display: grid;
   place-items: center;
   box-shadow: 0 8px 16px rgba(74, 207, 238, 0.25);
+  flex: 0 0 auto;
 }
 
 .modalTitle strong {
@@ -85,9 +99,9 @@
 }
 
 .closeBtn {
-  width: 30px;
-  height: 30px;
-  border-radius: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
   border: 1px solid rgba(15, 23, 42, 0.05);
   background: white;
   cursor: pointer;
@@ -95,6 +109,8 @@
   place-items: center;
   color: #64748b;
   transition: all 0.2s;
+  flex: 0 0 auto;
+  align-self: center;
 }
 
 .closeBtn:hover {

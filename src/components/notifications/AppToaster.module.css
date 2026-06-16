@@ -1,39 +1,67 @@
 .toast {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 11px;
 
   min-width: 300px;
-  max-width: min(420px, calc(100vw - 32px));
-  padding: 14px 16px;
+  max-width: min(410px, calc(100vw - 28px));
+  padding: 11px 12px 11px 11px;
   border-radius: 16px;
 
-  background: rgba(12, 17, 24, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background:
+    linear-gradient(180deg, rgba(18, 27, 42, 0.98), rgba(10, 16, 28, 0.98)),
+    rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(125, 211, 252, 0.18);
+  box-shadow:
+    0 16px 34px rgba(2, 6, 23, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 10px 24px rgba(14, 165, 233, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-  color: #f7f8fa;
+  color: #f8fafc;
+  font-family: Inter, "Montserrat", "Segoe UI", Arial, sans-serif;
 }
 
 .accent {
-  width: 3px;
+  width: 5px;
   align-self: stretch;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, #7dd3fc, #14b8a6);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
 }
 
 .success .accent {
-  background: linear-gradient(180deg, #39c98a, #1d8a5e);
+  background: linear-gradient(180deg, #34d399, #059669);
+}
+
+.success {
+  background:
+    linear-gradient(180deg, rgba(15, 39, 33, 0.98), rgba(8, 25, 20, 0.98)),
+    rgba(15, 39, 33, 0.98);
+  border-color: rgba(16, 185, 129, 0.24);
 }
 
 .error .accent {
-  background: linear-gradient(180deg, #ff8a6b, #d95b3f);
+  background: linear-gradient(180deg, #fb7185, #ea580c);
+}
+
+.error {
+  background:
+    linear-gradient(180deg, rgba(42, 20, 24, 0.98), rgba(24, 11, 14, 0.98)),
+    rgba(42, 20, 24, 0.98);
+  border-color: rgba(248, 113, 113, 0.24);
 }
 
 .loading .accent {
-  background: linear-gradient(180deg, #aab2bf, #6d7583);
+  background: linear-gradient(180deg, #7dd3fc, #2563eb);
+}
+
+.loading {
+  background:
+    linear-gradient(180deg, rgba(16, 24, 44, 0.98), rgba(9, 14, 28, 0.98)),
+    rgba(16, 24, 44, 0.98);
+  border-color: rgba(37, 99, 235, 0.24);
 }
 
 .icon {
@@ -41,26 +69,29 @@
   align-items: center;
   justify-content: center;
 
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  margin-top: 1px;
-  border-radius: 12px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 10px;
 
-  background: rgba(255, 255, 255, 0.04);
-  color: #dce1e8;
+  background: rgba(125, 211, 252, 0.08);
+  color: #7dd3fc;
+  font-size: 0.9rem;
 }
 
 .success .icon {
-  color: #52d39a;
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
 }
 
 .error .icon {
-  color: #ff896f;
+  background: rgba(248, 113, 113, 0.12);
+  color: #fb7185;
 }
 
 .loading .icon {
-  color: #c1c7d0;
+  background: rgba(37, 99, 235, 0.12);
+  color: #93c5fd;
 }
 
 .spin {
@@ -70,41 +101,43 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
   flex: 1;
 }
 
 .label {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.62rem;
+  font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.56);
+  color: rgba(125, 211, 252, 0.88);
 }
 
 .message {
-  font-size: 0.92rem;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.82rem;
+  line-height: 1.38;
+  color: #f8fafc;
   word-break: break-word;
+  font-weight: 600;
 }
 
 .closeBtn {
   appearance: none;
   border: 0;
   background: transparent;
-  color: rgba(255, 255, 255, 0.42);
+  color: rgba(226, 232, 240, 0.72);
   cursor: pointer;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 999px;
-  margin-left: 4px;
+  margin-left: 2px;
+  font-size: 0.78rem;
 
   transition:
     background-color 0.2s ease,
@@ -113,13 +146,13 @@
 }
 
 .closeBtn:hover {
-  color: rgba(255, 255, 255, 0.88);
-  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  background: rgba(125, 211, 252, 0.12);
   transform: translateY(-1px);
 }
 
 .closeBtn:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.28);
+  outline: 2px solid rgba(125, 211, 252, 0.36);
   outline-offset: 2px;
 }
 

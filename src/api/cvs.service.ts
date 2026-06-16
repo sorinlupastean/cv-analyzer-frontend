@@ -25,6 +25,7 @@ export type GeminiJobCvAnalysis = {
   candidateName: string;
   email: string | null;
   phone: string | null;
+  candidatePhotoDataUrl?: string | null;
 
   languages: string[];
   domains: string[];
@@ -103,6 +104,7 @@ export type FinalCandidateAnalysis = {
   candidateName: string;
   email: string | null;
   phone: string | null;
+  candidatePhotoDataUrl?: string | null;
 
   cvScore: number;
   githubScore: number | null;
@@ -284,6 +286,7 @@ function normalizeCv(cv: Cv): Cv {
         reasoningShort:
           normalizeUnicodeText(cv.analysisRaw.reasoningShort) ||
           cv.analysisRaw.reasoningShort,
+        candidatePhotoDataUrl: cv.analysisRaw.candidatePhotoDataUrl || null,
         evidence: (cv.analysisRaw.evidence || []).map(
           (item) => normalizeUnicodeText(item) || item,
         ),
