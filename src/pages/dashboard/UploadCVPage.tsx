@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import styles from "./UploadCVPage.module.css";
+import EmptyState from "../../components/EmptyState/EmptyState";
 import { jobsApi } from "../../api/jobs.service";
 import { cvsApi, type Cv } from "../../api/cvs.service";
 import { PATHS } from "../../routs/paths";
@@ -251,9 +252,7 @@ const UploadCVPage: React.FC = () => {
         `Am încărcat ${successCount} fișier(e), dar ${failedCount} nu au putut fi salvate.`,
       );
       if (refreshFailed) {
-        toast.error(
-          "Lista nu s-a putut sincroniza imediat după upload.",
-        );
+        toast.error("Lista nu s-a putut sincroniza imediat după upload.");
       }
       return;
     }
@@ -344,9 +343,12 @@ const UploadCVPage: React.FC = () => {
       for (let i = 0; i < pendingCvs.length; i++) {
         const cv = pendingCvs[i];
 
-        toast.loading(`Analizez ${i + 1}/${pendingCvs.length}: ${cv.fileName}...`, {
-          id: "bulkAnalyze",
-        });
+        toast.loading(
+          `Analizez ${i + 1}/${pendingCvs.length}: ${cv.fileName}...`,
+          {
+            id: "bulkAnalyze",
+          },
+        );
 
         try {
           const updated = await cvsApi.analyzeForJob(selectedJobId, cv.id);
@@ -389,10 +391,9 @@ const UploadCVPage: React.FC = () => {
           { id: "bulkAnalyze" },
         );
         if (refreshFailed) {
-          toast.error(
-            "Lista nu s-a putut sincroniza imediat după analiză.",
-            { id: "bulkAnalyze-sync" },
-          );
+          toast.error("Lista nu s-a putut sincroniza imediat după analiză.", {
+            id: "bulkAnalyze-sync",
+          });
         }
         return;
       }
@@ -402,10 +403,9 @@ const UploadCVPage: React.FC = () => {
         { id: "bulkAnalyze" },
       );
       if (refreshFailed) {
-        toast.error(
-          "Lista nu s-a putut sincroniza imediat după analiză.",
-          { id: "bulkAnalyze-sync" },
-        );
+        toast.error("Lista nu s-a putut sincroniza imediat după analiză.", {
+          id: "bulkAnalyze-sync",
+        });
       }
     } catch {
       toast.error("Analiza a eșuat", { id: "bulkAnalyze" });
@@ -502,9 +502,11 @@ const UploadCVPage: React.FC = () => {
             })}
 
             {jobs.length === 0 && (
-              <div className={styles.emptyPanel}>
-                <p>Niciun job disponibil.</p>
-              </div>
+              <EmptyState
+                icon={Briefcase}
+                title="Niciun job disponibil"
+                description="Creează primul post pentru a începe analiza candidaților."
+              />
             )}
           </div>
         </aside>
@@ -545,7 +547,6 @@ const UploadCVPage: React.FC = () => {
                     )}
                   </div>
                 </div>
-
               </header>
 
               <section className={styles.card}>
@@ -568,7 +569,9 @@ const UploadCVPage: React.FC = () => {
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  title={isClosed ? "Post închis, upload blocat" : "Încarcă CV-uri"}
+                  title={
+                    isClosed ? "Post închis, upload blocat" : "Încarcă CV-uri"
+                  }
                 >
                   <div className={styles.uploadIconPulse}>
                     <CloudUploadAlt />
@@ -622,24 +625,15 @@ const UploadCVPage: React.FC = () => {
 
                 <div className={styles.tableScroll}>
                   {pendingCvs.length === 0 ? (
-                    <div className={styles.emptyState}>
-                      <div className={styles.emptyCard}>
-                        <div className={styles.emptyBadge}>
-                          <RegFilePdf className={styles.emptyIcon} />
-                        </div>
-
-                        <h3 className={styles.emptyTitle}>
-                          Nu există CV-uri noi
-                        </h3>
-                        <p className={styles.emptyText}>
-                          Când adaugi CV-uri pentru acest job, ele apar aici până
-                          la analiză.
-                        </p>
-
-                      </div>
-                    </div>
+                    <EmptyState
+                      icon={RegFilePdf}
+                      title="Nu există CV-uri noi"
+                      description="Când adaugi CV-uri pentru acest job, ele apar aici până la analiză."
+                    />
                   ) : (
-                    <table className={`${styles.crystalTable} ${styles.pendingTable}`}>
+                    <table
+                      className={`${styles.crystalTable} ${styles.pendingTable}`}
+                    >
                       <thead>
                         <tr>
                           <th>Document</th>
@@ -702,7 +696,9 @@ const UploadCVPage: React.FC = () => {
                   </div>
 
                   <div className={styles.tableScroll}>
-                    <table className={`${styles.crystalTable} ${styles.analyzedTable}`}>
+                    <table
+                      className={`${styles.crystalTable} ${styles.analyzedTable}`}
+                    >
                       <thead>
                         <tr>
                           <th>Document</th>
@@ -731,9 +727,13 @@ const UploadCVPage: React.FC = () => {
 
                             <td>{formatDate(cv.uploadDate ?? cv.createdAt)}</td>
 
-                            <td className={styles.scoreCell}>{cv.matchScore ?? 0}%</td>
+                            <td className={styles.scoreCell}>
+                              {cv.matchScore ?? 0}%
+                            </td>
 
-                            <td className={styles.statusCell}>{cv.status || "—"}</td>
+                            <td className={styles.statusCell}>
+                              {cv.status || "—"}
+                            </td>
 
                             <td className={styles.actionCell}>
                               <button
@@ -768,11 +768,11 @@ const UploadCVPage: React.FC = () => {
               ) : null}
             </>
           ) : (
-            <div className={styles.noJobSelected}>
-              <Briefcase size={30} />
-              <h4>Selectează un job pentru a încărca CV-uri</h4>
-              <p>Panelul din stânga îți arată joburile disponibile.</p>
-            </div>
+            <EmptyState
+              icon={Briefcase}
+              title="Selectează un job pentru a încărca CV-uri"
+              description="Lista din stânga îți arată joburile disponibile."
+            />
           )}
         </main>
       </div>

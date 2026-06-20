@@ -202,6 +202,19 @@ export default function SkillDistributionChart({ data, loading }: Props) {
       <div
         className={`${styles.content} ${isStacked ? styles.contentStacked : ""}`}
       >
+        {!loading && chartData.length === 0 && (
+          <div className={styles.emptyStateOverlay} aria-live="polite">
+            <div className={styles.emptyState}>
+              <span className={styles.emptyStateLead}>
+                {"Nu există suficiente date încă."}
+              </span>
+              <span className={styles.emptyStateSub}>
+                {"Analizează câteva CV-uri ca să apară distribuția competențelor."}
+              </span>
+            </div>
+          </div>
+        )}
+
         <div className={styles.chartSide}>
           <div className={styles.chartInner}>
             <ResponsiveContainer width="100%" height="100%">
@@ -293,13 +306,6 @@ export default function SkillDistributionChart({ data, loading }: Props) {
               </div>
             </div>
           ))}
-
-          {!loading && chartData.length === 0 && (
-            <div className={styles.legendRow}>
-              Nu există suficiente date încă. Analizează câteva CV-uri ca să
-              apară distribuția competențelor.
-            </div>
-          )}
 
           {!loading && chartData.length > 0 && (
             <div className={styles.legendRow}>

@@ -101,6 +101,7 @@ const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
+    window.dispatchEvent(new Event("auth-change"));
     navigate(PATHS.ROOT, { replace: true });
   };
 

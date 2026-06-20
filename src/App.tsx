@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -36,6 +36,7 @@ const routeTitles: Array<{ path: RegExp; title: string }> = [
   { path: /^\/$/, title: "Acasă" },
   { path: /^\/auth\/login$/, title: "Autentificare" },
   { path: /^\/auth\/register$/, title: "Înregistrare" },
+  { path: /^\/oauth-success$/, title: "Autentificare" },
   { path: /^\/dashboard\/?$/, title: "Dashboard" },
   { path: /^\/dashboard\/home$/, title: "Dashboard" },
   { path: /^\/dashboard\/create-job$/, title: "Creare job" },
@@ -64,7 +65,24 @@ const DocumentTitle: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const isAuthenticated = !!localStorage.getItem("access_token");
+  const [isAuthenticated, setIsAuthenticated] = useState(() =>
+    !!localStorage.getItem("access_token"),
+  );
+
+  useEffect(() => {
+    const syncAuthState = () => {
+      setIsAuthenticated(!!localStorage.getItem("access_token"));
+    };
+
+    syncAuthState();
+    window.addEventListener("auth-change", syncAuthState);
+    window.addEventListener("storage", syncAuthState);
+
+    return () => {
+      window.removeEventListener("auth-change", syncAuthState);
+      window.removeEventListener("storage", syncAuthState);
+    };
+  }, []);
 
   return (
     <BrowserRouter>
@@ -107,6 +125,20 @@ const App: React.FC = () => {
 
         <Route
           path={PATHS.AUTH.REGISTER}
+          element={
+            !isAuthenticated ? (
+              <PaginaAuth />
+            ) : (
+              <Navigate
+                to={`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`}
+                replace
+              />
+            )
+          }
+        />
+
+        <Route
+          path="/oauth-success"
           element={
             !isAuthenticated ? (
               <PaginaAuth />

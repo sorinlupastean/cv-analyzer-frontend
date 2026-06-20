@@ -3,6 +3,7 @@ import styles from "./CreateJobPage.module.css";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { jobsApi, type JobStatus } from "../../api/jobs.service";
+import EmptyState from "../../components/EmptyState/EmptyState";
 import JobModal from "../../components/JobModal/JobModal";
 import { PATHS } from "../../routs/paths";
 
@@ -250,7 +251,6 @@ const CreateJobPage: React.FC = () => {
   return (
     <div className={styles.pageShell}>
       <div className={styles.container}>
-
         {/* JOBS PANEL */}
         <aside className={styles.jobsPanel}>
           <div className={styles.panelHeader}>
@@ -402,10 +402,10 @@ const CreateJobPage: React.FC = () => {
                         ? "Inchide postul"
                         : "Activeaza postul"
                     }
-                    >
-                      {selectedJob.status === "ACTIVE"
-                        ? "Inchide post"
-                        : "Activeaza post"}
+                  >
+                    {selectedJob.status === "ACTIVE"
+                      ? "Inchide post"
+                      : "Activeaza post"}
                   </button>
                 </div>
               </header>
@@ -414,9 +414,6 @@ const CreateJobPage: React.FC = () => {
                 <div className={styles.candidateFolderHeader}>
                   <div>
                     <p className={styles.candidateFolderKicker}>Candidați</p>
-                    <h2 className={styles.candidateFolderTitle}>
-                      Lista candidaților mei
-                    </h2>
                   </div>
                   <span className={styles.candidateFolderCount}>
                     {selectedJob.cvs.length} CV-uri
@@ -426,126 +423,124 @@ const CreateJobPage: React.FC = () => {
                 <div className={styles.cvContainer}>
                   {selectedJob.cvs.length > 0 ? (
                     <div className={styles.cvGrid}>
-                    {selectedJob.cvs.map((cv) => {
-                      const candidatePhotoSrc =
-                        cv.analysisRaw?.candidatePhotoDataUrl ||
-                        cv.analysisRaw?.cvAnalysis?.candidatePhotoDataUrl ||
-                        null;
-                      return (
-                        <div
-                          key={cv.id}
-                          className={[
-                            styles.cvCard,
-                            isClosed ? styles.cvCardDisabled : "",
-                          ].join(" ")}
-                          role="button"
-                          tabIndex={isClosed ? -1 : 0}
-                          aria-disabled={isClosed}
-                          onClick={() => {
-                            if (isClosed) return;
-                            navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
-                              state: {
-                                fromResults: true,
-                                jobId: selectedJob.id,
-                              },
-                            });
-                          }}
-                          onKeyDown={(e) => {
-                            if (isClosed) return;
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
+                      {selectedJob.cvs.map((cv) => {
+                        const candidatePhotoSrc =
+                          cv.analysisRaw?.candidatePhotoDataUrl ||
+                          cv.analysisRaw?.cvAnalysis?.candidatePhotoDataUrl ||
+                          null;
+                        return (
+                          <div
+                            key={cv.id}
+                            className={[
+                              styles.cvCard,
+                              isClosed ? styles.cvCardDisabled : "",
+                            ].join(" ")}
+                            role="button"
+                            tabIndex={isClosed ? -1 : 0}
+                            aria-disabled={isClosed}
+                            onClick={() => {
+                              if (isClosed) return;
                               navigate(`${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`, {
                                 state: {
                                   fromResults: true,
                                   jobId: selectedJob.id,
                                 },
                               });
-                            }
-                          }}
-                          title={
-                            isClosed
-                              ? "Post inchis, nu se pot deschide CV-urile"
-                              : "Deschide detaliile CV-ului"
-                          }
-                        >
-                          <div className={styles.cvTop}>
-                            <div className={styles.candidate}>
-                              <div
-                                className={[
-                                  styles.candidateAvatar,
-                                  candidatePhotoSrc
-                                    ? styles.candidateAvatarPhoto
-                                    : styles.candidateAvatarFallback,
-                                ].join(" ")}
-                              >
-                                {candidatePhotoSrc ? (
-                                  <img
-                                    src={candidatePhotoSrc}
-                                    alt={cv.candidateName || "Candidat"}
-                                    className={styles.candidateAvatarImg}
-                                  />
-                                ) : (
-                                  <UserCircle className={styles.userIcon} />
-                                )}
-                              </div>
-                              <div className={styles.candidateText}>
-                                <h4>{cv.candidateName}</h4>
-                                <p className={styles.cvFileName}>{cv.fileName}</p>
-                              </div>
-                            </div>
-                            <div className={styles.scoreBadge}>
-                              {cv.matchScore}%
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    </div>
-                  ) : (
-                    <div className={styles.emptyState}>
-                      <div className={styles.emptyCard}>
-                        <div className={styles.emptyBadge}>
-                          <Lightbulb className={styles.emptyIcon} />
-                        </div>
-                        <h3 className={styles.emptyTitle}>
-                        Niciun rezultat încă
-                        </h3>
-                        <p className={styles.emptyText}>
-                        Încarcă CV-uri ca să vezi potrivirile.
-                        </p>
-                        <div className={styles.emptyActions}>
-                          <button
-                            type="button"
-                            className={styles.emptyPrimary}
-                            disabled={isClosed}
+                            }}
+                            onKeyDown={(e) => {
+                              if (isClosed) return;
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                navigate(
+                                  `${PATHS.DASHBOARD.ROOT}/cv/${cv.id}`,
+                                  {
+                                    state: {
+                                      fromResults: true,
+                                      jobId: selectedJob.id,
+                                    },
+                                  },
+                                );
+                              }
+                            }}
                             title={
                               isClosed
-                                ? "Post închis, nu mai poți încărca CV-uri"
-                                : "Încarcă CV-uri"
-                            }
-                            onClick={() =>
-                              navigate(
-                                `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
-                                {
-                                  state: { jobId: selectedJob.id },
-                                },
-                              )
+                                ? "Post inchis, nu se pot deschide CV-urile"
+                                : "Deschide detaliile CV-ului"
                             }
                           >
-                            Încarcă CV-uri
-                          </button>
-                        </div>
-                      </div>
+                            <div className={styles.cvTop}>
+                              <div className={styles.candidate}>
+                                <div
+                                  className={[
+                                    styles.candidateAvatar,
+                                    candidatePhotoSrc
+                                      ? styles.candidateAvatarPhoto
+                                      : styles.candidateAvatarFallback,
+                                  ].join(" ")}
+                                >
+                                  {candidatePhotoSrc ? (
+                                    <img
+                                      src={candidatePhotoSrc}
+                                      alt={cv.candidateName || "Candidat"}
+                                      className={styles.candidateAvatarImg}
+                                    />
+                                  ) : (
+                                    <UserCircle className={styles.userIcon} />
+                                  )}
+                                </div>
+                                <div className={styles.candidateText}>
+                                  <h4>{cv.candidateName}</h4>
+                                  <p className={styles.cvFileName}>
+                                    {cv.fileName}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className={styles.scoreBadge}>
+                                {cv.matchScore}%
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
+                  ) : (
+                    <EmptyState
+                      icon={Lightbulb}
+                      title="Niciun rezultat încă"
+                      description="Încarcă CV-uri ca să vezi potrivirile."
+                      footer={
+                        <button
+                          type="button"
+                          className={styles.emptyPrimary}
+                          disabled={isClosed}
+                          title={
+                            isClosed
+                              ? "Post închis, nu mai poți încărca CV-uri"
+                              : "Încarcă CV-uri"
+                          }
+                          onClick={() =>
+                            navigate(
+                              `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
+                              {
+                                state: { jobId: selectedJob.id },
+                              },
+                            )
+                          }
+                        >
+                          Încarcă CV-uri
+                        </button>
+                      }
+                    />
                   )}
                 </div>
               </section>
             </>
           ) : (
-            <div className={styles.noJobSelected}>
-              <Briefcase size={20} />
-              <h4>Selectează un post pentru a vedea datele</h4>
-            </div>
+            <EmptyState
+              icon={Briefcase}
+              title="Selectează un post pentru a vedea datele"
+              description="Alege un job din listă pentru a vedea potrivirile și detaliile."
+            />
           )}
         </main>
 

@@ -17,6 +17,7 @@ import {
   FaCalendarAlt,
   FaChevronLeft,
   FaChevronRight,
+  FaChevronDown,
   FaPlus,
   FaSearch,
   FaClock,
@@ -36,6 +37,7 @@ import type { IconBaseProps } from "react-icons";
 const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 const ChevronLeft = FaChevronLeft as unknown as ComponentType<IconBaseProps>;
 const ChevronRight = FaChevronRight as unknown as ComponentType<IconBaseProps>;
+const ChevronDown = FaChevronDown as unknown as ComponentType<IconBaseProps>;
 const Plus = FaPlus as unknown as ComponentType<IconBaseProps>;
 const SearchIcon = FaSearch as unknown as ComponentType<IconBaseProps>;
 const ClockIcon = FaClock as unknown as ComponentType<IconBaseProps>;
@@ -50,6 +52,16 @@ const TrashIcon = FaTrash as unknown as ComponentType<IconBaseProps>;
 const CopyIcon = FaRegCopy as unknown as ComponentType<IconBaseProps>;
 
 type InterviewStatus = "SCHEDULED" | "CONFIRMED" | "CANCELLED";
+
+const STATUS_OPTIONS: Array<{
+  value: "ALL" | InterviewStatus;
+  label: string;
+}> = [
+  { value: "ALL", label: "Toate statusurile" },
+  { value: "SCHEDULED", label: "Programate" },
+  { value: "CONFIRMED", label: "Confirmate" },
+  { value: "CANCELLED", label: "Anulate" },
+];
 
 type InterviewEvent = {
   id: string; // păstrăm string în UI (din backend vine number)
@@ -176,6 +188,7 @@ const CalendarPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<"ALL" | InterviewStatus>(
     "ALL",
   );
+  const [statusMenuOpen, setStatusMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
@@ -200,12 +213,35 @@ const CalendarPage: React.FC = () => {
 
   const [form, setForm] = useState<EventForm>(emptyForm);
 
+  const statusMenuRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (!isModalOpen) {
       setForm(emptyForm);
       setEditingId(null);
     }
   }, [emptyForm, isModalOpen]);
+
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (!statusMenuOpen) return;
+      const target = event.target as Node | null;
+      if (target && statusMenuRef.current?.contains(target)) return;
+      setStatusMenuOpen(false);
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setStatusMenuOpen(false);
+    };
+
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [statusMenuOpen]);
 
   const monthLabel = useMemo(() => {
     return cursor.toLocaleDateString("ro-RO", {
@@ -794,16 +830,54 @@ const CalendarPage: React.FC = () => {
                 />
               </div>
 
-              <select
-                className={styles.select}
-                value={statusFilter}
-                onChange={(ev) => setStatusFilter(ev.target.value as any)}
-              >
-                <option value="ALL">Toate statusurile</option>
-                <option value="SCHEDULED">Programate</option>
-                <option value="CONFIRMED">Confirmate</option>
-                <option value="CANCELLED">Anulate</option>
-              </select>
+              <div className={styles.statusSelectWrap} ref={statusMenuRef}>
+                <span className={styles.statusSelectLabel}>Status activ</span>
+                <button
+                  type="button"
+                  className={styles.statusTrigger}
+                  onClick={() => setStatusMenuOpen((prev) => !prev)}
+                  aria-haspopup="listbox"
+                  aria-expanded={statusMenuOpen}
+                >
+                  <span className={styles.statusTriggerText}>
+                    {STATUS_OPTIONS.find((opt) => opt.value === statusFilter)
+                      ?.label ?? "Toate statusurile"}
+                  </span>
+                  <span className={styles.statusCaret}>
+                    <ChevronDown size={12} />
+                  </span>
+                </button>
+
+                {statusMenuOpen && (
+                  <div
+                    className={styles.statusMenu}
+                    role="listbox"
+                    aria-label="Status activ"
+                  >
+                    {STATUS_OPTIONS.map((option) => {
+                      const active = option.value === statusFilter;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="option"
+                          aria-selected={active}
+                          className={[
+                            styles.statusMenuItem,
+                            active ? styles.statusMenuItemActive : "",
+                          ].join(" ")}
+                          onClick={() => {
+                            setStatusFilter(option.value);
+                            setStatusMenuOpen(false);
+                          }}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className={styles.weekHeader}>

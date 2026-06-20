@@ -161,7 +161,12 @@ export default function ScoreEvolutionChart({ data, loading }: Props) {
       <div className={styles.chartArea}>
         {!loading && !hasAnyScore ? (
           <div className={styles.emptyState}>
-            {"Nu exist\u0103 date \u00eenc\u0103. Analizeaz\u0103 c\u00e2teva CV-uri ca s\u0103 apar\u0103 evolu\u021bia."}
+            <span className={styles.emptyStateLead}>
+              {"Nu exist\u0103 date \u00eenc\u0103."}
+            </span>
+            <span className={styles.emptyStateSub}>
+              {"Analizeaz\u0103 c\u00e2teva CV-uri ca s\u0103 apar\u0103 evolu\u021bia."}
+            </span>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">

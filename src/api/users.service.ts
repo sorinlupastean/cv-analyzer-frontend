@@ -59,4 +59,9 @@ export const usersApi = {
     const { data } = await http.delete<UserProfileDto>("/users/me/avatar");
     return data;
   },
+
+  deleteMe: async () => {
+    const { data } = await http.delete<{ ok: true }>("/users/me");
+    return data;
+  },
 };

@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./SettingsPage.module.css";
 import toast from "react-hot-toast";
+import { PATHS } from "../../routs/paths";
 import { usersApi } from "../../api/users.service";
 
 import {
@@ -18,6 +20,7 @@ import {
   FaLink,
   FaChevronRight,
   FaTimes,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 
 import type { ComponentType } from "react";
@@ -37,6 +40,8 @@ const KeyIcon = FaKey as unknown as ComponentType<IconBaseProps>;
 const WebLinkIcon = FaLink as unknown as ComponentType<IconBaseProps>;
 const RightIcon = FaChevronRight as unknown as ComponentType<IconBaseProps>;
 const CloseIcon = FaTimes as unknown as ComponentType<IconBaseProps>;
+const WarningIcon =
+  FaExclamationTriangle as unknown as ComponentType<IconBaseProps>;
 
 type Profile = {
   firstName: string;
@@ -94,6 +99,7 @@ const mapUserToProfile = (user: any): Profile => ({
 });
 
 const SettingsPage: React.FC = () => {
+  const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const emptyProfile: Profile = useMemo(
@@ -116,6 +122,8 @@ const SettingsPage: React.FC = () => {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -315,6 +323,31 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (isDeletingAccount) return;
+    setIsDeleteModalOpen(false);
+  };
+
+  const confirmDeleteAccount = async () => {
+    setIsDeletingAccount(true);
+    try {
+      await usersApi.deleteMe();
+      localStorage.removeItem("access_token");
+      window.dispatchEvent(new Event("auth-change"));
+      toast.success("Contul a fost șters.");
+      setIsDeleteModalOpen(false);
+      navigate(PATHS.AUTH.LOGIN, { replace: true });
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Nu am putut șterge contul");
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
   if (loadingProfile) {
     return (
       <div className={styles.page}>
@@ -463,10 +496,7 @@ const SettingsPage: React.FC = () => {
             </div>
             <div>
               <strong>Sfat</strong>
-              <p>
-                Folosește o poză clară, cu fundal simplu. Profilul arată mai
-                profesional și inspiră mai multă încredere.
-              </p>
+              <p>Folosește o poză clară, cu fundal simplu.</p>
             </div>
           </div>
         </aside>
@@ -647,15 +677,16 @@ const SettingsPage: React.FC = () => {
               <div className={styles.dangerInfo}>
                 <strong>Șterge contul</strong>
                 <p>
-                  Demo UI. Când conectezi backend-ul, aici vei cere confirmare
-                  și vei apela endpoint-ul de delete.
+                  Ștergerea contului este permanentă. Vor dispărea profilul și
+                  datele asociate acelui cont.
                 </p>
               </div>
 
               <button
                 type="button"
                 className={styles.dangerBtn}
-                onClick={() => toast.error("Demo UI: confirmare ștergere cont")}
+                onClick={openDeleteModal}
+                disabled={isDeletingAccount}
               >
                 <TrashIcon size={11} /> Șterge contul
               </button>
@@ -782,6 +813,75 @@ const SettingsPage: React.FC = () => {
               >
                 <KeyIcon />{" "}
                 {isChangingPassword ? "Se schimbă..." : "Schimbă parola"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {isDeleteModalOpen ? (
+        <div className={styles.modalOverlay} onClick={closeDeleteModal}>
+          <div
+            className={styles.modalCard}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.deleteModalHero}>
+              <div className={styles.deleteBadge}>
+                <WarningIcon />
+                <span>Acțiune ireversibilă</span>
+              </div>
+
+              <div className={styles.deleteTopRow}>
+                <div className={styles.deleteHeaderCopy}>
+                  <h3>Șterge contul</h3>
+                  <p>
+                    Contul, profilul și datele asociate vor dispărea definitiv
+                    din aplicație.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className={styles.modalCloseBtn}
+                  onClick={closeDeleteModal}
+                  disabled={isDeletingAccount}
+                >
+                  <CloseIcon />
+                </button>
+              </div>
+
+              <div className={styles.deleteAccentCard}>
+                <div className={styles.deleteAccentIcon}>
+                  <TrashIcon />
+                </div>
+                <div className={styles.deleteAccentText}>
+                  <strong>Confirmare finală</strong>
+                  <p>
+                    După ștergere nu mai poți recupera CV-urile, joburile sau
+                    setările contului.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={closeDeleteModal}
+                disabled={isDeletingAccount}
+              >
+                Anulează
+              </button>
+
+              <button
+                type="button"
+                className={styles.deleteConfirmBtn}
+                onClick={confirmDeleteAccount}
+                disabled={isDeletingAccount}
+              >
+                <TrashIcon />{" "}
+                {isDeletingAccount ? "Se șterge..." : "Șterge contul"}
               </button>
             </div>
           </div>

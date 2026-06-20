@@ -16,7 +16,11 @@ import {
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
-import { login, register } from "../../api/auth.service";
+import {
+  getAuthErrorMessage,
+  login,
+  register,
+} from "../../api/auth.service";
 
 type ParticleStyle = React.CSSProperties & {
   "--x"?: string;
@@ -76,12 +80,25 @@ const PaginaAuth: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    const error = params.get("error");
+
+    if (error) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      toast.error(error);
+
+      if (window.location.pathname !== PATHS.AUTH.LOGIN) {
+        navigate(PATHS.AUTH.LOGIN, { replace: true });
+      }
+
+      return;
+    }
 
     if (!token) {
       return;
     }
 
     localStorage.setItem("access_token", token);
+    window.dispatchEvent(new Event("auth-change"));
     window.history.replaceState({}, document.title, window.location.pathname);
     toast.success("Conectare reușită prin Google.");
 
@@ -111,14 +128,17 @@ const PaginaAuth: React.FC = () => {
     try {
       const data = await login(email, password);
       localStorage.setItem("access_token", data.access_token);
+      window.dispatchEvent(new Event("auth-change"));
       toast.success("Bine ai revenit.");
       setTimeout(() => {
         navigate(`${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.HOME}`, {
           replace: true,
         });
       }, 700);
-    } catch {
-      toast.error("Email sau parolă incorecte.");
+    } catch (error) {
+      toast.error(
+        getAuthErrorMessage(error, "Email sau parolă incorecte."),
+      );
     }
   };
 
@@ -143,8 +163,10 @@ const PaginaAuth: React.FC = () => {
         setPassword("");
         navigate(PATHS.AUTH.LOGIN);
       }, 900);
-    } catch {
-      toast.error("Nu am putut crea contul.");
+    } catch (error) {
+      toast.error(
+        getAuthErrorMessage(error, "Nu am putut crea contul."),
+      );
     }
   };
 

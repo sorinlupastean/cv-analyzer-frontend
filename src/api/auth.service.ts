@@ -2,6 +2,27 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5000/auth";
 
+export const getAuthErrorMessage = (
+  error: unknown,
+  fallback: string,
+) => {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as
+      | { message?: string | string[] }
+      | undefined;
+
+    if (typeof data?.message === "string" && data.message.trim()) {
+      return data.message;
+    }
+
+    if (Array.isArray(data?.message) && data.message.length > 0) {
+      return data.message[0];
+    }
+  }
+
+  return fallback;
+};
+
 export const login = async (email: string, password: string) => {
   const response = await axios.post(`${API_URL}/login`, {
     email,
