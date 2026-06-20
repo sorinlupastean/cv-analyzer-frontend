@@ -1,0 +1,63 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="16" y1="14" x2="112" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#071725"/>
+      <stop offset="100%" stop-color="#03111C"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="28" y1="18" x2="100" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#A7F3FF"/>
+      <stop offset="45%" stop-color="#4ACFEE"/>
+      <stop offset="100%" stop-color="#3B7F9B"/>
+    </linearGradient>
+    <linearGradient id="page" x1="40" y1="26" x2="92" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F8FDFF" stop-opacity="0.98"/>
+      <stop offset="100%" stop-color="#D7F3FA" stop-opacity="0.92"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.5" result="blur"/>
+      <feColorMatrix
+        in="blur"
+        type="matrix"
+        values="1 0 0 0 0
+                0 1 0 0 0
+                0 0 1 0 0
+                0 0 0 0.45 0"
+      />
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <circle cx="64" cy="64" r="58" fill="url(#bg)"/>
+  <circle cx="64" cy="64" r="55" stroke="url(#accent)" stroke-opacity="0.24" stroke-width="2"/>
+  <circle cx="64" cy="64" r="44" stroke="url(#accent)" stroke-opacity="0.08" stroke-width="1.5"/>
+
+  <g filter="url(#glow)">
+    <path
+      d="M40 24H74L92 42V90C92 97.732 85.732 104 78 104H40C32.268 104 26 97.732 26 90V38C26 30.268 32.268 24 40 24Z"
+      fill="url(#page)"
+      stroke="url(#accent)"
+      stroke-width="4"
+      stroke-linejoin="round"
+    />
+    <path
+      d="M74 24V40C74 42.7614 76.2386 45 79 45H92"
+      stroke="url(#accent)"
+      stroke-width="4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+
+    <path d="M39 54H72" stroke="#0F172A" stroke-opacity="0.42" stroke-width="4" stroke-linecap="round"/>
+    <path d="M39 66H68" stroke="#0F172A" stroke-opacity="0.28" stroke-width="4" stroke-linecap="round"/>
+    <path d="M39 78H60" stroke="#0F172A" stroke-opacity="0.2" stroke-width="4" stroke-linecap="round"/>
+
+    <path d="M39 91L49 81L58 85L68 73L78 79" stroke="url(#accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <circle cx="87" cy="85" r="15" fill="#052135" fill-opacity="0.98" stroke="url(#accent)" stroke-width="4"/>
+    <path d="M87 74L89.7 80.3L96 83L89.7 85.7L87 92L84.3 85.7L78 83L84.3 80.3L87 74Z" fill="#E0F2FE"/>
+    <circle cx="82" cy="80" r="2.2" fill="#22D3EE"/>
+  </g>
+</svg>

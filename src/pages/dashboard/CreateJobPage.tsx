@@ -16,6 +16,7 @@ import {
   FaEdit,
   FaCalendarAlt,
   FaGraduationCap,
+  FaRobot,
 } from "react-icons/fa";
 import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
@@ -29,6 +30,7 @@ const TrashIcon = FaTrash as unknown as ComponentType<IconBaseProps>;
 const EditIcon = FaEdit as unknown as ComponentType<IconBaseProps>;
 const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 const CategoryIcon = FaGraduationCap as unknown as ComponentType<IconBaseProps>;
+const CopilotIcon = FaRobot as unknown as ComponentType<IconBaseProps>;
 
 interface CVResult {
   id: number;
@@ -38,6 +40,12 @@ interface CVResult {
   matchScore: number;
   status: string;
   skills: string[];
+  analysisRaw?: {
+    candidatePhotoDataUrl?: string | null;
+    cvAnalysis?: {
+      candidatePhotoDataUrl?: string | null;
+    } | null;
+  } | null;
 }
 
 interface Job {
@@ -363,6 +371,24 @@ const CreateJobPage: React.FC = () => {
                 </div>
 
                 <div className={styles.headerRightActions}>
+                  <button
+                    type="button"
+                    className={`${styles.headerPrimaryBtn} ${styles.headerCopilotBtn}`}
+                    onClick={() =>
+                      navigate(
+                        `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.COPILOT}`,
+                        {
+                          state: { jobId: selectedJob.id },
+                        },
+                      )
+                    }
+                  >
+                    <span className={styles.copilotIconChip} aria-hidden="true">
+                      <CopilotIcon className={styles.metaIcon} />
+                    </span>
+                    <span>Copilot</span>
+                  </button>
+
                   <button
                     type="button"
                     className={`${styles.headerPrimaryBtn} ${

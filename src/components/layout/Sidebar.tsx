@@ -15,6 +15,7 @@ import {
   FaCalendarAlt,
   FaBars,
   FaTimes,
+  FaRobot,
 } from "react-icons/fa";
 
 import type { ComponentType } from "react";
@@ -24,6 +25,7 @@ const CalendarIcon = FaCalendarAlt as unknown as ComponentType<IconBaseProps>;
 const HomeIcon = FaHome as unknown as ComponentType<IconBaseProps>;
 const CreateJobIcon = FaPlusCircle as unknown as ComponentType<IconBaseProps>;
 const UploadIcon = FaCloudUploadAlt as unknown as ComponentType<IconBaseProps>;
+const CopilotIcon = FaRobot as unknown as ComponentType<IconBaseProps>;
 const ResultsIcon = FaChartBar as unknown as ComponentType<IconBaseProps>;
 const SettingsIcon = FaCog as unknown as ComponentType<IconBaseProps>;
 const LogoutIcon = FaSignOutAlt as unknown as ComponentType<IconBaseProps>;
@@ -117,6 +119,11 @@ const Sidebar: React.FC = () => {
       name: "Încarcă CV",
       IconComponent: UploadIcon,
       path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.UPLOAD_CV}`,
+    },
+    {
+      name: "Copilot",
+      IconComponent: CopilotIcon,
+      path: `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.COPILOT}`,
     },
     {
       name: "Calendar",
