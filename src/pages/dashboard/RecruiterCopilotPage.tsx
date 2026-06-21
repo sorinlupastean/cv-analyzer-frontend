@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import styles from "./RecruiterCopilotPage.module.css";
+import { PATHS } from "../../routs/paths";
 import { jobsApi, type CVResult, type Job, type RecruiterCopilotCandidate, type RecruiterCopilotReport } from "../../api/jobs.service";
 import { normalizeUnicodeText } from "../../utils/text-normalization";
 
@@ -23,7 +24,6 @@ const RefreshIcon = FaSyncAlt as unknown as ComponentType<IconBaseProps>;
 const ChevronDownIcon = FaChevronDown as unknown as ComponentType<IconBaseProps>;
 
 type CandidateTab = "rezumat" | "dovezi" | "riscuri" | "intrebari";
-type ActionState = Record<number, string>;
 type LocationState = { jobId?: number; openJobId?: number };
 
 const actionLabel: Record<string, string> = {
@@ -384,6 +384,7 @@ const buildFallbackReport = (job: Job): RecruiterCopilotReport => {
 
 const RecruiterCopilotPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [jobs, setJobs] = useState<{ id: number; title: string }[]>([]);
   const [report, setReport] = useState<RecruiterCopilotReport | null>(null);
@@ -393,7 +394,6 @@ const RecruiterCopilotPage: React.FC = () => {
   const [jobMenuOpen, setJobMenuOpen] = useState(false);
   const [activeCandidateId, setActiveCandidateId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<CandidateTab>("rezumat");
-  const [actionState, setActionState] = useState<ActionState>({});
   const jobMenuRef = useRef<HTMLDivElement | null>(null);
 
   const state = (location.state ?? {}) as LocationState;
@@ -528,9 +528,19 @@ const RecruiterCopilotPage: React.FC = () => {
     setJobMenuOpen(false);
   };
 
-  const triggerAction = (candidateId: number, action: string) => {
-    setActionState((prev) => ({ ...prev, [candidateId]: action }));
-    toast.success(`${decisionLabel(action)} setat pentru candidat.`);
+  const openCandidateDetails = () => {
+    if (!selectedCandidate) return;
+
+    navigate(
+      `${PATHS.DASHBOARD.ROOT}/${PATHS.DASHBOARD.CV_DETAILS(String(selectedCandidate.id))}`,
+      {
+        state: {
+          fromResults: true,
+          jobId: selectedJobId ?? undefined,
+          jobTitle: selectedJobTitle,
+        },
+      },
+    );
   };
 
   return (
@@ -622,7 +632,6 @@ const RecruiterCopilotPage: React.FC = () => {
               <div className={styles.candidateList}>
                 {report.candidates.map((candidate) => {
                   const isActive = candidate.id === selectedCandidate?.id;
-                  const latestAction = actionState[candidate.id];
 
                   return (
                     <div
@@ -670,11 +679,6 @@ const RecruiterCopilotPage: React.FC = () => {
                         <span className={styles.softBadge}>
                           Încredere {candidate.confidenceScore}%
                         </span>
-                        {latestAction ? (
-                          <span className={styles.actionPill}>
-                            {decisionLabel(latestAction)}
-                          </span>
-                        ) : null}
                       </div>
 
                       <p className={styles.candidateExcerpt}>
@@ -682,26 +686,14 @@ const RecruiterCopilotPage: React.FC = () => {
                       </p>
 
                       <div className={styles.actionRow}>
-                        {(["INVITE", "REVIEW", "REJECT", "FOLLOW_UP"] as const).map(
-                          (action) => (
-                            <button
-                              key={action}
-                              type="button"
-                              className={[
-                                styles.actionBtn,
-                                candidate.nextStep === action
-                                  ? styles.actionBtnPrimary
-                                  : "",
-                              ].join(" ")}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                triggerAction(candidate.id, action);
-                              }}
-                            >
-                              {decisionLabel(action)}
-                            </button>
-                          ),
-                        )}
+                        <span
+                          className={[
+                            styles.actionPill,
+                            nextStepTone(candidate.nextStep),
+                          ].join(" ")}
+                        >
+                          {decisionLabel(candidate.nextStep)}
+                        </span>
                       </div>
                     </div>
                   );
@@ -718,11 +710,25 @@ const RecruiterCopilotPage: React.FC = () => {
                   {selectedCandidate?.candidateName ?? "Selectează un candidat"}
                 </h3>
               </div>
-              {selectedCandidate ? (
-                <span className={[styles.scoreBadge, scoreTone(selectedCandidate.matchScore)].join(" ")}>
-                  {selectedCandidate.matchScore}%
-                </span>
-              ) : null}
+              <div className={styles.panelHeaderActions}>
+                {selectedCandidate ? (
+                  <>
+                    <span className={[styles.scoreBadge, scoreTone(selectedCandidate.matchScore)].join(" ")}>
+                      {selectedCandidate.matchScore}%
+                    </span>
+                    <button
+                      type="button"
+                      className={styles.detailLinkBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openCandidateDetails();
+                      }}
+                    >
+                      Vezi detalii candidat
+                    </button>
+                  </>
+                ) : null}
+              </div>
             </div>
 
             {!selectedCandidate ? (

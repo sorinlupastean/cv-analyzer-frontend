@@ -780,10 +780,47 @@
   margin-bottom: 14px;
 }
 
+.panelHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .panelTitle {
   font-size: 0.96rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+}
+
+.detailLinkBtn {
+  border: 1px solid rgba(74, 207, 238, 0.22);
+  background: linear-gradient(
+    135deg,
+    rgba(74, 207, 238, 0.12),
+    rgba(57, 163, 196, 0.08)
+  );
+  color: var(--ocean-mid);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 9px 11px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    border-color 0.16s ease;
+  white-space: nowrap;
+}
+
+.detailLinkBtn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(74, 207, 238, 0.34);
+  box-shadow: 0 10px 22px rgba(74, 207, 238, 0.14);
 }
 
 .panelCount {

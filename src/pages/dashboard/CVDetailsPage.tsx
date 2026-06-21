@@ -15,7 +15,6 @@ import {
 
 import {
   FaChevronLeft,
-  FaMagic,
   FaFileSignature,
   FaChartLine,
   FaEnvelope,
@@ -35,7 +34,6 @@ import type { ComponentType } from "react";
 import type { IconBaseProps } from "react-icons";
 
 const ChevronLeft = FaChevronLeft as unknown as ComponentType<IconBaseProps>;
-const MagicIcon = FaMagic as unknown as ComponentType<IconBaseProps>;
 const FileSignature =
   FaFileSignature as unknown as ComponentType<IconBaseProps>;
 const ChartLine = FaChartLine as unknown as ComponentType<IconBaseProps>;
@@ -341,19 +339,6 @@ const CVDetailsPage: React.FC = () => {
     navigate(-1);
   };
 
-  const onAnalyzeNow = async () => {
-    if (!cv) return;
-
-    try {
-      toast.loading("Rulez analiza...", { id: "analyze" });
-      const updated = await cvsApi.analyze(cv.id);
-      setCv(updated);
-      toast.success("Analiza a fost salvată!", { id: "analyze" });
-    } catch {
-      toast.error("Analiza a eșuat", { id: "analyze" });
-    }
-  };
-
   const safeFileName: string = cv?.fileName ?? "—";
   const safeCandidateName: string = cv?.candidateName?.trim?.()
     ? cv.candidateName
@@ -542,20 +527,7 @@ ${signatureSafe}
             </div>
           </div>
 
-          <div className={styles.topBarRight}>
-            <div className={styles.actionGroup}>
-              <button
-                type="button"
-                className={styles.magicBtn}
-                onClick={onAnalyzeNow}
-                disabled={!cv || loading}
-              >
-                <div className={styles.magicGlow} />
-                <MagicIcon className={styles.magicIcon} />
-                <span>Re-analizează</span>
-              </button>
-            </div>
-          </div>
+          <div className={styles.topBarRight} />
         </header>
 
         {loading ? (
