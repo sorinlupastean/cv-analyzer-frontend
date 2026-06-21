@@ -42,8 +42,7 @@ type JobLite = {
 const SELECTED_JOB_STORAGE_KEY = "upload-cv:selected-job-id";
 
 const isAnalyzedCv = (cv: Cv): boolean => {
-  const status = String(cv.status ?? "").toLowerCase();
-  return status.includes("analiz") || Boolean(cv.analysisRaw);
+  return Boolean(cv.analysisRaw);
 };
 
 const readStoredJobId = (): number | null => {
@@ -71,6 +70,7 @@ const UploadCVPage: React.FC = () => {
     Record<number, number>
   >({});
   const [isDraggingFiles, setIsDraggingFiles] = useState(false);
+  const [isJobsLoaded, setIsJobsLoaded] = useState(false);
   const dragDepthRef = useRef(0);
 
   useEffect(() => {
@@ -122,12 +122,14 @@ const UploadCVPage: React.FC = () => {
         setAnalyzedCvCounts(Object.fromEntries(pairs));
       } catch {
         toast.error("Nu pot încărca job-urile din backend.");
+      } finally {
+        setIsJobsLoaded(true);
       }
     })();
   }, []);
 
   useEffect(() => {
-    if (!selectedJobId) {
+    if (!isJobsLoaded || !selectedJobId) {
       setCvs([]);
       return;
     }
@@ -135,11 +137,26 @@ const UploadCVPage: React.FC = () => {
     (async () => {
       try {
         await refreshCvs(selectedJobId);
-      } catch {
-        toast.error("Nu pot încărca CV-urile pentru job.");
+      } catch (err: any) {
+        const status = err?.response?.status;
+        const message = String(
+          err?.response?.data?.message || err?.message || "",
+        ).trim();
+
+        if (status === 404 || status === 403) {
+          const nextJobId = jobs[0]?.id ?? null;
+          setSelectedJobId(nextJobId);
+          toast.error(
+            message ||
+              "Jobul selectat nu mai este disponibil pentru contul tău.",
+          );
+          return;
+        }
+
+        toast.error(message || "Nu pot încărca CV-urile pentru job.");
       }
     })();
-  }, [selectedJobId]);
+  }, [isJobsLoaded, jobs, selectedJobId]);
 
   const filteredJobs = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();

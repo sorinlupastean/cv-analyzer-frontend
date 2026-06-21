@@ -263,7 +263,7 @@ function normalizeCvResult(cv: CVResult): CVResult {
 }
 
 function isAnalyzedCvResult(cv: CVResult): boolean {
-  return String(cv.status ?? "").trim().toLowerCase() === "analizat";
+  return Boolean(cv.analysisRaw);
 }
 
 function normalizeJob(job: Job): Job {

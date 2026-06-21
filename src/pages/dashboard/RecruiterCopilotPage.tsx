@@ -303,7 +303,7 @@ const buildLocalCandidate = (
 
 const buildFallbackReport = (job: Job): RecruiterCopilotReport => {
   const candidates = (job.cvs || [])
-    .filter((cv) => cv.status?.toLowerCase() === "analizat" || Boolean(cv.analysisRaw))
+    .filter((cv) => Boolean(cv.analysisRaw))
     .map((cv) => buildLocalCandidate(cv, job.title))
     .sort((a, b) => {
       if (b.matchScore !== a.matchScore) return b.matchScore - a.matchScore;

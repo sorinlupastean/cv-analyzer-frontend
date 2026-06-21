@@ -8,6 +8,7 @@ import React, {
 import styles from "./CalendarPage.module.css";
 import toast from "react-hot-toast";
 import CalendarEventModal from "../../components/CalendarEventModal/CalendarEventModal";
+import { usersApi } from "../../api/users.service";
 import {
   interviewsApi,
   type InterviewEventDto,
@@ -75,6 +76,7 @@ type InterviewEvent = {
   status: InterviewStatus;
   meetLink?: string;
   cvId?: number | null;
+  createdById?: number | null;
 };
 
 type EventForm = {
@@ -140,17 +142,6 @@ const formatHour = (iso: string) => {
   if (Number.isNaN(d.getTime())) return "-";
   return d.toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit" });
 };
-
-const isValidEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim());
-const isValidUrl = (s: string) => {
-  if (!s.trim()) return true;
-  try {
-    new URL(s.trim());
-    return true;
-  } catch {
-    return false;
-  }
-};
 const clamp = (v: number, min: number, max: number) =>
   Math.min(max, Math.max(min, v));
 
@@ -166,6 +157,7 @@ const mapDtoToUi = (x: InterviewEventDto): InterviewEvent => ({
   status: x.status,
   meetLink: x.meetLink ?? undefined,
   cvId: x.cvId ?? null,
+  createdById: x.createdById ?? null,
 });
 
 const CalendarPage: React.FC = () => {
@@ -183,6 +175,8 @@ const CalendarPage: React.FC = () => {
 
   const [events, setEvents] = useState<InterviewEvent[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [currentUserRole, setCurrentUserRole] = useState<string>("");
 
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | InterviewStatus>(
@@ -215,6 +209,23 @@ const CalendarPage: React.FC = () => {
 
   const statusMenuRef = useRef<HTMLDivElement | null>(null);
 
+  const canManageInterviews = useMemo(() => {
+    const role = currentUserRole.trim().toLowerCase();
+    if (!role) return false;
+    return (
+      role.includes("admin") ||
+      role.includes("recruit") ||
+      role.includes("hr") ||
+      role.includes("manager") ||
+      role.includes("lead") ||
+      role.includes("owner")
+    );
+  }, [currentUserRole]);
+
+  const canManageEvent = (event: InterviewEvent) =>
+    canManageInterviews ||
+    (currentUserId !== null && event.createdById === currentUserId);
+
   useEffect(() => {
     if (!isModalOpen) {
       setForm(emptyForm);
@@ -242,6 +253,28 @@ const CalendarPage: React.FC = () => {
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [statusMenuOpen]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const me = await usersApi.me();
+        if (cancelled) return;
+        setCurrentUserId(me?.id ?? null);
+        setCurrentUserRole(me?.role || "");
+      } catch {
+        if (!cancelled) {
+          setCurrentUserId(null);
+          setCurrentUserRole("");
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const monthLabel = useMemo(() => {
     return cursor.toLocaleDateString("ro-RO", {
@@ -355,6 +388,7 @@ const CalendarPage: React.FC = () => {
   };
 
   const openEdit = (ev: InterviewEvent) => {
+    if (!canManageEvent(ev)) return;
     setModalServerErrors({});
     const s = new Date(ev.startAt);
     const e = new Date(ev.endAt);
@@ -477,6 +511,11 @@ const CalendarPage: React.FC = () => {
   };
 
   const cancelEvent = async (id: string) => {
+    const event = events.find((x) => x.id === id);
+    if (!event || !canManageEvent(event)) {
+      toast.error("Nu ai permisiunea să anulezi programările.");
+      return;
+    }
     try {
       toast.loading("Anulez...", { id: "cancelEvent" });
       const updated = await interviewsApi.cancel(Number(id));
@@ -773,6 +812,8 @@ const CalendarPage: React.FC = () => {
     hoverTip.open,
     hoverTip.anchor,
     hoverTip.pos.left,
+    hoverTip.pos.top,
+    hoverTip.maxH,
     hoverTip.items.length,
     hoverTip.idx,
   ]);
@@ -1163,25 +1204,27 @@ const CalendarPage: React.FC = () => {
                         ) : null}
                       </div>
 
-                      <div className={styles.agendaActions}>
-                        <button
-                          className={styles.iconActionBtn}
-                          onClick={() => openEdit(ev)}
-                          title="Editează"
-                          disabled={ev.status === "CANCELLED"}
-                        >
-                          <EditIcon size={14} />
-                        </button>
+                      {canManageEvent(ev) ? (
+                        <div className={styles.agendaActions}>
+                          <button
+                            className={styles.iconActionBtn}
+                            onClick={() => openEdit(ev)}
+                            title="Editează"
+                            disabled={ev.status === "CANCELLED"}
+                          >
+                            <EditIcon size={14} />
+                          </button>
 
-                        <button
-                          className={`${styles.iconActionBtn} ${styles.dangerBtn}`}
-                          onClick={() => cancelEvent(ev.id)}
-                          title="Anulează"
-                          disabled={ev.status === "CANCELLED"}
-                        >
-                          <TrashIcon size={14} />
-                        </button>
-                      </div>
+                          <button
+                            className={`${styles.iconActionBtn} ${styles.dangerBtn}`}
+                            onClick={() => cancelEvent(ev.id)}
+                            title="Anulează"
+                            disabled={ev.status === "CANCELLED"}
+                          >
+                            <TrashIcon size={14} />
+                          </button>
+                        </div>
+                      ) : null}
                     </article>
                   );
                 })

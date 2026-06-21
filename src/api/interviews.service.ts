@@ -14,6 +14,7 @@ export type InterviewEventDto = {
   status: InterviewStatus;
   meetLink?: string | null;
   cvId?: number | null;
+  createdById?: number | null;
 };
 
 export const interviewsApi = {

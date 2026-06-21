@@ -233,6 +233,7 @@ const CVDetailsPage: React.FC = () => {
 
   const match = analysis?.finalScore ?? cv?.matchScore ?? 0;
   const githubAnalysis = analysis?.githubAnalysis ?? null;
+  const headerStatusLabel = analysis ? "Analizat" : "Încărcat";
 
   const scoreLabel = useMemo(() => {
     if (match >= 85) return "Potrivire foarte bună";
@@ -531,7 +532,7 @@ ${signatureSafe}
               <div className={styles.headerStatusRow}>
                 <div className={styles.statusIndicator}>
                   <span className={styles.pulseDot} />
-                  {cv?.status || "Inactiv"}
+                  {headerStatusLabel}
                 </div>
                 <div className={styles.dotSeparator} />
                 <span className={styles.dateInfo}>
