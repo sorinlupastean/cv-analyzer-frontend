@@ -1,0 +1,15 @@
+{
+  "short_name": "CV Studio",
+  "name": "CV Analyzer Studio",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#03111c",
+  "background_color": "#03111c"
+}
